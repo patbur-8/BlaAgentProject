@@ -45,8 +45,8 @@ public class Assignment {
     }
 */
     public String getTitle() {
-        //return this.title;
-        return "Byte av glödlampa.";
+        return this.title;
+        //return "Byte av glödlampa.";
     }
 
     public String getUid() {

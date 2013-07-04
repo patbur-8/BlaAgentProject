@@ -32,7 +32,7 @@ import javax.xml.xpath.XPathFactory;
  * Created by pbm on 2013-06-25.
  */
 public class BAConnection {
-    String nodesToRetrieve = "//assignment/workorder/title | //assignment/uid | //assignment/workorder/booked | //assignment/start | //assignment/stop | //assignment/workorder/location/latitude | //assignment/workorder/location/longitude";
+    String nodesToRetrieve = "//assignment/start | //assignment/stop | //assignment/uid | //assignment/workorder/booked | //assignment/workorder/title | //assignment/workorder/location/latitude | //assignment/workorder/location/longitude";
     private Vector<Assignment> assignments = new Vector<Assignment>();
     private int nodePerAssignment;
     private String xml = "";
@@ -47,7 +47,7 @@ public class BAConnection {
     }
 
     public void calculateNodePerAssignment() {
-        nodePerAssignment = nodesToRetrieve.length() - nodesToRetrieve.replaceAll("|", "").length();
+        nodePerAssignment = nodesToRetrieve.length() - nodesToRetrieve.replaceAll("\\|", "").length() + 1;
     }
     public void startRetrieval() {
         Log.i("Progress", "Starting retrieval");
@@ -100,23 +100,16 @@ public class BAConnection {
     }
 
     private ByteArrayOutputStream getUrlData(String url) {
-        Log.i("Progress", "Byte array stream");
         HttpURLConnection uc = null;
         InputStream is = null;
         ByteArrayOutputStream ret = null;
         try {
             uc = (HttpURLConnection)(new URL(url)).openConnection();
-            Log.i("ByteArrayOutputStream", "uc = (HttpURLConnection)(new URL(url)).openConnection();");
             HttpURLConnection.setFollowRedirects(true);
-            Log.i("ByteArrayOutputStream", "HttpURLConnection.setFollowRedirects(true);");
             uc.connect();
-            Log.i("ByteArrayOutputStream", "uc.connect();");
             is = uc.getInputStream();
-            Log.i("ByteArrayOutputStream", "is = uc.getInputStream();");
             ret = new ByteArrayOutputStream();
-            Log.i("ByteArrayOutputStream", "ret = new ByteArrayOutputStream();");
             copyStream(is, ret);
-            Log.i("ByteArrayOutputStream", "copyStream(is, ret);");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -143,7 +136,6 @@ public class BAConnection {
         Log.i("Progress", "Getting XML");
         xml = "";
         events = "";
-        Log.i("Progress", "Port: " + port);
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -165,21 +157,13 @@ public class BAConnection {
     }
 
     private Document docFromString(String v) {
-        Log.i("Progress", "Doc from String");
-        Log.i("Progress", ""+v.length());
-        Log.i("Progress", ""+xml.length());
         Document doc = null;
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
-            Log.i("Progress","Trying 1...");
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Log.i("Progress","Trying 2...");
             InputSource is = new InputSource();
-            Log.i("Progress","Trying 3...");
             is.setCharacterStream(new StringReader(v));
-            Log.i("Progress","Trying 4...");
-            Log.d("XML",xml);
             doc = db.parse(is);
             Log.i("Progress","WIN");
         } catch (Exception e) {
@@ -192,10 +176,7 @@ public class BAConnection {
 
     private void parseXML() {
         Document doc = docFromString(xml);
-        Log.i("Progress","här?1");
-        Log.i("Progress", "sanning? " + (doc == null));
         if (doc == null) return;
-        Log.i("Progress","här?");
         XPathFactory xpf = XPathFactory.newInstance();
         XPath xp1 = xpf.newXPath();
         NodeList nl;
@@ -208,11 +189,11 @@ public class BAConnection {
             events = "";
             for (int m = 0; m < nl.getLength(); m=m+nodePerAssignment) {
 
-                String title = nl.item(m).getTextContent();
-                String uid = nl.item(m+1).getTextContent();
-                boolean booked = Boolean.parseBoolean(nl.item(m + 2).getTextContent());
-                String startTime = nl.item(m+3).getTextContent();
-                String stopTime = nl.item(m+4).getTextContent();
+                String startTime = nl.item(m).getTextContent();
+                String stopTime = nl.item(m+1).getTextContent();
+                String uid = nl.item(m+2).getTextContent();
+                boolean booked = Boolean.parseBoolean(nl.item(m + 3).getTextContent());
+                String title = nl.item(m+4).getTextContent();
                 float latitude = Float.parseFloat(nl.item(m+5).getTextContent());
                 float longitude = Float.parseFloat(nl.item(m+6).getTextContent());
                 Assignment a = new Assignment(title, uid, booked, startTime, stopTime, latitude, longitude);
