@@ -2,8 +2,10 @@ package com.ismobile.blaagent;
 
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.app.NotificationManager;
 import android.support.v4.app.TaskStackBuilder;
@@ -15,7 +17,7 @@ public class StatusNotificationIntent {
     private float longi = assignment.getLongitude();
     private float lati = assignment.getLatitude();
     private String title = assignment.getTitle();
-    private String uid = assignment.getUid();
+    private String uid = "9Bk5THugReWsbQ6xq2nTkA"; //assignment.getUid();
     private boolean booked = assignment.getBooked();
     private String start = assignment.getStart();
     private String stop = assignment.getStop();
@@ -48,12 +50,26 @@ public class StatusNotificationIntent {
         events[2] = "Drive time to next assignment: " + currentDriveTime + " min.";
 
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
-        resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", "9Bk5THugReWsbQ6xq2nTkA");
+        resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
+
+        // lat, long
+        // from: 20.344,34.34
+        // to: 20.5666,45.345
+        Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?f=d&daddr=59.6534, 17.9336"));
+        mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
+                "com.google.android.maps.MapsActivity"));
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addNextIntent(resultIntent);
 
+        TaskStackBuilder mapsStackBuilder = TaskStackBuilder.create(context);
+        mapsStackBuilder.addNextIntent(mapsIntent);
+
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+                0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent mapsPendingIntent = mapsStackBuilder.getPendingIntent(
                 0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
@@ -64,7 +80,7 @@ public class StatusNotificationIntent {
                 .setWhen(System.currentTimeMillis())
                 .setDefaults(Notification.DEFAULT_SOUND)
                 .addAction(R.drawable.ic_launcher, "", resultPendingIntent)
-                .addAction(R.drawable.google_maps_logo, "", resultPendingIntent); // Ta bort notifieringen efter man klickat på bilderna.
+                .addAction(R.drawable.google_maps_logo, "", mapsPendingIntent); // Ta bort notifieringen efter man klickat på bilderna.
 
         builder.setContentIntent(resultPendingIntent);
 
