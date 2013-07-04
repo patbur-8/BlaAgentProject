@@ -74,8 +74,6 @@ public class StatusNotificationIntent {
                 .setContentText(contentText)
                 .setContentTitle(contentTitle)
                 .setSmallIcon(R.drawable.ic_launcher)
-                .setAutoCancel(true)
-                .setDeleteIntent(mapsPendingIntent) // Funkar inte..
                 .setWhen(System.currentTimeMillis())
                 .setDefaults(Notification.DEFAULT_SOUND) // Notification.DEFAULT_ALL
                 .addAction(R.drawable.ic_launcher, "", resultPendingIntent)
