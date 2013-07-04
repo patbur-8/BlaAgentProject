@@ -12,9 +12,16 @@ public class Assignment {
     private String start;
     private String stop;
 
-    public Assignment() {
+    public Assignment(String title, String uid, boolean booked, String startTime, String stopTime, float latitude, float longitude) {
+        this.title = title;
+        this.uid = uid;
+        this.booked = booked;
+        this.start = startTime;
+        this.stop = stopTime;
+        this.lati = latitude;
+        this.longi = longitude;
     }
-
+/*
     public void setLongi(float longitude) {
         this.longi = longitude;
     }
@@ -36,7 +43,7 @@ public class Assignment {
     public void setStop(String stopTime) {
         this.stop = stopTime;
     }
-
+*/
     public String getTitle() {
         //return this.title;
         return "Byte av glödlampa.";
