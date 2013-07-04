@@ -11,6 +11,16 @@ import android.support.v4.app.TaskStackBuilder;
 public class StatusNotificationIntent {
     private Context context;
 
+    Assignment assignment = new Assignment();
+    private float longi = assignment.getLongitude();
+    private float lati = assignment.getLatitude();
+    private String title = assignment.getTitle();
+    private String uid = assignment.getUid();
+    private boolean booked = assignment.getBooked();
+    private String start = assignment.getStart();
+    private String stop = assignment.getStop();
+    private int currentDriveTime = 30;
+
     public StatusNotificationIntent(Context context) {
         this.context = context;
     }
@@ -33,12 +43,18 @@ public class StatusNotificationIntent {
         String[] events = new String[6];
 
         // Sets a title for the Inbox style big view
-        events[0] = "Helloo..!";
-        events[1] = "How are you?";
-        events[2] = "HIII !!";
-        events[3] = "i am fine...";
-        events[4] = "what about you? all is well?";
-        events[5] = "Yes, every thing is all right..";
+        events[0] = "Title: " + title;
+        events[1] = "Deadline: " + stop;
+        events[2] = "Drive time to next assignment: " + currentDriveTime + " min.";
+
+        Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
+        resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", "9Bk5THugReWsbQ6xq2nTkA");
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntent(resultIntent);
+
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+                0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setContentText(contentText)
@@ -46,17 +62,9 @@ public class StatusNotificationIntent {
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
-                .setDefaults(Notification.DEFAULT_SOUND);
-
-        Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
-        resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", "9Bk5THugReWsbQ6xq2nTkA");
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        //stackBuilder.addParentStack(ResultActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
-                        0, PendingIntent.FLAG_UPDATE_CURRENT);
+                .setDefaults(Notification.DEFAULT_SOUND)
+                .addAction(R.drawable.ic_launcher, "", resultPendingIntent)
+                .addAction(R.drawable.google_maps_logo, "", resultPendingIntent); // Ta bort notifieringen efter man klickat på bilderna.
 
         builder.setContentIntent(resultPendingIntent);
 

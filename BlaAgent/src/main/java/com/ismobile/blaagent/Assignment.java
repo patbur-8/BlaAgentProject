@@ -12,18 +12,34 @@ public class Assignment {
     private String start;
     private String stop;
 
-    public Assignment(long longitude, long latitude, String title, String uid, boolean booked, String start, String stop) {
-        this.title = title;
-        this.uid = uid;
-        this.start = start;
-        this.stop = stop;
-        this.booked = booked;
-        this.lati = latitude;
+    public Assignment() {
+    }
+
+    public void setLongi(float longitude) {
         this.longi = longitude;
+    }
+    public void setLati(float latitude) {
+        this.lati = latitude;
+    }
+    public void setTitle(String titleAss) {
+        this.title = titleAss;
+    }
+    public void setUid(String uId) {
+        this.uid = uId;
+    }
+    public void setBooked(boolean bookedAss) {
+        this.booked = bookedAss;
+    }
+    public void setStart(String startTime) {
+        this.start = startTime;
+    }
+    public void setStop(String stopTime) {
+        this.stop = stopTime;
     }
 
     public String getTitle() {
-        return this.title;
+        //return this.title;
+        return "Byte av glödlampa.";
     }
 
     public String getUid() {
@@ -35,7 +51,8 @@ public class Assignment {
     }
 
     public String getStop() {
-        return this.stop;
+        //return this.stop;
+        return "16:00";
     }
 
     public boolean getBooked() {
