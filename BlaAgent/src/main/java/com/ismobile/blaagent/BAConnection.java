@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,6 +32,9 @@ import javax.xml.xpath.XPathFactory;
  * Created by pbm on 2013-06-25.
  */
 public class BAConnection {
+    String nodesToRetrieve = "//assignment/workorder/title | //assignment/uid | //assignment/workorder/booked | //assignment/start | //assignment/stop | //assignment/workorder/location/latitude | //assignment/workorder/location/longitude";
+    private Vector<Assignment> assignments = new Vector<Assignment>();
+    private int nodePerAssignment;
     private String xml = "";
     private String events = "";
     private File getPortfile() {
@@ -39,9 +43,12 @@ public class BAConnection {
         return f;
     }
     public BAConnection() {
-
+        calculateNodePerAssignment();
     }
 
+    public void calculateNodePerAssignment() {
+        nodePerAssignment = nodesToRetrieve.length() - nodesToRetrieve.replaceAll("|", "").length();
+    }
     public void startRetrieval() {
         Log.i("Progress", "Starting retrieval");
         final File p = getPortfile();
@@ -193,17 +200,27 @@ public class BAConnection {
         XPath xp1 = xpf.newXPath();
         NodeList nl;
         try {
-            // <start> <stop> <booked> <title> <location>
+            //String title, String uid, boolean booked, String startTime, String stopTime, float latitude, float longitude
+            // <title> <uid>  <booked> <start> <stop> <latitude> <longitude>
             Log.i("Progress","Try");
-            String nodesToRetrieve = "//assignment/uid | //assignment/start | //assignment/stop | //assignment/workorder/booked | //assignment/workorder/title | //assignment/workorder/location/latitude | //assignment/workorder/location/longitude";
             nl = (NodeList) xp1.evaluate(nodesToRetrieve, doc, XPathConstants.NODESET);
             Log.i("Progress","Created Node list");
             events = "";
-            for (int m = 0; m < nl.getLength(); m++) {
-                Node trnode = nl.item(m);
-                events = events + trnode.getTextContent() + "\n";
+            for (int m = 0; m < nl.getLength(); m=m+nodePerAssignment) {
+
+                String title = nl.item(m).getTextContent();
+                String uid = nl.item(m+1).getTextContent();
+                boolean booked = Boolean.parseBoolean(nl.item(m + 2).getTextContent());
+                String startTime = nl.item(m+3).getTextContent();
+                String stopTime = nl.item(m+4).getTextContent();
+                float latitude = Float.parseFloat(nl.item(m+5).getTextContent());
+                float longitude = Float.parseFloat(nl.item(m+6).getTextContent());
+                Assignment a = new Assignment(title, uid, booked, startTime, stopTime, latitude, longitude);
+                assignments.add(a);
             }
-            Log.d("events",events);
+            //sort
+            Log.d("events",assignments.firstElement().getTitle());
+            Log.d("events",assignments.lastElement().getTitle());
         } catch (XPathExpressionException e) {
             Log.e("Progress","XPath error: " + e);
             e.printStackTrace();
