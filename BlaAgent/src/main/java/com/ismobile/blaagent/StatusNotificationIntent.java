@@ -13,15 +13,15 @@ import android.support.v4.app.TaskStackBuilder;
 public class StatusNotificationIntent {
     private Context context;
 
-    Assignment assignment = new Assignment();
-    private float longi = assignment.getLongitude();
-    private float lati = assignment.getLatitude();
-    private String title = assignment.getTitle();
-    private String uid = "9Bk5THugReWsbQ6xq2nTkA"; //assignment.getUid();
-    private boolean booked = assignment.getBooked();
-    private String start = assignment.getStart();
-    private String stop = assignment.getStop();
+    private float longi = (float) 17.9336;
+    private float lati = (float) 59.6534;
+    private String title;
+    private String uid = "9Bk5THugReWsbQ6xq2nTkA";
+    private boolean booked;
+    private String start;
+    private String stop;
     private int currentDriveTime = 30;
+    Assignment assignment = new Assignment(title, uid, booked, start, stop, lati, longi);
 
     public StatusNotificationIntent(Context context) {
         this.context = context;
@@ -44,26 +44,24 @@ public class StatusNotificationIntent {
     public void buildNotification(CharSequence contentTitle, CharSequence contentText) {
         String[] events = new String[6];
 
-        // Sets a title for the Inbox style big view
-        events[0] = "Title: " + title;
-        events[1] = "Deadline: " + stop;
+        // Event details.
+        events[0] = "Title: " + assignment.getTitle();
+        events[1] = "Deadline: " + assignment.getStop();
         events[2] = "Drive time to next assignment: " + currentDriveTime + " min.";
 
+        // Opens assignment with uid in Blå Android.
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
         resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
 
-        // lat, long
-        // from: 20.344,34.34
-        // to: 20.5666,45.345
+        // Opens google maps, from: My Location to: an assignments lat, long.
         Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
-                Uri.parse("http://maps.google.com/maps?f=d&daddr=59.6534, 17.9336"));
+                Uri.parse("http://maps.google.com/maps?f=d&daddr=" + lati + "," + longi));
         mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
                 "com.google.android.maps.MapsActivity"));
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addNextIntent(resultIntent);
-
         TaskStackBuilder mapsStackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addNextIntent(resultIntent);
         mapsStackBuilder.addNextIntent(mapsIntent);
 
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
@@ -77,14 +75,16 @@ public class StatusNotificationIntent {
                 .setContentTitle(contentTitle)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setAutoCancel(true)
+                .setDeleteIntent(mapsPendingIntent) // Funkar inte..
                 .setWhen(System.currentTimeMillis())
-                .setDefaults(Notification.DEFAULT_SOUND)
+                .setDefaults(Notification.DEFAULT_SOUND) // Notification.DEFAULT_ALL
                 .addAction(R.drawable.ic_launcher, "", resultPendingIntent)
                 .addAction(R.drawable.google_maps_logo, "", mapsPendingIntent); // Ta bort notifieringen efter man klickat på bilderna.
 
         builder.setContentIntent(resultPendingIntent);
 
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager nm = (NotificationManager) context.getSystemService(
+                Context.NOTIFICATION_SERVICE);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         inboxStyle.setBigContentTitle("Assignment Details");
