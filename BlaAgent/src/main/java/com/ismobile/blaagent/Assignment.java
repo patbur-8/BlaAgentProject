@@ -46,7 +46,6 @@ public class Assignment {
 */
     public String getTitle() {
         return this.title;
-        //return "Byte av glödlampa.";
     }
 
     public String getUid() {
@@ -58,8 +57,7 @@ public class Assignment {
     }
 
     public String getStop() {
-        //return this.stop;
-        return "16:00";
+        return this.stop;
     }
 
     public boolean getBooked() {

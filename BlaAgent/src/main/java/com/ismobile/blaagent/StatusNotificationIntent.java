@@ -19,9 +19,8 @@ public class StatusNotificationIntent {
     private String uid = "9Bk5THugReWsbQ6xq2nTkA";
     private boolean booked;
     private String start;
-    private String stop;
+    private String stop = "16:00";
     private int currentDriveTime = 30;
-    Assignment assignment = new Assignment(title, uid, booked, start, stop, lati, longi);
 
     public StatusNotificationIntent(Context context) {
         this.context = context;
@@ -45,8 +44,8 @@ public class StatusNotificationIntent {
         String[] events = new String[6];
 
         // Event details.
-        events[0] = "Title: " + assignment.getTitle();
-        events[1] = "Deadline: " + assignment.getStop();
+        events[0] = "Title: ";
+        events[1] = "Deadline: " + stop;
         events[2] = "Drive time to next assignment: " + currentDriveTime + " min.";
 
         // Opens assignment with uid in Blå Android.
@@ -77,7 +76,7 @@ public class StatusNotificationIntent {
                 .setWhen(System.currentTimeMillis())
                 .setDefaults(Notification.DEFAULT_SOUND) // Notification.DEFAULT_ALL
                 .addAction(R.drawable.ic_launcher, "", resultPendingIntent)
-                .addAction(R.drawable.google_maps_logo, "", mapsPendingIntent); // Ta bort notifieringen efter man klickat på bilderna.
+                .addAction(R.drawable.google_maps_logo, "", mapsPendingIntent);
 
         builder.setContentIntent(resultPendingIntent);
 
