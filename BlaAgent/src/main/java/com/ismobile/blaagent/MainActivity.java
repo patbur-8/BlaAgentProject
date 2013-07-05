@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
 
 
     public void onClick(View view) {
-        switch (view.getId()) {
+        /*switch (view.getId()) {
             case R.id.button: // Info
                 sn.sendNotification(1);
                 break;
@@ -45,6 +45,6 @@ public class MainActivity extends Activity {
             case R.id.button3: // Error
                 sn.sendNotification(3);
                 break;
-        }
+        }*/
     }
 }

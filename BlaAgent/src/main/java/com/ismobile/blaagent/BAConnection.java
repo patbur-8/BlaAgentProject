@@ -2,6 +2,7 @@ package com.ismobile.blaagent;
 
 import android.*;
 import android.R;
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -37,12 +38,16 @@ public class BAConnection {
     private int nodePerAssignment;
     private String xml = "";
     private String events = "";
+    private SchematicNotification sn;
+    private Context context;
     private File getPortfile() {
         File f = new File(new File(Environment.getExternalStorageDirectory(), "BlaAndroid"), "port.txt");
         f.mkdirs();
         return f;
     }
-    public BAConnection() {
+    public BAConnection(Context context) {
+        this.context = context;
+        sn = new SchematicNotification();
         calculateNodePerAssignment();
     }
 
@@ -198,10 +203,11 @@ public class BAConnection {
                 float longitude = Float.parseFloat(nl.item(m+6).getTextContent());
                 Assignment a = new Assignment(title, uid, booked, startTime, stopTime, latitude, longitude);
                 assignments.add(a);
+                sn.evaluate(assignments,context);
             }
             //sort
             Log.d("events",assignments.firstElement().getTitle());
-            Log.d("events",assignments.lastElement().getTitle());
+            Log.d("events", assignments.lastElement().getTitle());
         } catch (XPathExpressionException e) {
             Log.e("Progress","XPath error: " + e);
             e.printStackTrace();

@@ -26,6 +26,7 @@ public class StatusNotificationIntent {
         this.context = context;
     }
 
+    /*
     public void sendNotification(int typeOfMessage) {
         switch (typeOfMessage) {
             case 1:
@@ -39,20 +40,10 @@ public class StatusNotificationIntent {
                 break;
         }
     }
+*/
+    public void buildNotification(CharSequence contentTitle, CharSequence contentText, Intent resultIntent, String[] details, boolean bigStyle, NotificationAction[] notiActions) {
 
-    public void buildNotification(CharSequence contentTitle, CharSequence contentText) {
-        String[] events = new String[6];
-
-        // Event details.
-        events[0] = "Title: ";
-        events[1] = "Deadline: " + stop;
-        events[2] = "Drive time to next assignment: " + currentDriveTime + " min.";
-
-        // Opens assignment with uid in Blå Android.
-        Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
-        resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
-
-        // Opens google maps, from: My Location to: an assignments lat, long.
+     /*   // Opens google maps, from: My Location to: an assignments lat, long.
         Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
                 Uri.parse("http://maps.google.com/maps?f=d&daddr=" + lati + "," + longi));
         mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
@@ -67,32 +58,59 @@ public class StatusNotificationIntent {
                 0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         PendingIntent mapsPendingIntent = mapsStackBuilder.getPendingIntent(
-                0, PendingIntent.FLAG_UPDATE_CURRENT);
+                0, PendingIntent.FLAG_UPDATE_CURRENT);*/
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setContentText(contentText)
                 .setContentTitle(contentTitle)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setWhen(System.currentTimeMillis())
-                .setDefaults(Notification.DEFAULT_SOUND) // Notification.DEFAULT_ALL
-                .addAction(R.drawable.ic_launcher, "", resultPendingIntent)
-                .addAction(R.drawable.google_maps_logo, "", mapsPendingIntent);
+                .setDefaults(Notification.DEFAULT_SOUND); // Notification.DEFAULT_ALL
+                /*.addAction(R.drawable.ic_launcher, "", resultPendingIntent)
+                .addAction(R.drawable.google_maps_logo, "", mapsPendingIntent);*/
 
-        builder.setContentIntent(resultPendingIntent);
+        if(notiActions != null) {
+            for(int i = 0; i<notiActions.length;i++) {
+                int img = notiActions[i].getImage();
+                String title = notiActions[i].getTitle();
+                Intent intent = notiActions[i].getIntent();
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+                stackBuilder.addNextIntent(intent);
+                PendingIntent pi = stackBuilder.getPendingIntent(
+                        0, PendingIntent.FLAG_UPDATE_CURRENT);
+                builder.addAction(img, title, pi);
+            }
+        }
+
+        // Opens assignment with uid in Blå Android.
+        if(resultIntent != null) {
+            /*Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
+            resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);*/
+
+            TaskStackBuilder resultStackBuilder = TaskStackBuilder.create(context);
+            resultStackBuilder.addNextIntent(resultIntent);
+            PendingIntent resultPendingIntent = resultStackBuilder.getPendingIntent(
+                    0, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(resultPendingIntent);
+        }
+
 
         NotificationManager nm = (NotificationManager) context.getSystemService(
                 Context.NOTIFICATION_SERVICE);
 
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle("Assignment Details");
-
-        // Moves events into the big view
-        for (int i=0; i < events.length; i++) {
-            inboxStyle.addLine(events[i]);
-        }
-
         // Moves the big view style object into the notification object.
-        builder.setStyle(inboxStyle);
+        if(bigStyle) {
+            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+            inboxStyle.setBigContentTitle("Assignment Details");
+
+            // Moves events into the big view
+            if(details != null) {
+                for (int i=0; i < details.length; i++) {
+                    inboxStyle.addLine(details[i]);
+                }
+            }
+            builder.setStyle(inboxStyle);
+        }
 
         nm.notify(100, builder.build());
     }

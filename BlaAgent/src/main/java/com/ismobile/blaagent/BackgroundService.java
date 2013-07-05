@@ -20,7 +20,7 @@ public class BackgroundService {
     private final String alarmManagerAction = "com.ismobile.blaagent.alarmManagerAction";
     BroadcastReceiver receiver;
     PendingIntent pi;
-    BAConnection bacon = new BAConnection();
+    BAConnection bacon;
     private boolean registered = false;
     AlarmManager am;
     private PowerManager.WakeLock wl;
@@ -28,6 +28,7 @@ public class BackgroundService {
     public BackgroundService(Context context) {
         Log.d("Superduper","constructor");
         this.context = context;
+        bacon = new BAConnection(context);
         this.receiver = null;
     }
 
