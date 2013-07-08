@@ -50,7 +50,7 @@ public class SchematicNotification extends NotificationType {
         NotificationAction[] notiActions = new NotificationAction[2];
         notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
         notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
-        
+
         StatusNotificationIntent sni = new StatusNotificationIntent(context);
         sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions);
     }
