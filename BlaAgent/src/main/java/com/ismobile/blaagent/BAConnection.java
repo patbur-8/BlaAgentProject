@@ -20,6 +20,12 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -186,6 +192,7 @@ public class BAConnection {
         XPath xp1 = xpf.newXPath();
         NodeList nl;
         try {
+            assignments.clear();
             //String title, String uid, boolean booked, String startTime, String stopTime, float latitude, float longitude
             // <title> <uid>  <booked> <start> <stop> <latitude> <longitude>
             Log.i("Progress","Try");
@@ -194,23 +201,70 @@ public class BAConnection {
             events = "";
             for (int m = 0; m < nl.getLength(); m=m+nodePerAssignment) {
 
-                String startTime = nl.item(m).getTextContent();
                 String stopTime = nl.item(m+1).getTextContent();
-                String uid = nl.item(m+2).getTextContent();
-                boolean booked = Boolean.parseBoolean(nl.item(m + 3).getTextContent());
-                String title = nl.item(m+4).getTextContent();
-                float latitude = Float.parseFloat(nl.item(m+5).getTextContent());
-                float longitude = Float.parseFloat(nl.item(m+6).getTextContent());
-                Assignment a = new Assignment(title, uid, booked, startTime, stopTime, latitude, longitude);
-                assignments.add(a);
-                sn.evaluate(assignments,context);
+                //if(isTimestampAfterNow(stopTime)) {
+                if(true) {
+                    String startTime = nl.item(m).getTextContent();
+                    String uid = nl.item(m+2).getTextContent();
+                    boolean booked = Boolean.parseBoolean(nl.item(m + 3).getTextContent());
+                    String title = nl.item(m+4).getTextContent();
+                    float latitude = Float.parseFloat(nl.item(m+5).getTextContent());
+                    float longitude = Float.parseFloat(nl.item(m+6).getTextContent());
+                    Assignment a = new Assignment(title, uid, booked, startTime, stopTime, latitude, longitude);
+                    assignments.add(a);
+                }
             }
-            //sort
-            Log.d("events",assignments.firstElement().getTitle());
-            Log.d("events", assignments.lastElement().getTitle());
+            if(assignments.size() > 0) {
+                sn.evaluate(assignments,context);
+                sort("stop", assignments);
+                for(int i = 0; i < assignments.size(); i++) {
+                    Log.d("timestamp", assignments.elementAt(i).getStop());
+                }
+            }
         } catch (XPathExpressionException e) {
             Log.e("Progress","XPath error: " + e);
             e.printStackTrace();
         }
     }
+
+    public void sort(final String field, List<Assignment> itemLocationList) {
+        Collections.sort(itemLocationList, new Comparator<Assignment>() {
+            @Override
+            public int compare(Assignment a1, Assignment a2) {
+                if (field.equals("stop")) {
+                    String timestamp1 = a1.getStop();
+                    String timestamp2 = a2.getStop();
+                    String myFormatString = "yyyy-MM-dd HH:mm"; // for example
+                    SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+                    try {
+                        Date d1 = df.parse(timestamp1);
+                        Date d2 = df.parse(timestamp2);
+                        if(d1.after(d2)) {
+                            return 1;
+                        } else if(d1.before(d2)) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return 1;
+            }
+        });
+    }
+    public boolean isTimestampAfterNow(String timestamp) {
+        String myFormatString = "yyyy-MM-dd HH:mm"; // for example
+        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+        try {
+            Date d1 = df.parse(timestamp);
+            Date now = new Date();
+            return d1.after(now);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }
