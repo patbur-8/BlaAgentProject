@@ -22,7 +22,7 @@ public class SchematicNotification extends NotificationType {
         // Assignments is sorted by stop time. First deadline = first element.
         CharSequence contentText;
         String title = assignments.firstElement().getTitle();
-        String stopTime = assignments.firstElement().getStop();
+        String stopTime = "2013-07-08 17:20"; //assignments.firstElement().getStop();
         int currentDriveTime = 30;
         String[] details = new String [3];
 
