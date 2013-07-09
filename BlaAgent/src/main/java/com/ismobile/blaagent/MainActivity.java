@@ -2,6 +2,7 @@ package com.ismobile.blaagent;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
@@ -11,6 +12,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("Lifecycle","onCreate");
         setContentView(R.layout.activity_main);
         bs = new BackgroundService(this);
         bs.connect();
@@ -24,7 +26,20 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    public void onStop() {
+        super.onStop();
+        Log.d("Lifecycle","onStop");
+        bs.removeBroadCastListener();
+    }
+
+    public void onRestart() {
+        super.onRestart();
+        Log.d("Lifecycle","onRestart");
+        bs.connect();
+    }
     public void onDestroy() {
+        super.onDestroy();
+        Log.d("Lifecycle","onDestroy");
         bs.removeBroadCastListener();
     }
 
