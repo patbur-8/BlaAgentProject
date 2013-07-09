@@ -22,7 +22,7 @@ public class SchematicNotification extends NotificationType {
         // Assignments is sorted by stop time. First deadline = first element.
         CharSequence contentText;
         String title = assignments.firstElement().getTitle();
-        String stopTime = "2013-07-09 11:35"; //assignments.firstElement().getStop();
+        String stopTime = "2013-07-09 14:16"; //assignments.firstElement().getStop();
         int currentDriveTime = 30;
         String[] details = new String [3];
 
@@ -34,6 +34,7 @@ public class SchematicNotification extends NotificationType {
             String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
             try {
                 d1 = df.parse(currentTime);
+                /*contentText = "Time is up looong
                 d2 = df.parse(stopTime);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -42,8 +43,7 @@ public class SchematicNotification extends NotificationType {
             Long difference = (d2.getTime() - d1.getTime())/(1000*60);
             if (difference > 15) {
                 Log.d("NOTIF", ">15min");
-                //Do nothing
-                /*contentText = "Time is up looong ago";
+                //Do nothing ago";
                 details[0] = "Deadline: " + stopTime;
                 details[1] = "Assignment: " + title;
                 details[2] = "Next assignment in current traffic: " + currentDriveTime + " min";
