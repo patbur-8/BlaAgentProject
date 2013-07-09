@@ -34,7 +34,6 @@ public class SchematicNotification extends NotificationType {
             String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
             try {
                 d1 = df.parse(currentTime);
-                /*contentText = "Time is up looong
                 d2 = df.parse(stopTime);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -43,8 +42,8 @@ public class SchematicNotification extends NotificationType {
             Long difference = (d2.getTime() - d1.getTime())/(1000*60);
             if (difference > 15) {
                 Log.d("NOTIF", ">15min");
-                //Do nothing ago";
-                details[0] = "Deadline: " + stopTime;
+                //Do nothing ago
+                /*details[0] = "Deadline: " + stopTime;
                 details[1] = "Assignment: " + title;
                 details[2] = "Next assignment in current traffic: " + currentDriveTime + " min";
                 sendNotification(assignments, details, contentText, context);*/
