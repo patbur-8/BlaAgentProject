@@ -22,7 +22,7 @@ public class SchematicNotification extends NotificationType {
         // Assignments is sorted by stop time. First deadline = first element.
         CharSequence contentText;
         String title = assignments.firstElement().getTitle();
-        String stopTime = "2013-07-08 17:20"; //assignments.firstElement().getStop();
+        String stopTime = "2013-07-09 11:35"; //assignments.firstElement().getStop();
         int currentDriveTime = 30;
         String[] details = new String [3];
 
@@ -41,14 +41,16 @@ public class SchematicNotification extends NotificationType {
 
             Long difference = (d2.getTime() - d1.getTime())/(1000*60);
             if (difference > 15) {
+                Log.d("NOTIF", ">15min");
                 //Do nothing
-                contentText = "Time is up looong ago";
+                /*contentText = "Time is up looong ago";
                 details[0] = "Deadline: " + stopTime;
                 details[1] = "Assignment: " + title;
                 details[2] = "Next assignment in current traffic: " + currentDriveTime + " min";
-                sendNotification(assignments, details, contentText, context);
+                sendNotification(assignments, details, contentText, context);*/
 
             } else if (13 <= difference && difference <= 15) {
+                Log.d("NOTIF", "<15min");
                 //Info
                 contentText = difference + " min left to deadline";
                 details[0] = "Deadline: " + stopTime;
@@ -57,6 +59,7 @@ public class SchematicNotification extends NotificationType {
                 sendNotification(assignments, details, contentText, context);
 
             } else if (4 <= difference && difference <= 5) {
+                Log.d("NOTIF", "<5min");
                 //Warning
                 contentText = difference + " min left to deadline";
                 details[0] = "Deadline: " + stopTime;
@@ -65,6 +68,7 @@ public class SchematicNotification extends NotificationType {
                 sendNotification(assignments, details, contentText, context);
 
             } else if (difference <= 0) {
+                Log.d("NOTIF", "<0min");
                 //Error
                 contentText = difference + " min, time is up!!!";
                 details[0] = "Deadline: " + stopTime;
