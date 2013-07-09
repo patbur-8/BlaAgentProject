@@ -26,17 +26,6 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    public void onStop() {
-        super.onStop();
-        Log.d("Lifecycle","onStop");
-        bs.removeBroadCastListener();
-    }
-
-    public void onRestart() {
-        super.onRestart();
-        Log.d("Lifecycle","onRestart");
-        bs.connect();
-    }
     public void onDestroy() {
         super.onDestroy();
         Log.d("Lifecycle","onDestroy");

@@ -217,9 +217,6 @@ public class BAConnection {
             if(assignments.size() > 0) {
                 sn.evaluate(assignments,context);
                 sort("stop", assignments);
-                for(int i = 0; i < assignments.size(); i++) {
-                    Log.d("timestamp", assignments.elementAt(i).getStop());
-                }
             }
         } catch (XPathExpressionException e) {
             Log.e("Progress","XPath error: " + e);
