@@ -16,4 +16,5 @@
     <string name="info">Info</string>
     <string name="warning">Warning</string>
     <string name="error">Error</string>
+    <string name="hello">test</string>
 </resources>

@@ -1,22 +1,77 @@
 package com.ismobile.blaagent;
 
+import android.app.ListActivity;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
-public class MainActivity extends Activity {
+import com.ismobile.blaagent.sqlite.NotificationItem;
+import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
+
+import java.util.List;
+import java.util.Random;
+
+public class MainActivity extends ListActivity {
+    private NotificationItemsDataSource datasource;
     StatusNotificationIntent sn = new StatusNotificationIntent(this);
     BackgroundService bs = new BackgroundService(this);
+    private ListView listView1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("Lifecycle","onCreate");
         setContentView(R.layout.activity_main);
         bs = new BackgroundService(this);
-        bs.connect();
+        //bs.connect();
+
+        datasource = new NotificationItemsDataSource(this);
+        datasource.open();
+
+        List<NotificationItem> values = datasource.getAllNotificationItems();
+
+        // Use the SimpleCursorAdapter to show the
+        // elements in a ListView
+        NotificationAdapter adapter = new NotificationAdapter(this,
+                R.layout.custom_list_item, values);
+        //setListAdapter(adapter);
+
+
+        listView1 = (ListView)findViewById(android.R.id.list);
+
+        View header = getLayoutInflater().inflate(R.layout.listview_header_row, null);
+        listView1.addHeaderView(header);
+
+        listView1.setAdapter(adapter);
     }
+
+    // Will be called via the onClick attribute
+    // of the buttons in main.xml
+   /* public void onClick(View view) {
+        @SuppressWarnings("unchecked")
+        ArrayAdapter<NotificationItem> adapter = (ArrayAdapter<NotificationItem>) getListAdapter();
+        NotificationItem NotificationItem = null;
+        switch (view.getId()) {
+            case R.id.add:
+                String[] NotificationItems = new String[] { "Cool", "Very nice", "Hate it" };
+                int nextInt = new Random().nextInt(3);
+                // Save the new NotificationItem to the database
+                NotificationItem = datasource.createNotificationItem("HEJSAN","qwe","RWER","123","124",0.1f,0.2f, NotificationItems ,"5 man123");
+                adapter.add(NotificationItem);
+                break;
+            case R.id.delete:
+                if (getListAdapter().getCount() > 0) {
+                    NotificationItem = (NotificationItem) getListAdapter().getItem(0);
+                    datasource.deleteNotificationItem(NotificationItem);
+                    adapter.remove(NotificationItem);
+                }
+                break;
+        }
+        adapter.notifyDataSetChanged();
+    }*/
 
 
     @Override
@@ -32,13 +87,25 @@ public class MainActivity extends Activity {
         bs.removeBroadCastListener();
     }
 
+    @Override
+    protected void onResume() {
+        datasource.open();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        datasource.close();
+        super.onPause();
+    }
+
     /**
      * Click of the buttons.
      * @param view
      */
 
 
-    public void onClick(View view) {
+    /*public void onClick(View view) {
         /*switch (view.getId()) {
             case R.id.button: // Info
                 sn.sendNotification(1);
@@ -49,6 +116,6 @@ public class MainActivity extends Activity {
             case R.id.button3: // Error
                 sn.sendNotification(3);
                 break;
-        }*/
-    }
+        }
+    }*/
 }
