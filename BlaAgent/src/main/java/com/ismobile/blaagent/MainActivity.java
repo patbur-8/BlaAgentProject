@@ -28,7 +28,7 @@ public class MainActivity extends ListActivity {
         Log.d("Lifecycle","onCreate");
         setContentView(R.layout.activity_main);
         bs = new BackgroundService(this);
-        //bs.connect();
+        bs.connect();
 
         datasource = new NotificationItemsDataSource(this);
         datasource.open();

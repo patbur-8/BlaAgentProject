@@ -63,6 +63,6 @@ public class StatusNotificationIntent {
             builder.setStyle(inboxStyle);
         }
 
-        nm.notify(100, builder.build());
+        nm.notify(100, builder.build()); // Ska inte va samma för alla.
     }
 }
