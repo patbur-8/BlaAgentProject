@@ -12,14 +12,13 @@ public class NotificationItem
     private CharSequence contentText;
     private float latitude;
     private float longitude;
-    private String[] details;
+    private String details;
     private String start;
     private String stop;
-    private Date dateCreated;
+    private String dateCreated;
     private String type;
 
     public NotificationItem() {
-        this.dateCreated = new Date();
     }
 
     public String getUid() {
@@ -62,11 +61,11 @@ public class NotificationItem
         this.latitude = latitude;
     }
 
-    public String[] getDetails() {
+    public String getDetails() {
         return details;
     }
 
-    public void setDetails(String[] details) {
+    public void setDetails(String details) {
         this.details = details;
     }
 
@@ -86,8 +85,12 @@ public class NotificationItem
         this.stop = stop;
     }
 
-    public Date getDateCreated() {
+    public String getDateCreated() {
         return dateCreated;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public void setType(String type) {

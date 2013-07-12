@@ -33,12 +33,9 @@ public class NotificationAdapter extends ArrayAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Log.d("WHEREISIT","getView");
         View row = convertView;
         NotificationHolder holder = null;
-        Log.d("WHEREISIT","getView2");
         if(row == null) {
-            Log.d("WHEREISIT","getView3");
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
@@ -53,25 +50,13 @@ public class NotificationAdapter extends ArrayAdapter {
         }
         else
         {
-            Log.d("WHEREISIT","getView4");
             holder = (NotificationHolder)row.getTag();
         }
-        Log.d("WHEREISIT","getView5");
         NotificationItem noti = data.get(position);
-        Log.d("WHEREISIT","getView6");
-        String details = "eje";
-        /*for(int i = 0; i<noti.getDetails().length-1;i++) {
-            details = details + noti.getDetails()[i];
-            if(i < noti.getDetails().length-1) {
-                details = details + "\n";
-            }
-        }*/
-        Log.d("WHEREISIT","getView7");
-        holder.txtDetail.setText(details);
-        Log.d("WHEREISIT","getView7");
-        holder.txtTitle.setText(noti.getTitle());
-        holder.txtDate.setText(noti.getDateCreated().toString());
 
+        holder.txtDetail.setText(noti.getDetails());
+        holder.txtTitle.setText(noti.getTitle());
+        holder.txtDate.setText(noti.getDateCreated() +"");
         return row;
     }
 

@@ -3,7 +3,10 @@ package com.ismobile.blaagent.sqlite;
 /**
  * Created by pbm on 2013-07-10.
  */
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -38,6 +41,7 @@ public class NotificationItemsDataSource {
     public NotificationItem createNotificationItem(String title, String uid, String contentText,
                                                     String start, String stop, float lati,
                                                     float longi, String[] details, String type) {
+
         String detailString = convertArrayToString(details);
 
         ContentValues values = new ContentValues();
@@ -50,15 +54,16 @@ public class NotificationItemsDataSource {
         values.put(SQLHelper.COLUMN_START, start);
         values.put(SQLHelper.COLUMN_STOP, stop);
         values.put(SQLHelper.COLUMN_TYPE, type);
-
+        values.put(SQLHelper.COLUMN_DATE, (""+System.currentTimeMillis() / 1000L));
+        Log.d("TIIIIIID", values.get(SQLHelper.COLUMN_DATE) + "");
         long insertId = database.insert(SQLHelper.TABLE_NOTIFICATIONS, null,
                 values);
 
         Cursor cursor = database.query(SQLHelper.TABLE_NOTIFICATIONS,
                 allColumns, SQLHelper.COLUMN_UID + " = '" + uid + "'"  + " AND "
-                + SQLHelper.COLUMN_TYPE + " = '" + type + "'", null, null, null, null);
+                + SQLHelper.COLUMN_TYPE + " = '" + type + "'", null, null, null, SQLHelper.COLUMN_DATE);
 
-        cursor.moveToFirst();
+        cursor.moveToLast();
         NotificationItem newNoti = cursorToNotification(cursor);
         cursor.close();
         return newNoti;
@@ -92,6 +97,12 @@ public class NotificationItemsDataSource {
         NotificationItem noti = new NotificationItem();
         noti.setUid(cursor.getString(0));
         noti.setTitle(cursor.getString(1));
+        noti.setDetails(cursor.getString(5));
+        Date date = new Date ();
+        date.setTime((long)cursor.getInt(9) * 1000);
+        DateFormat df = new SimpleDateFormat("HH:mm, d MMM yyyy:");
+        noti.setDateCreated(df.format(date));
+
         return noti;
     }
 

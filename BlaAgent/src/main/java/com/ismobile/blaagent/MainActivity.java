@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends ListActivity {
+    private List<NotificationItem> values;
+    private NotificationAdapter adapter;
     private NotificationItemsDataSource datasource;
     StatusNotificationIntent sn = new StatusNotificationIntent(this);
     BackgroundService bs = new BackgroundService(this);
@@ -31,12 +33,11 @@ public class MainActivity extends ListActivity {
         datasource = new NotificationItemsDataSource(this);
         datasource.open();
 
-        List<NotificationItem> values = datasource.getAllNotificationItems();
+        values = datasource.getAllNotificationItems();
 
         // Use the SimpleCursorAdapter to show the
         // elements in a ListView
-        NotificationAdapter adapter = new NotificationAdapter(this,
-                R.layout.custom_list_item, values);
+        adapter = new NotificationAdapter(this, R.layout.custom_list_item, values);
         //setListAdapter(adapter);
 
 
@@ -50,28 +51,35 @@ public class MainActivity extends ListActivity {
 
     // Will be called via the onClick attribute
     // of the buttons in main.xml
-   /* public void onClick(View view) {
+   public void onClick(View view) {
         @SuppressWarnings("unchecked")
-        ArrayAdapter<NotificationItem> adapter = (ArrayAdapter<NotificationItem>) getListAdapter();
-        NotificationItem NotificationItem = null;
+        //NotificationAdapter adapter = (NotificationAdapter) listView1.getAdapter();
+        NotificationItem notificationItem = null;
         switch (view.getId()) {
             case R.id.add:
+                Log.d("WORKING", "ISIT2");
                 String[] NotificationItems = new String[] { "Cool", "Very nice", "Hate it" };
                 int nextInt = new Random().nextInt(3);
                 // Save the new NotificationItem to the database
-                NotificationItem = datasource.createNotificationItem("HEJSAN","qwe","RWER","123","124",0.1f,0.2f, NotificationItems ,"5 man123");
-                adapter.add(NotificationItem);
+
+                notificationItem = datasource.createNotificationItem("HEJSAN2222","qwe","RWER","123","124",0.1f,0.2f, NotificationItems ,"5 man123");
+                Log.d("WORKING", "ISIT3");
+                adapter.add(notificationItem);
+                Log.d("WORKING", "ISIT4");
+                //adapter.notifyDataSetChanged();
+                Log.d("WORKING", "ISIT5");
                 break;
             case R.id.delete:
                 if (getListAdapter().getCount() > 0) {
-                    NotificationItem = (NotificationItem) getListAdapter().getItem(0);
-                    datasource.deleteNotificationItem(NotificationItem);
-                    adapter.remove(NotificationItem);
+                    notificationItem = (NotificationItem) getListAdapter().getItem(0);
+                    datasource.deleteNotificationItem(notificationItem);
+                    adapter.remove(notificationItem);
                 }
                 break;
         }
+       //((NotificationAdapter)((ListView)findViewById(android.R.id.list)).getAdapter()).notifyDataSetChanged();
         adapter.notifyDataSetChanged();
-    }*/
+    }
 
 
     @Override

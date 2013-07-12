@@ -34,7 +34,7 @@ public class SQLHelper extends SQLiteOpenHelper {
             + COLUMN_START + " text not null, "
             + COLUMN_STOP + " text not null, "
             + COLUMN_TYPE + " text not null, "
-            + COLUMN_DATE + " datetime default current_timestamp);";
+            + COLUMN_DATE + " integer not null);";
 
     public SQLHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
