@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.Vector;
 
 /**
+ * If start time has passed for an assignment and the user is not in place,
+ * this notification will appear.
  * Created by ats on 2013-07-12.
  */
 public class locationBasedNotification extends NotificationType {
@@ -22,11 +24,8 @@ public class locationBasedNotification extends NotificationType {
     public boolean evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         CharSequence contentText;
-        String title = assignments.firstElement().getTitle();
         String startTime = assignments.firstElement().getStart();
-        int currentDriveTime = 30;
         String[] details = new String [3];
-        boolean booked = assignments.firstElement().getBooked();
         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
 
         // My location.
@@ -44,8 +43,6 @@ public class locationBasedNotification extends NotificationType {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-        Long difference = (d2.getTime() - d1.getTime())/(1000*60);
 
         if (d1.after(d2)) { // Check if we are in place.
             if (0 <= distance && distance <= 0.5) {
@@ -96,6 +93,6 @@ public class locationBasedNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return 0.4; //distance;
+        return distance;
     }
 }
