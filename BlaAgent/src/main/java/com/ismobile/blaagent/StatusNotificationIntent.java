@@ -8,14 +8,17 @@ import android.support.v4.app.NotificationCompat;
 import android.app.NotificationManager;
 import android.support.v4.app.TaskStackBuilder;
 
+import java.util.HashMap;
+
 public class StatusNotificationIntent {
     private Context context;
-
+    int notiId = 0;
+    HashMap<String, Integer> hm = new HashMap<String, Integer>();
     public StatusNotificationIntent(Context context) {
         this.context = context;
     }
 
-    public void buildNotification(CharSequence contentTitle, CharSequence contentText, Intent resultIntent, String[] details, boolean bigStyle, NotificationAction[] notiActions) {
+    public void buildNotification(CharSequence contentTitle, CharSequence contentText, Intent resultIntent, String[] details, boolean bigStyle, NotificationAction[] notiActions, String notificationId) {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setContentText(contentText)
@@ -62,7 +65,15 @@ public class StatusNotificationIntent {
             }
             builder.setStyle(inboxStyle);
         }
+        int id;
+        if(hm.containsKey(notificationId)) {
+            id = hm.get(notificationId);
+        } else {
+            hm.put(notificationId, notiId);
+            id = notiId;
+            notiId++;
+        }
 
-        nm.notify(100, builder.build()); // Ska inte va samma för alla.
+        nm.notify(id, builder.build()); // Ska inte va samma för alla.
     }
 }

@@ -16,6 +16,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.ismobile.blaagent.Assignment;
+
 public class NotificationItemsDataSource {
 
     // Database fields
@@ -38,11 +40,23 @@ public class NotificationItemsDataSource {
         dbHelper.close();
     }
 
-    public NotificationItem createNotificationItem(String title, String uid, String contentText,
-                                                    String start, String stop, float lati,
-                                                    float longi, String[] details, String type) {
+    public NotificationItem createNotificationItem(Assignment ass, String contentText,
+                                                    String[] details, String type) {
 
-        String detailString = convertArrayToString(details);
+        String title = ass.getTitle();
+        String uid = ass.getUid();
+        String start = ass.getStart();
+        String stop = ass.getStop();
+        float lati = ass.getLatitude();
+        float longi = ass.getLongitude();
+
+        String detailString;
+        if(details != null) {
+            detailString = convertArrayToString(details);
+        } else {
+            detailString = "";
+        }
+
 
         ContentValues values = new ContentValues();
         values.put(SQLHelper.COLUMN_UID, uid);
@@ -98,6 +112,7 @@ public class NotificationItemsDataSource {
         noti.setUid(cursor.getString(0));
         noti.setTitle(cursor.getString(1));
         noti.setDetails(cursor.getString(5));
+        noti.setContentText(cursor.getString(2));
         Date date = new Date ();
         date.setTime((long)cursor.getInt(9) * 1000);
         DateFormat df = new SimpleDateFormat("HH:mm, d MMM yyyy:");

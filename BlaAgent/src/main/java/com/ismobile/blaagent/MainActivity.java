@@ -2,23 +2,20 @@ package com.ismobile.blaagent;
 
 import android.app.ListActivity;
 import android.os.Bundle;
-import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.ismobile.blaagent.sqlite.NotificationItem;
 import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
 
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends ListActivity {
     private List<NotificationItem> values;
-    private NotificationAdapter adapter;
-    private NotificationItemsDataSource datasource;
+    private static NotificationAdapter adapter;
+    private static NotificationItemsDataSource datasource;
     StatusNotificationIntent sn = new StatusNotificationIntent(this);
     BackgroundService bs = new BackgroundService(this);
     private ListView listView1;
@@ -29,7 +26,6 @@ public class MainActivity extends ListActivity {
         setContentView(R.layout.activity_main);
         bs = new BackgroundService(this);
         bs.connect();
-
         datasource = new NotificationItemsDataSource(this);
         datasource.open();
 
@@ -51,31 +47,15 @@ public class MainActivity extends ListActivity {
 
     // Will be called via the onClick attribute
     // of the buttons in main.xml
-   public void onClick(View view) {
-        @SuppressWarnings("unchecked")
-        //NotificationAdapter adapter = (NotificationAdapter) listView1.getAdapter();
-        NotificationItem notificationItem = null;
-        switch (view.getId()) {
-            case R.id.add:
-                String[] NotificationItems = new String[] { "Cool", "Very nice", "Hate it" };
-                int nextInt = new Random().nextInt(3);
-                // Save the new NotificationItem to the database
 
-                notificationItem = datasource.createNotificationItem("HEJSAN2222","qwe","RWER","123","124",0.1f,0.2f, NotificationItems ,"5 man123");
-                adapter.add(notificationItem);
-                break;
-            case R.id.delete:
-                if (getListAdapter().getCount() > 0) {
-                    notificationItem = (NotificationItem) getListAdapter().getItem(0);
-                    datasource.deleteNotificationItem(notificationItem);
-                    adapter.remove(notificationItem);
-                }
-                break;
-        }
-       //((NotificationAdapter)((ListView)findViewById(android.R.id.list)).getAdapter()).notifyDataSetChanged();
-        adapter.notifyDataSetChanged();
+
+    public static NotificationAdapter getNotificationAdapter() {
+        return adapter;
     }
 
+    public static NotificationItemsDataSource getDatasource() {
+        return datasource;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

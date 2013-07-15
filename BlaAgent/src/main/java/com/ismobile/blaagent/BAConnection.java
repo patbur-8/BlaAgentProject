@@ -6,6 +6,8 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
+import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

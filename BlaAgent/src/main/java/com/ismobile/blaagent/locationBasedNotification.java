@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.ListView;
+
+import com.ismobile.blaagent.sqlite.NotificationItem;
+import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,14 +27,17 @@ public class locationBasedNotification extends NotificationType {
     @Override
     public boolean evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
-        CharSequence contentText;
-        String startTime = assignments.firstElement().getStart();
-        String[] details = new String [3];
+        NotificationItem notificationItem;
+
+        String contentText;
+        Assignment first = assignments.firstElement();
+        String startTime = first.getStart();
+        String[] details = null;
         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
 
         // My location.
-        float latitude = assignments.firstElement().getLatitude();
-        float longitude = assignments.firstElement().getLongitude();
+        float latitude = first.getLatitude();
+        float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
 
         // Date object.
@@ -45,12 +52,18 @@ public class locationBasedNotification extends NotificationType {
         }
 
         if (d1.after(d2)) { // Check if we are in place.
-            if (0 <= distance && distance <= 0.5) {
+            if (!(0 <= distance && distance <= 0.5)) {
                 Log.d("NOTIF", "Fungerar!!!");
                 contentText = "A new assignment has started and you are not in place.";
                 sendNotification(assignments, details, contentText, context);
+                notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"loc"+first.getUid());
+                MainActivity.getNotificationAdapter().add(notificationItem);
+                MainActivity.getNotificationAdapter().notifyDataSetChanged();
             }
         }
+
+
+
         return false;
     }
 
@@ -67,8 +80,10 @@ public class locationBasedNotification extends NotificationType {
         NotificationAction[] notiActions = new NotificationAction[1];
         notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
 
+        String notificationId = uid+"location";
+
         StatusNotificationIntent sni = new StatusNotificationIntent(context);
-        sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions);
+        sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions,notificationId);
 
     }
 

@@ -54,7 +54,7 @@ public class NotificationAdapter extends ArrayAdapter {
         }
         NotificationItem noti = data.get(position);
 
-        holder.txtDetail.setText(noti.getDetails());
+        holder.txtDetail.setText(noti.getContentText());
         holder.txtTitle.setText(noti.getTitle());
         holder.txtDate.setText(noti.getDateCreated() +"");
         return row;
