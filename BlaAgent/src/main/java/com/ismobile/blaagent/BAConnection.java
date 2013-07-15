@@ -48,6 +48,7 @@ public class BAConnection {
     private String events = "";
     private SchematicNotification sn;
     private locationBasedNotification lbn;
+    private DeadlineMissedNotification dmn;
     private Context context;
     private File getPortfile() {
         File f = new File(new File(Environment.getExternalStorageDirectory(), "BlaAndroid"), "port.txt");
@@ -58,6 +59,7 @@ public class BAConnection {
         this.context = context;
         sn = new SchematicNotification();
         lbn = new locationBasedNotification();
+        dmn = new DeadlineMissedNotification();
         calculateNodePerAssignment();
     }
 
@@ -221,6 +223,7 @@ public class BAConnection {
             if(assignments.size() > 0) {
                 sn.evaluate(assignments,context);
                 lbn.evaluate(assignments,context);
+                dmn.evaluate(assignments, context);
                 sort("stop", assignments);
             }
         } catch (XPathExpressionException e) {

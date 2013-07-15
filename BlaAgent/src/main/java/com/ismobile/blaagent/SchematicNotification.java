@@ -17,7 +17,6 @@ import java.util.Vector;
  * Created by pbm on 2013-07-04.
  */
 public class SchematicNotification extends NotificationType {
-    private int nrOfCriticAssignments;
 
     /**
      * Evaluates what type of notification we want to send.
@@ -31,7 +30,6 @@ public class SchematicNotification extends NotificationType {
         CharSequence contentText;
         String title = assignments.firstElement().getTitle();
         String stopTime = assignments.firstElement().getStop();
-        int currentDriveTime = 30;
         String[] details = new String [3];
         boolean booked = assignments.firstElement().getBooked();
 
@@ -65,7 +63,7 @@ public class SchematicNotification extends NotificationType {
                     contentText = difference + " min left to deadline";
                     details[0] = "Deadline: " + stopTime;
                     details[1] = "Assignment: " + title;
-                    details[2] = "Next assignment in current traffic: " + currentDriveTime + " min";
+                    details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
                     sendNotification(assignments, details, contentText, context);
 
                 } else if (4 <= difference && difference <= 5) {
@@ -74,18 +72,17 @@ public class SchematicNotification extends NotificationType {
                     contentText = difference + " min left to deadline";
                     details[0] = "Deadline: " + stopTime;
                     details[1] = "Assignment: " + title;
-                    details[2] = "Next assignment in current traffic: " + currentDriveTime + " min";
+                    details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
                     sendNotification(assignments, details, contentText, context);
 
-                } else if (difference <= 0) {
+                } else if (d1.after(d2)) {
                     Log.d("NOTIF", "<0min");
                     //Error
                     contentText = difference + " min, time is up!!!";
                     details[0] = "Deadline: " + stopTime;
                     details[1] = "Assignment: " + title;
-                    details[2] = "Next assignment in current traffic: " + currentDriveTime + " min";
-                    sendNotification(assignments, details,  contentText, context);
-                    // Kolla här om vi kommer hinna till nästa bokade mötet.
+                    details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
+                    sendNotification(assignments, details, contentText, context);
                 }
             }
         }
@@ -149,75 +146,9 @@ public class SchematicNotification extends NotificationType {
         return 0.4; //distance;
     }
 
-    /**
-     * Returns the first booked assignment.
-     * @param assignments
-     * @return
-     */
-    public Assignment deadlineMiss(Vector<Assignment> assignments) {
-        nrOfCriticAssignments = 0;
-        for (int i=0; i<assignments.size(); i++) {
-            if (assignments.elementAt(i).getBooked()) {
-                nrOfCriticAssignments = i;
-                return assignments.elementAt(i);
-            }
-        }
-        return null;
-    }
-
-    public void checkTime(Vector<Assignment> assignments) {
-        int currentDriveTime = 30;
-        Assignment nextBooked = deadlineMiss(assignments);
-        if (nextBooked != null) {
-            Long difference;
-            double totalTime = 0;
-
-            Date d1 = null, d2 = null;
-            String myFormatString = "yyyy-MM-dd HH:mm";
-            SimpleDateFormat df = new SimpleDateFormat(myFormatString);
-
-            // Notification:
-            // Calculate the drive time between the next assignments to the booked assignment.
-
-            for (int i=0; i<=nrOfCriticAssignments; i++) {
-                //float tola = assignments.elementAt(i).getLatitude();
-                //float tolo = assignments.elementAt(i).getLongitude();
-                String start = assignments.elementAt(i).getStart();
-                String stop = assignments.elementAt(i).getStop();
-
-                try {
-                    d1 = df.parse(start);
-                    d2 = df.parse(stop);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                difference = (d2.getTime() - d1.getTime())/(1000*60);
-                totalTime += difference + currentDriveTime;
-            }
-
-            // kommer den missas:
-            String nextBookedStop = nextBooked.getStop();
-            String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
-            try {
-                d1 = df.parse(currentTime);
-                d2 = df.parse(nextBookedStop);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            double result = (d2.getTime() - d1.getTime())/(1000*60); //ÄNDRA TILL RÄTT TID.
-        }
-//                    --Deadline miss--
-//                    vi har en bokad
-//                      vi vet vilket element de är
-//                      vi vet hur många element innan som inte är bokade
-//                      Notifiering:
-//                          räkna ut körtiden mha currentTraffic --
-//                              om vi hinner: mäta vanliga tiden och gå efter den. hitta tjänst att använda!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//                                  notify: Skynda!!!! visa stoptiden för nästa uppdrag
-//                              om vi inte hinner:
-//                                  visa lista, förslag på uppdrag att skippa
-//                                  teknikern får välja en i listan
-//                                  de uppdraget tas bort ur assignments
-//                                  visas i feeden highlightad! --> länkas till BlåAndroid.
+    public int getCurrentTrafficTime(Vector<Assignment> assignments, int i) {
+        //Hämta lat, long för nästa uppdrag, i = 1.
+        // Beräkna current traffic time och returnera.
+        return 30;
     }
 }
