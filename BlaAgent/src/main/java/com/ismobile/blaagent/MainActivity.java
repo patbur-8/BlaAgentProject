@@ -57,17 +57,12 @@ public class MainActivity extends ListActivity {
         NotificationItem notificationItem = null;
         switch (view.getId()) {
             case R.id.add:
-                Log.d("WORKING", "ISIT2");
                 String[] NotificationItems = new String[] { "Cool", "Very nice", "Hate it" };
                 int nextInt = new Random().nextInt(3);
                 // Save the new NotificationItem to the database
 
                 notificationItem = datasource.createNotificationItem("HEJSAN2222","qwe","RWER","123","124",0.1f,0.2f, NotificationItems ,"5 man123");
-                Log.d("WORKING", "ISIT3");
                 adapter.add(notificationItem);
-                Log.d("WORKING", "ISIT4");
-                //adapter.notifyDataSetChanged();
-                Log.d("WORKING", "ISIT5");
                 break;
             case R.id.delete:
                 if (getListAdapter().getCount() > 0) {
