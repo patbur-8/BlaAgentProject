@@ -89,10 +89,12 @@ public class NotificationItemsDataSource {
     }
 
     public boolean checkIfNotificationExist(String uid, String type) {
+        Log.d("DBASE", "FAIL!?");
         SQLiteStatement s = database.compileStatement("SELECT " + SQLHelper.COLUMN_TITLE + " FROM " +
                 SQLHelper.TABLE_NOTIFICATIONS + " WHERE " + SQLHelper.COLUMN_UID + " = '" + uid +
                 "' AND " + SQLHelper.COLUMN_TYPE + " = '" + type + "'");
         long count =  s.simpleQueryForLong();
+        Log.d("DBASE", "WIN!?");
         if (count > 0)  {
             return true;
         } else {
