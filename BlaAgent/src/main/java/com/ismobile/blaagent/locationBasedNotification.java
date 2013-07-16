@@ -32,6 +32,7 @@ public class locationBasedNotification extends NotificationType {
         String contentText;
         Assignment first = assignments.firstElement();
         String startTime = first.getStart();
+        String stopTime = first.getStop();
         String[] details = null;
         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
 
@@ -41,32 +42,32 @@ public class locationBasedNotification extends NotificationType {
         double distance = getDistance(latitude, longitude);
 
         // Date object.
-        Date d1 = null, d2 = null;
+        Date d1 = null, d2 = null, d3 = null;
         String myFormatString = "yyyy-MM-dd HH:mm";
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         try {
             d1 = df.parse(currentTime);
             d2 = df.parse(startTime);
+            d3 = df.parse(stopTime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        if (d1.after(d2)) { // Check if we are in place.
-            if (!(0 <= distance && distance <= 0.5)) {
-                Log.d("NOTIF", "Fungerar!!!");
-                contentText = "A new assignment has started and you are not in place.";
-                sendNotification(assignments, details, contentText, context);
-                notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"loc"+first.getUid());
-                if(notificationItem != null) {
-                    MainActivity.getNotificationAdapter().add(notificationItem);
-                    MainActivity.getNotificationAdapter().notifyDataSetChanged();
+        long timePassed = (d1.getTime() - d2.getTime())/(1000*60);
+        if (timePassed <= 6) {
+            if (d1.after(d2) && d1.before(d3)) {
+                if (!(0 <= distance && distance <= 0.5)) {
+                    Log.d("NOTIF", "Fungerar!!!");
+                    contentText = "A new assignment has started and you are not in place.";
+                    sendNotification(assignments, details, contentText, context);
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"loc"+first.getUid());
+                    if(notificationItem != null) {
+                         MainActivity.getNotificationAdapter().add(notificationItem);
+                        MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                    }
                 }
-
             }
         }
-
-
-
         return false;
     }
 

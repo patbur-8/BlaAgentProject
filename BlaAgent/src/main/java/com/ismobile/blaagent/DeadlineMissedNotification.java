@@ -7,6 +7,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import com.ismobile.blaagent.sqlite.NotificationItem;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,14 +30,15 @@ public class DeadlineMissedNotification extends NotificationType {
     @Override
     public boolean evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
-        CharSequence contentText;
-        String title = assignments.firstElement().getTitle();
-        String stopTime = assignments.firstElement().getStop();
-        String[] details = new String [3];
+        NotificationItem notificationItem;
+
+        String contentText;
+        Assignment first = assignments.firstElement();
+        String stopTime = first.getStop();
 
         // My location.
-        float latitude = assignments.firstElement().getLatitude();
-        float longitude = assignments.firstElement().getLongitude();
+        float latitude = first.getLatitude();
+        float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
 
         Date d1 = null, d2 = null;
@@ -53,19 +56,35 @@ public class DeadlineMissedNotification extends NotificationType {
                 }
 
                 if (d1.after(d2)) {
+                    Log.d("deadlinemiss: ", "d1.after(d2)");
                     // Deadline miss.
-                    if (checkNextBooked(assignments)) {
-                        // We will miss the booked meeting
+                    if (checkIfMakeNextAss(assignments)) {
+                        // Miss the booked meeting
                         // Send notify
-                        contentText = "You will miss the meeting. ";
-                        details[0] = "Deadline: " + stopTime;
-                        details[1] = "Assignment: " + title;
-                        details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
+                        String[] details = new String [2];
+                        contentText = "You will miss your next booked meeting with the current" +
+                                "traffic time. Click me to postpone an assignment.";
+                        details[0] = "Booked meeting starting: " + getNextBooked(assignments).getStart();
+                        details[1] = "Assignment: " + getNextBooked(assignments).getTitle();
                         sendNotification(assignments, details, contentText, context);
-                        // Give suggestions to skip one assignment
-                    } else {
-                        // We will make it to the booked meeting
+                        notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
+                        MainActivity.getNotificationAdapter().add(notificationItem);
+                        MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                        // Give suggestions to skip one assignment, show nrOfCriticAssignments.
+
+                    } else if (!checkIfMakeNextAss(assignments)) {
+                        // Make the booked meeting
                         // Send notify to hurry
+                        String[] details = new String [3];
+                        int assignmentNr = 1;
+                        contentText = "You have to leave this assignment now. Next booked meeting starts: " + getNextBooked(assignments).getStart();
+                        details[0] = "Next assignment starts at: " + getNextAssigment(assignments).getStart();
+                        details[1] = "Assignment: " + getNextAssigment(assignments).getTitle();
+                        details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, assignmentNr) + " min";
+                        sendNotification(assignments, details, contentText, context);
+                        notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
+                        MainActivity.getNotificationAdapter().add(notificationItem);
+                        MainActivity.getNotificationAdapter().notifyDataSetChanged();
                     }
                 }
             }
@@ -82,22 +101,47 @@ public class DeadlineMissedNotification extends NotificationType {
      */
     @Override
     public void sendNotification(Vector<Assignment> assignments, String[] details, CharSequence contentText, Context context) {
-        CharSequence contentTitle = "Booked meeting at " + getNextBooked(assignments).getStart();
-
+        CharSequence contentTitle = "Booked meeting";
         String uid = assignments.firstElement().getUid();
-        float longi = assignments.firstElement().getLongitude();
-        float lati = assignments.firstElement().getLatitude();
+        Intent resultIntent;
+        Intent mapsIntent = null;
+        NotificationAction[] notiActions;
 
-        // Opens Bla Agent - Choose one assignment to skip.
-        Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
-        resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
+        if (!checkIfMakeNextAss(assignments)) {
+            // Make the booked meeting
+            // Opens Blå Android and show assignment.
+            resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
+            resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
+
+            float longi = assignments.firstElement().getLongitude();
+            float lati = assignments.firstElement().getLatitude();
+
+            // Opens google maps, from: My Location to: an assignments lat, long.
+            mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
+                    Uri.parse("http://maps.google.com/maps?f=d&daddr=" + lati + "," + longi));
+            mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
+                    "com.google.android.maps.MapsActivity"));
+        } else {
+            // Opens Blå Agent and show the list of critical assignments.
+            // Will make the user choose an assignment to skip.
+            resultIntent = new Intent("com.ismobile.blaagent.XXX");
+        }
 
         boolean bigStyle = true;
-        NotificationAction[] notiActions = new NotificationAction[1];
-        notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+
+        if (!checkIfMakeNextAss(assignments)) {
+            notiActions = new NotificationAction[2];
+            notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+            notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
+        } else {
+            notiActions = new NotificationAction[1];
+            notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+        }
+
+        String notificationId = uid+"deadlineMiss";
 
         StatusNotificationIntent sni = new StatusNotificationIntent(context);
-        sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions);
+        sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions,notificationId);
     }
 
     /**
@@ -146,12 +190,34 @@ public class DeadlineMissedNotification extends NotificationType {
         return 30;
     }
 
+    public Assignment getNextAssigment(Vector<Assignment> assignments) {
+        String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
+        String startTime = assignments.firstElement().getStart();
+        String stopTime = assignments.firstElement().getStop();
+        Date d1 = null, d2 = null, d3 = null;
+        String myFormatString = "yyyy-MM-dd HH:mm";
+        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+        try {
+            d1 = df.parse(currentTime);
+            d2 = df.parse(stopTime);
+            d3 = df.parse(startTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (d1.after(d3) && d1.before(d2)) {
+            return assignments.firstElement();
+        } else {
+            return assignments.elementAt(1);
+        }
+    }
+
     /**
      * Check if we have to skip an assignment if we missed a deadline.
      * @param assignments
      * @return
      */
-    public boolean checkNextBooked(Vector<Assignment> assignments) {
+    public boolean checkIfMakeNextAss(Vector<Assignment> assignments) {
         Assignment nextBooked = getNextBooked(assignments);
 
         // Check if we have any booked meetings today.
@@ -164,7 +230,7 @@ public class DeadlineMissedNotification extends NotificationType {
             SimpleDateFormat df = new SimpleDateFormat(myFormatString);
 
             // Calculate the drive time between the next assignments to the booked assignment.
-            for (int i=0; i<=nrOfCriticAssignments; i++) {
+            for (int i=0; i<nrOfCriticAssignments; i++) {
                 String start = assignments.elementAt(i).getStart();
                 String stop = assignments.elementAt(i).getStop();
                 try {
@@ -180,11 +246,11 @@ public class DeadlineMissedNotification extends NotificationType {
 
             // Will the total drive time + estimated work time exceed the stop time for the
             // booked assignment.
-            String nextBookedStop = nextBooked.getStop();
+            String nextBookedStart = nextBooked.getStart();
             String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
             try {
                 d1 = df.parse(currentTime);
-                d2 = df.parse(nextBookedStop);
+                d2 = df.parse(nextBookedStart);
             } catch (ParseException e) {
                 e.printStackTrace();
             }

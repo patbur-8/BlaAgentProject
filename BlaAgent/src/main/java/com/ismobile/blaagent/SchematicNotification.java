@@ -7,6 +7,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import com.ismobile.blaagent.sqlite.NotificationItem;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,15 +29,16 @@ public class SchematicNotification extends NotificationType {
     @Override
     public boolean evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
-        CharSequence contentText;
-        String title = assignments.firstElement().getTitle();
-        String stopTime = assignments.firstElement().getStop();
+        NotificationItem notificationItem;
+        String contentText;
+        Assignment first = assignments.firstElement();
+        String title = first.getTitle();
+        String stopTime = first.getStop();
         String[] details = new String [3];
-        boolean booked = assignments.firstElement().getBooked();
 
         // My location.
-        float latitude = assignments.firstElement().getLatitude();
-        float longitude = assignments.firstElement().getLongitude();
+        float latitude = first.getLatitude();
+        float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
 
         Date d1 = null, d2 = null;
@@ -65,6 +68,9 @@ public class SchematicNotification extends NotificationType {
                     details[1] = "Assignment: " + title;
                     details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
                     sendNotification(assignments, details, contentText, context);
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
+                    MainActivity.getNotificationAdapter().add(notificationItem);
+                    MainActivity.getNotificationAdapter().notifyDataSetChanged();
 
                 } else if (4 <= difference && difference <= 5) {
                     Log.d("NOTIF", "<5min");
@@ -74,15 +80,10 @@ public class SchematicNotification extends NotificationType {
                     details[1] = "Assignment: " + title;
                     details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
                     sendNotification(assignments, details, contentText, context);
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
+                    MainActivity.getNotificationAdapter().add(notificationItem);
+                    MainActivity.getNotificationAdapter().notifyDataSetChanged();
 
-                } else if (d1.after(d2)) {
-                    Log.d("NOTIF", "<0min");
-                    //Error
-                    contentText = difference + " min, time is up!!!";
-                    details[0] = "Deadline: " + stopTime;
-                    details[1] = "Assignment: " + title;
-                    details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
-                    sendNotification(assignments, details, contentText, context);
                 }
             }
         }
@@ -118,8 +119,10 @@ public class SchematicNotification extends NotificationType {
         notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
         notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
 
+        String notificationId = uid+"schema";
+
         StatusNotificationIntent sni = new StatusNotificationIntent(context);
-        sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions);
+        sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions,notificationId);
     }
 
     /**
@@ -143,7 +146,7 @@ public class SchematicNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return 0.4; //distance;
+        return distance;
     }
 
     public int getCurrentTrafficTime(Vector<Assignment> assignments, int i) {
