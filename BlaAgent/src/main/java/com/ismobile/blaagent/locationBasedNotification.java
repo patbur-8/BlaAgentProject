@@ -57,8 +57,11 @@ public class locationBasedNotification extends NotificationType {
                 contentText = "A new assignment has started and you are not in place.";
                 sendNotification(assignments, details, contentText, context);
                 notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"loc"+first.getUid());
-                MainActivity.getNotificationAdapter().add(notificationItem);
-                MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                if(notificationItem != null) {
+                    MainActivity.getNotificationAdapter().add(notificationItem);
+                    MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                }
+
             }
         }
 

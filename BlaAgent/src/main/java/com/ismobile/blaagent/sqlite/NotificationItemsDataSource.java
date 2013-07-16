@@ -14,6 +14,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import com.ismobile.blaagent.Assignment;
@@ -43,6 +44,7 @@ public class NotificationItemsDataSource {
     public NotificationItem createNotificationItem(Assignment ass, String contentText,
                                                     String[] details, String type) {
 
+
         String title = ass.getTitle();
         String uid = ass.getUid();
         String start = ass.getStart();
@@ -50,37 +52,53 @@ public class NotificationItemsDataSource {
         float lati = ass.getLatitude();
         float longi = ass.getLongitude();
 
-        String detailString;
-        if(details != null) {
-            detailString = convertArrayToString(details);
+        if(!checkIfNotificationExist(uid,type)) {
+            String detailString;
+            if(details != null) {
+                detailString = convertArrayToString(details);
+            } else {
+                detailString = "";
+            }
+
+
+            ContentValues values = new ContentValues();
+            values.put(SQLHelper.COLUMN_UID, uid);
+            values.put(SQLHelper.COLUMN_TITLE, title);
+            values.put(SQLHelper.COLUMN_CONTENTTEXT, contentText);
+            values.put(SQLHelper.COLUMN_LATITUDE, lati);
+            values.put(SQLHelper.COLUMN_LONGITUDE, longi);
+            values.put(SQLHelper.COLUMN_DETAILS, detailString);
+            values.put(SQLHelper.COLUMN_START, start);
+            values.put(SQLHelper.COLUMN_STOP, stop);
+            values.put(SQLHelper.COLUMN_TYPE, type);
+            values.put(SQLHelper.COLUMN_DATE, (""+System.currentTimeMillis() / 1000L));
+            Log.d("TIIIIIID", values.get(SQLHelper.COLUMN_DATE) + "");
+            long insertId = database.insert(SQLHelper.TABLE_NOTIFICATIONS, null,
+                    values);
+
+            Cursor cursor = database.query(SQLHelper.TABLE_NOTIFICATIONS,
+                    allColumns, SQLHelper.COLUMN_UID + " = '" + uid + "'"  + " AND "
+                    + SQLHelper.COLUMN_TYPE + " = '" + type + "'", null, null, null, SQLHelper.COLUMN_DATE);
+
+            cursor.moveToLast();
+            NotificationItem newNoti = cursorToNotification(cursor);
+            cursor.close();
+            return newNoti;
+        }
+        return null;
+    }
+
+    public boolean checkIfNotificationExist(String uid, String type) {
+        SQLiteStatement s = database.compileStatement("SELECT " + SQLHelper.COLUMN_TITLE + " FROM " +
+                SQLHelper.TABLE_NOTIFICATIONS + " WHERE " + SQLHelper.COLUMN_UID + " = '" + uid +
+                "' AND " + SQLHelper.COLUMN_TYPE + " = '" + type + "'");
+        long count =  s.simpleQueryForLong();
+        if (count > 0)  {
+            return true;
         } else {
-            detailString = "";
+            return false;
         }
 
-
-        ContentValues values = new ContentValues();
-        values.put(SQLHelper.COLUMN_UID, uid);
-        values.put(SQLHelper.COLUMN_TITLE, title);
-        values.put(SQLHelper.COLUMN_CONTENTTEXT, contentText);
-        values.put(SQLHelper.COLUMN_LATITUDE, lati);
-        values.put(SQLHelper.COLUMN_LONGITUDE, longi);
-        values.put(SQLHelper.COLUMN_DETAILS, detailString);
-        values.put(SQLHelper.COLUMN_START, start);
-        values.put(SQLHelper.COLUMN_STOP, stop);
-        values.put(SQLHelper.COLUMN_TYPE, type);
-        values.put(SQLHelper.COLUMN_DATE, (""+System.currentTimeMillis() / 1000L));
-        Log.d("TIIIIIID", values.get(SQLHelper.COLUMN_DATE) + "");
-        long insertId = database.insert(SQLHelper.TABLE_NOTIFICATIONS, null,
-                values);
-
-        Cursor cursor = database.query(SQLHelper.TABLE_NOTIFICATIONS,
-                allColumns, SQLHelper.COLUMN_UID + " = '" + uid + "'"  + " AND "
-                + SQLHelper.COLUMN_TYPE + " = '" + type + "'", null, null, null, SQLHelper.COLUMN_DATE);
-
-        cursor.moveToLast();
-        NotificationItem newNoti = cursorToNotification(cursor);
-        cursor.close();
-        return newNoti;
     }
 
     public void deleteNotificationItem(NotificationItem noti) {

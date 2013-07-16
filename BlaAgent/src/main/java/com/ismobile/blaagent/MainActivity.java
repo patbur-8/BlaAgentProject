@@ -19,6 +19,7 @@ public class MainActivity extends ListActivity {
     StatusNotificationIntent sn = new StatusNotificationIntent(this);
     BackgroundService bs = new BackgroundService(this);
     private ListView listView1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
