@@ -31,7 +31,7 @@ public class DeadlineMissedNotification extends NotificationType {
     public boolean evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
-
+///////////////////////////////////////////
         String contentText;
         Assignment first = assignments.firstElement();
         String stopTime = first.getStop();
