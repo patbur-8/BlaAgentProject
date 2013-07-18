@@ -2,6 +2,7 @@ package com.ismobile.blaagent;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -19,6 +20,7 @@ public class MainActivity extends ListActivity {
     StatusNotificationIntent sn = new StatusNotificationIntent(this);
     BackgroundService bs = new BackgroundService(this);
     private ListView listView1;
+    private static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,7 @@ public class MainActivity extends ListActivity {
         setContentView(R.layout.activity_main);
         bs = new BackgroundService(this);
         bs.connect();
+        handler = new Handler();
         datasource = new NotificationItemsDataSource(this);
         datasource.open();
 
@@ -58,6 +61,9 @@ public class MainActivity extends ListActivity {
         return datasource;
     }
 
+    public static Handler getUIHandler() {
+        return handler;
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -68,18 +74,17 @@ public class MainActivity extends ListActivity {
     public void onDestroy() {
         super.onDestroy();
         Log.d("Lifecycle","onDestroy");
+        datasource.close();
         bs.removeBroadCastListener();
     }
 
     @Override
     protected void onResume() {
-        datasource.open();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        datasource.close();
         super.onPause();
     }
 

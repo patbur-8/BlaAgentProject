@@ -38,6 +38,7 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     public SQLHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        context.deleteDatabase(DATABASE_NAME);
     }
 
     @Override

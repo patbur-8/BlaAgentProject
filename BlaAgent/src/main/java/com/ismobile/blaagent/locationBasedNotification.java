@@ -1,15 +1,12 @@
 package com.ismobile.blaagent;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.net.Uri;
 import android.util.Log;
-import android.widget.ListView;
 
+import com.ismobile.blaagent.Test.Test;
 import com.ismobile.blaagent.sqlite.NotificationItem;
-import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,42 +25,47 @@ public class locationBasedNotification extends NotificationType {
     public boolean evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
-
+        Test test = new Test();
         String contentText;
-        Assignment first = assignments.firstElement();
-        String startTime = first.getStart();
-        String stopTime = first.getStop();
-        String[] details = null;
-        String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
+        Assignment first = test.createTestAssignment("2013-07-18 11:09", "2013-07-18 23:05");//assignments.firstElement();
+        String start = first.getStart();
+        String stop = first.getStop();
+        String current= new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
 
+        String[] details = null;
         // My location.
         float latitude = first.getLatitude();
         float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
 
         // Date object.
-        Date d1 = null, d2 = null, d3 = null;
+        Date currentTime = null, startTime = null, stopTime = null;
         String myFormatString = "yyyy-MM-dd HH:mm";
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         try {
-            d1 = df.parse(currentTime);
-            d2 = df.parse(startTime);
-            d3 = df.parse(stopTime);
+            currentTime = df.parse(current);
+            startTime = df.parse(start);
+            stopTime = df.parse(stop);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        long timePassed = (d1.getTime() - d2.getTime())/(1000*60);
+        long timePassed = (currentTime.getTime() - startTime.getTime())/(1000*60);
+        Log.d("locationB", "TimePassed:" + (timePassed <= 6));
         if (timePassed <= 6) {
-            if (d1.after(d2) && d1.before(d3)) {
+            Log.d("locationB", (!currentTime.before(startTime) && currentTime.before(stopTime)) + "");
+            Log.d("locationB", "StartTime: " + (startTime.getTime()));
+            Log.d("locationB", "StopTime: " + (stopTime.getTime()));
+            Log.d("locationB", "CurrentTime: " + (currentTime.getTime()));
+            if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(stopTime)) {
                 if (!(0 <= distance && distance <= 0.5)) {
                     Log.d("NOTIF", "Fungerar!!!");
                     contentText = "A new assignment has started and you are not in place.";
-                    sendNotification(assignments, details, contentText, context);
                     notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"loc"+first.getUid());
                     if(notificationItem != null) {
-                         MainActivity.getNotificationAdapter().add(notificationItem);
-                        MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                        Log.d("LocationB", "kommer jag hit?");
+                        sendNotification(assignments, details, contentText, context);
+                        addNewItem(notificationItem);
                     }
                 }
             }
@@ -71,6 +73,15 @@ public class locationBasedNotification extends NotificationType {
         return false;
     }
 
+    public void addNewItem(final NotificationItem noti) {
+        MainActivity.getUIHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.getNotificationAdapter().add(noti);
+                MainActivity.getNotificationAdapter().notifyDataSetChanged();
+            }
+        });
+    }
     @Override
     public void sendNotification(Vector<Assignment> assignments, String[] details, CharSequence contentText, Context context) {
         CharSequence contentTitle = assignments.firstElement().getTitle();
@@ -112,6 +123,6 @@ public class locationBasedNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return distance;
+        return  0.6;//distance;
     }
 }

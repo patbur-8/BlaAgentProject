@@ -7,6 +7,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import com.ismobile.blaagent.Test.Test;
 import com.ismobile.blaagent.sqlite.NotificationItem;
 
 import java.text.ParseException;
@@ -31,7 +32,8 @@ public class SchematicNotification extends NotificationType {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
         String contentText;
-        Assignment first = assignments.firstElement();
+        Test test = new Test();
+        Assignment first = test.createTestAssignment("2013-07-18 10:00", "2013-07-18 11:23");//assignments.firstElement();
         String title = first.getTitle();
         String stopTime = first.getStop();
         String[] details = new String [3];
@@ -67,10 +69,12 @@ public class SchematicNotification extends NotificationType {
                     details[0] = "Deadline: " + stopTime;
                     details[1] = "Assignment: " + title;
                     details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
-                    sendNotification(assignments, details, contentText, context);
                     notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
-                    MainActivity.getNotificationAdapter().add(notificationItem);
-                    MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                    if(notificationItem != null) {
+                        sendNotification(assignments, details, contentText, context);
+                        addNewItem(notificationItem);
+                    }
+
 
                 } else if (4 <= difference && difference <= 5) {
                     Log.d("NOTIF", "<5min");
@@ -79,10 +83,11 @@ public class SchematicNotification extends NotificationType {
                     details[0] = "Deadline: " + stopTime;
                     details[1] = "Assignment: " + title;
                     details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
-                    sendNotification(assignments, details, contentText, context);
                     notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
-                    MainActivity.getNotificationAdapter().add(notificationItem);
-                    MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                    if(notificationItem != null) {
+                        sendNotification(assignments, details, contentText, context);
+                        addNewItem(notificationItem);
+                    }
 
                 }
             }
@@ -146,12 +151,22 @@ public class SchematicNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return distance;
+        return 0.4;//distance;
     }
 
     public int getCurrentTrafficTime(Vector<Assignment> assignments, int i) {
         //Hämta lat, long för nästa uppdrag, i = 1.
         // Beräkna current traffic time och returnera.
         return 30;
+    }
+
+    public void addNewItem(final NotificationItem noti) {
+        MainActivity.getUIHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.getNotificationAdapter().add(noti);
+                MainActivity.getNotificationAdapter().notifyDataSetChanged();
+            }
+        });
     }
 }

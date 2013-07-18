@@ -7,13 +7,14 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.app.NotificationManager;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 
 import java.util.HashMap;
 
 public class StatusNotificationIntent {
     private Context context;
-    int notiId = 0;
-    HashMap<String, Integer> hm = new HashMap<String, Integer>();
+    static int notiId = 0;
+    static HashMap<String, Integer> hm = new HashMap<String, Integer>();
     public StatusNotificationIntent(Context context) {
         this.context = context;
     }
@@ -67,13 +68,14 @@ public class StatusNotificationIntent {
         }
         int id;
         if(hm.containsKey(notificationId)) {
+            Log.d("NotifID", "Contains ID");
             id = hm.get(notificationId);
         } else {
             hm.put(notificationId, notiId);
             id = notiId;
             notiId++;
         }
-
+        Log.d("NotifID", id+"");
         nm.notify(id, builder.build()); // Ska inte va samma för alla.
     }
 }
