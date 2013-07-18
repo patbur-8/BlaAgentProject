@@ -28,7 +28,7 @@ public class DeadlineMissedNotification extends NotificationType {
      * @return
      */
     @Override
-    public boolean evaluate(Vector<Assignment> assignments, Context context) {
+    public void evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
 ///////////////////////////////////////////
@@ -89,7 +89,6 @@ public class DeadlineMissedNotification extends NotificationType {
                 }
             }
         }
-        return false;
     }
 
     /**

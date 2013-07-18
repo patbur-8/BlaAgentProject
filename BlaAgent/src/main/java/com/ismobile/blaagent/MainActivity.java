@@ -1,19 +1,24 @@
 package com.ismobile.blaagent;
 
 import android.app.ListActivity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.ismobile.blaagent.sqlite.NotificationItem;
 import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
 
 import java.util.List;
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends ListActivity  {
     private List<NotificationItem> values;
     private static NotificationAdapter adapter;
     private static NotificationItemsDataSource datasource;
@@ -21,6 +26,7 @@ public class MainActivity extends ListActivity {
     BackgroundService bs = new BackgroundService(this);
     private ListView listView1;
     private static Handler handler;
+    private static final int RESULT_SETTINGS = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,8 @@ public class MainActivity extends ListActivity {
         listView1.addHeaderView(header);
 
         listView1.setAdapter(adapter);
+
+        showUserSettings();
     }
 
     // Will be called via the onClick attribute
@@ -88,23 +96,51 @@ public class MainActivity extends ListActivity {
         super.onPause();
     }
 
-    /**
-     * Click of the buttons.
-     * @param view
-     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
 
+            case R.id.menu_settings:
+                Intent i = new Intent(this, UserSettingActivity.class);
+                startActivityForResult(i, RESULT_SETTINGS);
+                break;
 
-    /*public void onClick(View view) {
-        /*switch (view.getId()) {
-            case R.id.button: // Info
-                sn.sendNotification(1);
-                break;
-            case R.id.button2: // Warning
-                sn.sendNotification(2);
-                break;
-            case R.id.button3: // Error
-                sn.sendNotification(3);
-                break;
         }
-    }*/
+
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case RESULT_SETTINGS:
+                showUserSettings();
+                break;
+
+        }
+
+    }
+
+    private void showUserSettings() {
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("\n Username: "
+                + sharedPrefs.getString("prefUsername", "NULL"));
+
+        builder.append("\n Send report:"
+                + sharedPrefs.getBoolean("prefSendReport", false));
+
+        builder.append("\n Sync Frequency: "
+                + sharedPrefs.getString("prefSyncFrequency", "NULL"));
+
+        TextView settingsTextView = (TextView) findViewById(R.id.textUserSettings);
+
+        settingsTextView.setText(builder.toString());
+    }
+
 }

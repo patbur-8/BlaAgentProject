@@ -23,6 +23,7 @@ public class SchematicNotification extends NotificationType {
 
     /**
      * Evaluates what type of notification we want to send.
+     *
      * @param assignments
      * @param context
      * @return

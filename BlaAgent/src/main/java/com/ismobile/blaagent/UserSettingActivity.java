@@ -1,5 +1,6 @@
 package com.ismobile.blaagent;
 
+import android.R;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
@@ -12,7 +13,7 @@ public class UserSettingActivity extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addPreferencesFromResource(R.xml.Preferences);
+        addPreferencesFromResource(R.xml.preferences);
 
     }
 }
