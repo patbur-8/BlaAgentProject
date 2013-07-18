@@ -22,7 +22,7 @@ import java.util.Vector;
 public class locationBasedNotification extends NotificationType {
 
     @Override
-    public boolean evaluate(Vector<Assignment> assignments, Context context) {
+    public void evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
         Test test = new Test();
@@ -70,7 +70,6 @@ public class locationBasedNotification extends NotificationType {
                 }
             }
         }
-        return false;
     }
 
     public void addNewItem(final NotificationItem noti) {
