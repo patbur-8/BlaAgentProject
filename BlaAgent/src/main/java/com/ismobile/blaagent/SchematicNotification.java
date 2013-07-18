@@ -34,7 +34,7 @@ public class SchematicNotification extends NotificationType {
         NotificationItem notificationItem;
         String contentText;
         Test test = new Test();
-        Assignment first = test.createTestAssignment("2013-07-18 10:00", "2013-07-18 11:23");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-07-18 10:00", "2013-07-18 15:26");//assignments.firstElement();
         String title = first.getTitle();
         String stopTime = first.getStop();
         String[] details = new String [3];

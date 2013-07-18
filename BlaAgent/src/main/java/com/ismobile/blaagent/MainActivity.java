@@ -54,7 +54,7 @@ public class MainActivity extends ListActivity  {
 
         listView1.setAdapter(adapter);
 
-        showUserSettings();
+       // showUserSettings();
     }
 
     // Will be called via the onClick attribute
@@ -72,7 +72,7 @@ public class MainActivity extends ListActivity  {
     public static Handler getUIHandler() {
         return handler;
     }
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -98,9 +98,9 @@ public class MainActivity extends ListActivity  {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+       switch (item.getItemId()) {
 
-            case R.id.menu_settings:
+            case R.id.action_settings:
                 Intent i = new Intent(this, UserSettingActivity.class);
                 startActivityForResult(i, RESULT_SETTINGS);
                 break;
@@ -142,5 +142,5 @@ public class MainActivity extends ListActivity  {
 
         settingsTextView.setText(builder.toString());
     }
-
+*/
 }

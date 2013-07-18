@@ -27,7 +27,7 @@ public class locationBasedNotification extends NotificationType {
         NotificationItem notificationItem;
         Test test = new Test();
         String contentText;
-        Assignment first = test.createTestAssignment("2013-07-18 11:09", "2013-07-18 23:05");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-07-18 15:11", "2013-07-18 23:05");//assignments.firstElement();
         String start = first.getStart();
         String stop = first.getStop();
         String current= new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
