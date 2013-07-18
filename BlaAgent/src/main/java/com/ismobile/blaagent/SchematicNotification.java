@@ -28,7 +28,7 @@ public class SchematicNotification extends NotificationType {
      * @return
      */
     @Override
-    public boolean evaluate(Vector<Assignment> assignments, Context context) {
+    public void evaluate(Vector<Assignment> assignments, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
         String contentText;
@@ -58,25 +58,8 @@ public class SchematicNotification extends NotificationType {
                 }
 
                 Long difference = (d2.getTime() - d1.getTime())/(1000*60);
-                if (difference > 15) {
-                    Log.d("NOTIF", ">15min");
-                    //Do nothing
 
-                } else if (13 <= difference && difference <= 15) {
-                    Log.d("NOTIF", "<15min");
-                    //Info
-                    contentText = difference + " min left to deadline";
-                    details[0] = "Deadline: " + stopTime;
-                    details[1] = "Assignment: " + title;
-                    details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
-                    notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
-                    if(notificationItem != null) {
-                        sendNotification(assignments, details, contentText, context);
-                        addNewItem(notificationItem);
-                    }
-
-
-                } else if (4 <= difference && difference <= 5) {
+                if(0 <= difference && difference <= 5) {
                     Log.d("NOTIF", "<5min");
                     //Warning
                     contentText = difference + " min left to deadline";
@@ -88,11 +71,23 @@ public class SchematicNotification extends NotificationType {
                         sendNotification(assignments, details, contentText, context);
                         addNewItem(notificationItem);
                     }
-
+                    return;
+                } else if(difference <= 15) {
+                    Log.d("NOTIF", "<15min");
+                    //Info
+                    contentText = difference + " min left to deadline";
+                    details[0] = "Deadline: " + stopTime;
+                    details[1] = "Assignment: " + title;
+                    details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
+                    if(notificationItem != null) {
+                        sendNotification(assignments, details, contentText, context);
+                        addNewItem(notificationItem);
+                    }
+                    return;
                 }
             }
         }
-        return false;
     }
 
     /**
