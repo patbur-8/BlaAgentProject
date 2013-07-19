@@ -12,7 +12,8 @@ public class UserSettingActivity extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        //setContentView(R.layout.activity_main);
+        //addPreferencesFromResource(R.xml.preferences); //int
+        //onPreferenceStartFragment(); //PreferenceFragment, preference.
     }
 }
