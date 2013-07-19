@@ -7,6 +7,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import com.ismobile.blaagent.Test.Test;
 import com.ismobile.blaagent.sqlite.NotificationItem;
 
 import java.text.ParseException;
@@ -33,13 +34,14 @@ public class DeadlineMissedNotification extends NotificationType {
         NotificationItem notificationItem;
 ///////////////////////////////////////////
         String contentText;
-        Assignment first = assignments.firstElement();
+        Test test = new Test();
+        Assignment first = test.createTestAssignment("2013-07-19 09:11", "2013-07-19 11:35");//assignments.firstElement();
         String stopTime = first.getStop();
 
         // My location.
         float latitude = first.getLatitude();
         float longitude = first.getLongitude();
-        double distance = getDistance(latitude, longitude);
+        double distance = 0.4; //getDistance(latitude, longitude);
 
         Date d1 = null, d2 = null;
         String myFormatString = "yyyy-MM-dd HH:mm";
@@ -58,7 +60,7 @@ public class DeadlineMissedNotification extends NotificationType {
                 if (d1.after(d2)) {
                     Log.d("deadlinemiss: ", "d1.after(d2)");
                     // Deadline miss.
-                    if (checkIfMakeNextAss(assignments)) {
+                    if (!checkIfMakeNextAss(assignments) ) {
                         // Miss the booked meeting
                         // Send notify
                         String[] details = new String [2];
@@ -72,7 +74,7 @@ public class DeadlineMissedNotification extends NotificationType {
                         MainActivity.getNotificationAdapter().notifyDataSetChanged();
                         // Give suggestions to skip one assignment, show nrOfCriticAssignments.
 
-                    } else if (!checkIfMakeNextAss(assignments)) {
+                    } else {
                         // Make the booked meeting
                         // Send notify to hurry
                         String[] details = new String [3];
@@ -206,8 +208,10 @@ public class DeadlineMissedNotification extends NotificationType {
 
         if (d1.after(d3) && d1.before(d2)) {
             return assignments.firstElement();
-        } else {
+        } else if (assignments.elementAt(1) != null){
             return assignments.elementAt(1);
+        } else {
+            return null;
         }
     }
 
@@ -258,10 +262,10 @@ public class DeadlineMissedNotification extends NotificationType {
             Date newDate = new Date((long) (d1.getTime() + (2L * totalTime)));
 
             if (newDate.after(d2)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
 //                    --Deadline miss--
 //                    vi har en bokad
 //                      vi vet vilket element de är

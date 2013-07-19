@@ -223,7 +223,7 @@ public class BAConnection {
             if(assignments.size() > 0) {
                 sn.evaluate(assignments,context);
                 lbn.evaluate(assignments,context);
-                //dmn.evaluate(assignments, context);
+                dmn.evaluate(assignments, context);
                 sort("stop", assignments);
             }
         } catch (XPathExpressionException e) {

@@ -34,7 +34,7 @@ public class SchematicNotification extends NotificationType {
         NotificationItem notificationItem;
         String contentText;
         Test test = new Test();
-        Assignment first = test.createTestAssignment("2013-07-18 10:00", "2013-07-18 15:26");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-07-19 10:00", "2013-07-19 11:20");//assignments.firstElement();
         String title = first.getTitle();
         String stopTime = first.getStop();
         String[] details = new String [3];
@@ -73,7 +73,7 @@ public class SchematicNotification extends NotificationType {
                         addNewItem(notificationItem);
                     }
                     return;
-                } else if(difference <= 15) {
+                } else if(10 <= difference && difference <= 15) {
                     Log.d("NOTIF", "<15min");
                     //Info
                     contentText = difference + " min left to deadline";
