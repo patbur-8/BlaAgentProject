@@ -29,7 +29,7 @@ public class SchematicNotification extends NotificationType {
      * @return
      */
     @Override
-    public void evaluate(Vector<Assignment> assignments, Context context) {
+    public void evaluate(Vector<Assignment> assignments, Assignment previous, Context context) {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
         String contentText;

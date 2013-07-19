@@ -264,7 +264,7 @@ public class BAConnection {
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         try {
             Date d1 = df.parse(timestamp);
-            Date now = new Date();
+            Date now = new Date(System.currentTimeMillis() - (60 * 60 * 1000));
             return d1.after(now);
         } catch (ParseException e) {
             e.printStackTrace();

@@ -9,7 +9,7 @@ import java.util.Vector;
  */
 public abstract class NotificationType {
 
-    public abstract void evaluate(Vector<Assignment> assignments, Context context);
+    public abstract void evaluate(Vector<Assignment> assignments, Assignment previous, Context context);
     public abstract void sendNotification(Vector<Assignment> assignments, String[] details, CharSequence contentText, Context context);
 
 
