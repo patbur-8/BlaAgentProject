@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-</PreferenceScreen>
+
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header
+            android:fragment="com.ismobile.blaagent.SettingsActivity$SettingsFragmentOne"
+            android:title="@string/prefs_category_one"
+            android:summary="@string/prefs_summ_category_one" />
+    <header
+            android:fragment="com.ismobile.blaagent.SettingsActivity$SettingsFragmentTwo"
+            android:title="@string/prefs_category_two"
+            android:summary="@string/prefs_summ_category_two" >
+        <!-- key/value pairs can be included as arguments for the fragment. -->
+        <extra android:name="someKey" android:value="someHeaderValue" />
+    </header>
+</preference-headers>
