@@ -18,4 +18,14 @@
     <string name="error">Error</string>
     <string name="hello">test</string>
 
+    <string name="pref_user_profile">Profile</string>
+    <string name="pref_user_name">Username</string>
+    <string name="pref_user_name_summary">This is my username</string>
+
+    <string name="pref_update_setting">Update</string>
+    <string name="pref_send_report_summary">Report summary</string>
+    <string name="pref_send_report">Send report</string>
+
+    <string name="pref_sync_frequency_summary">Sync summary</string>
+    <string name="pref_sync_frequency">Sync frequency</string>
 </resources>

@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
-    <header
-            android:fragment="com.ismobile.blaagent.SettingsActivity$SettingsFragmentOne"
-            android:title="@string/prefs_category_one"
-            android:summary="@string/prefs_summ_category_one" />
-    <header
-            android:fragment="com.ismobile.blaagent.SettingsActivity$SettingsFragmentTwo"
-            android:title="@string/prefs_category_two"
-            android:summary="@string/prefs_summ_category_two" >
-        <!-- key/value pairs can be included as arguments for the fragment. -->
-        <extra android:name="someKey" android:value="someHeaderValue" />
-    </header>
-</preference-headers>
+    <PreferenceCategory android:title="@string/pref_user_profile" >
+        <EditTextPreference
+                android:title="@string/pref_user_name"
+                android:summary="@string/pref_user_name_summary"
+                android:key="prefUsername"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_update_setting" >
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="prefSendReport"
+                android:summary="@string/pref_send_report_summary"
+                android:title="@string/pref_send_report" >
+        </CheckBoxPreference>
+
+        <ListPreference
+                android:key="prefSyncFrequency"
+                android:summary="@string/pref_sync_frequency_summary"
+                android:title="@string/pref_sync_frequency" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

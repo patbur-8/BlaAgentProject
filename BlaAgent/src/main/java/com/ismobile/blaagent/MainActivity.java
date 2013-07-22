@@ -1,6 +1,7 @@
 package com.ismobile.blaagent;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,6 +28,8 @@ public class MainActivity extends ListActivity  {
         super.onCreate(savedInstanceState);
         Log.d("Lifecycle","onCreate");
         setContentView(R.layout.activity_main);
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
         bs = new BackgroundService(this);
         bs.connect();
         handler = new Handler();
@@ -64,7 +67,7 @@ public class MainActivity extends ListActivity  {
         return handler;
     }
 
-   /@Override
+   @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
