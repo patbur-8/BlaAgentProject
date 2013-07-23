@@ -52,6 +52,7 @@ public class NotificationItemsDataSource {
         String stop = ass.getStop();
         float lati = ass.getLatitude();
         float longi = ass.getLongitude();
+        Log.d("uid+type", uid + " : " +type);
 
         if(!checkIfNotificationExist(uid,type)) {
             String detailString;
