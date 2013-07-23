@@ -74,7 +74,6 @@ public class DeadlineMissedNotification extends NotificationType {
                                 "traffic time.";
                         details[0] = "Booked meeting starting: " + getNextBooked(assignments).getStart();
                         details[1] = "Assignment: " + getNextBooked(assignments).getTitle();
-                        sendNotification(assignments, details, contentText, context);
                         notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
                         if(notificationItem != null) {
                             Log.d("Sending: ", "MISSBOOKED");
@@ -90,7 +89,6 @@ public class DeadlineMissedNotification extends NotificationType {
                         details[0] = "Next assignment starts at: " + getNextAssigment(assignments).getStart();
                         details[1] = "Assignment: " + getNextAssigment(assignments).getTitle();
                         details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, assignmentNr) + " min";
-                        sendNotification(assignments, details, contentText, context);
                         notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
                         if(notificationItem != null) {
                             Log.d("Sending: ", "NOTMISS");
@@ -104,11 +102,10 @@ public class DeadlineMissedNotification extends NotificationType {
                         contentText = "You will miss your next assignment with the current" +
                                 "traffic time.";
                         details[0] = "Next assignment starting: " + getNextAssigment(assignments).getStart();
-                        details[1] = "Sending: " + getNextAssigment(assignments).getTitle();
-                        sendNotification(assignments, details, contentText, context);
+                        details[1] = "Assignment: " + getNextAssigment(assignments).getTitle();
                         notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
                         if(notificationItem != null) {
-                            Log.d("LocationB", "MISSNEXTASS");
+                            Log.d("Sending: ", "MISSNEXTASS");
                             sendNotification(assignments, details, contentText, context);
                             addNewItem(notificationItem);
                         }
