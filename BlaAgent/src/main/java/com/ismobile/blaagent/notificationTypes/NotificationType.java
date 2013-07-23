@@ -1,6 +1,8 @@
-package com.ismobile.blaagent;
+package com.ismobile.blaagent.notificationTypes;
 
 import android.content.Context;
+
+import com.ismobile.blaagent.Assignment;
 
 import java.util.Vector;
 
@@ -11,6 +13,4 @@ public abstract class NotificationType {
 
     public abstract void evaluate(Vector<Assignment> assignments, Assignment previous, Context context);
     public abstract void sendNotification(Vector<Assignment> assignments, String[] details, CharSequence contentText, Context context);
-
-
 }

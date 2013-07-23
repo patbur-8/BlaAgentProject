@@ -40,7 +40,6 @@ public class NotificationAdapter extends ArrayAdapter {
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new NotificationHolder();
-            holder.imgBlaAndroid = (ImageView)row.findViewById(R.id.imgBlaAndroid);
             holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
             holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
             holder.txtDetail = (TextView)row.findViewById(R.id.txtDetail);
@@ -56,13 +55,16 @@ public class NotificationAdapter extends ArrayAdapter {
 
         holder.txtDetail.setText(noti.getContentText());
         holder.txtTitle.setText(noti.getTitle());
-        holder.txtDate.setText(noti.getDateCreated() +"");
+        holder.txtDate.setText(noti.getDateCreated());
         return row;
+    }
+
+    public NotificationItem getNoti(int position) {
+        return data.get(position-1);
     }
 
     static class NotificationHolder
     {
-        ImageView imgBlaAndroid;
         ImageView imgMaps;
         TextView txtTitle;
         TextView txtDetail;

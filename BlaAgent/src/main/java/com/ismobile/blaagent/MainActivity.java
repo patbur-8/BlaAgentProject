@@ -1,14 +1,18 @@
 package com.ismobile.blaagent;
 
 import android.app.ListActivity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.ismobile.blaagent.menuSettings.SettingsActivity;
 import com.ismobile.blaagent.sqlite.NotificationItem;
 import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
 
@@ -28,8 +32,6 @@ public class MainActivity extends ListActivity  {
         super.onCreate(savedInstanceState);
         Log.d("Lifecycle","onCreate");
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
         bs = new BackgroundService(this);
         bs.connect();
         handler = new Handler();
@@ -74,6 +76,22 @@ public class MainActivity extends ListActivity  {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                openSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
     public void onDestroy() {
         super.onDestroy();
         Log.d("Lifecycle","onDestroy");
@@ -91,4 +109,19 @@ public class MainActivity extends ListActivity  {
         super.onPause();
     }
 
+
+    protected void onListItemClick (ListView l, View v, int position, long id) {
+        NotificationItem noti = adapter.getNoti(position);
+        Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
+        resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", noti.getUid());
+        TaskStackBuilder resultStackBuilder = TaskStackBuilder.create(this);
+        resultStackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = resultStackBuilder.getPendingIntent(
+                0, PendingIntent.FLAG_UPDATE_CURRENT);
+        try {
+            resultPendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
+    }
 }

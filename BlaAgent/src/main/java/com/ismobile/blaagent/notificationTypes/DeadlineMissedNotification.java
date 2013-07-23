@@ -1,4 +1,4 @@
-package com.ismobile.blaagent;
+package com.ismobile.blaagent.notificationTypes;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -7,6 +7,11 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import com.ismobile.blaagent.Assignment;
+import com.ismobile.blaagent.MainActivity;
+import com.ismobile.blaagent.NotificationAction;
+import com.ismobile.blaagent.R;
+import com.ismobile.blaagent.StatusNotificationIntent;
 import com.ismobile.blaagent.Test.Test;
 import com.ismobile.blaagent.sqlite.NotificationItem;
 
@@ -35,7 +40,7 @@ public class DeadlineMissedNotification extends NotificationType {
 ///////////////////////////////////////////
         String contentText;
         Test test = new Test();
-        Assignment first = test.createTestAssignment("2013-07-19 09:11", "2013-07-19 11:35");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-07-22 09:11", "2013-07-22 10:09", "hgfd732jgfd7y32");//assignments.firstElement();
         String stopTime = first.getStop();
 
         // My location.
@@ -70,10 +75,12 @@ public class DeadlineMissedNotification extends NotificationType {
                         details[1] = "Assignment: " + getNextBooked(assignments).getTitle();
                         sendNotification(assignments, details, contentText, context);
                         notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
-                        MainActivity.getNotificationAdapter().add(notificationItem);
-                        MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                        if(notificationItem != null) {
+                            Log.d("LocationB", "kommer jag hit?");
+                            sendNotification(assignments, details, contentText, context);
+                            addNewItem(notificationItem);
+                        }
                         // Give suggestions to skip one assignment, show nrOfCriticAssignments.
-
                     } else {
                         // Make the booked meeting
                         // Send notify to hurry
@@ -85,14 +92,26 @@ public class DeadlineMissedNotification extends NotificationType {
                         details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, assignmentNr) + " min";
                         sendNotification(assignments, details, contentText, context);
                         notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
-                        MainActivity.getNotificationAdapter().add(notificationItem);
-                        MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                        if(notificationItem != null) {
+                            Log.d("LocationB", "kommer jag hit?");
+                            sendNotification(assignments, details, contentText, context);
+                            addNewItem(notificationItem);
+                        }
                     }
                 }
             }
         }
     }
 
+    public void addNewItem(final NotificationItem noti) {
+        MainActivity.getUIHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.getNotificationAdapter().add(noti);
+                MainActivity.getNotificationAdapter().notifyDataSetChanged();
+            }
+        });
+    }
     /**
      *
      * @param assignments

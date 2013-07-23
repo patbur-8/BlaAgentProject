@@ -1,15 +1,14 @@
 package com.ismobile.blaagent;
 
-import android.*;
-import android.R;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
+import com.ismobile.blaagent.notificationTypes.DeadlineMissedNotification;
+import com.ismobile.blaagent.notificationTypes.ScheduleNotification;
+import com.ismobile.blaagent.notificationTypes.locationBasedNotification;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -46,7 +45,7 @@ public class BAConnection {
     private int nodePerAssignment;
     private String xml = "";
     private String events = "";
-    private SchematicNotification sn;
+    private ScheduleNotification sn;
     private locationBasedNotification lbn;
     private DeadlineMissedNotification dmn;
     private Context context;
@@ -57,7 +56,7 @@ public class BAConnection {
     }
     public BAConnection(Context context) {
         this.context = context;
-        sn = new SchematicNotification();
+        sn = new ScheduleNotification();
         lbn = new locationBasedNotification();
         dmn = new DeadlineMissedNotification();
         calculateNodePerAssignment();
@@ -219,16 +218,28 @@ public class BAConnection {
                     Assignment a = new Assignment(title, uid, booked, startTime, stopTime, latitude, longitude);
                     assignments.add(a);
                 }
+                evaluateNotifications();
             }
-            if(assignments.size() > 0) {
-                sn.evaluate(assignments,null,context);
-                lbn.evaluate(assignments,null,context);
-                dmn.evaluate(assignments, null,context);
-                sort("stop", assignments);
-            }
+
         } catch (XPathExpressionException e) {
             Log.e("Progress","XPath error: " + e);
             e.printStackTrace();
+        }
+    }
+
+    public void evaluateNotifications() {
+        if(assignments.size() > 0) {
+            Assignment previous = null;
+
+            if(isStopTimeBeforeNow(assignments.firstElement().getStop())) {
+                previous = assignments.firstElement();
+                assignments.removeElementAt(0);
+                sn.evaluate(assignments,previous,context);
+                lbn.evaluate(assignments,previous,context);
+                dmn.evaluate(assignments, previous,context);
+                sort("stop", assignments);
+            }
+
         }
     }
 
@@ -259,13 +270,26 @@ public class BAConnection {
             }
         });
     }
-    public boolean isTimestampAfterNow(String timestamp) {
+    public boolean filterOutOldAssignments(String timestamp) {
         String myFormatString = "yyyy-MM-dd HH:mm"; // for example
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         try {
             Date d1 = df.parse(timestamp);
             Date now = new Date(System.currentTimeMillis() - (60 * 60 * 1000));
             return d1.after(now);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean isStopTimeBeforeNow(String stopTime) {
+        String myFormatString = "yyyy-MM-dd HH:mm"; // for example
+        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+        try {
+            Date d1 = df.parse(stopTime);
+            Date now = new Date();
+            return d1.before(now);
         } catch (ParseException e) {
             e.printStackTrace();
         }

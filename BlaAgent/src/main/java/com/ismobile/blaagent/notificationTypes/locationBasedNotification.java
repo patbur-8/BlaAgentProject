@@ -1,10 +1,17 @@
-package com.ismobile.blaagent;
+package com.ismobile.blaagent.notificationTypes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.ismobile.blaagent.Assignment;
+import com.ismobile.blaagent.MainActivity;
+import com.ismobile.blaagent.NotificationAction;
+import com.ismobile.blaagent.R;
+import com.ismobile.blaagent.StatusNotificationIntent;
 import com.ismobile.blaagent.Test.Test;
 import com.ismobile.blaagent.sqlite.NotificationItem;
 
@@ -23,11 +30,18 @@ public class locationBasedNotification extends NotificationType {
 
     @Override
     public void evaluate(Vector<Assignment> assignments,Assignment previous, Context context) {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean displayNotification = prefs.getBoolean("locOnNewAss", true);
+        Log.d("LOCONNEWASS",""+displayNotification);
+        if(!displayNotification) return;
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
         Test test = new Test();
         String contentText;
-        Assignment first = test.createTestAssignment("2013-07-19 11:04", "2013-07-19 23:05");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-07-23 11:53", "2013-07-23 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
+        assignments.add(0,first);
+
         String start = first.getStart();
         String stop = first.getStop();
         String current= new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());

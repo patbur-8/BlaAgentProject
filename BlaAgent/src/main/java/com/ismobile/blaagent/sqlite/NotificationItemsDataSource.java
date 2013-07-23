@@ -128,7 +128,7 @@ public class NotificationItemsDataSource {
         noti.setContentText(cursor.getString(2));
         Date date = new Date ();
         date.setTime((long)cursor.getInt(9) * 1000);
-        DateFormat df = new SimpleDateFormat("HH:mm, d MMM yyyy:");
+        DateFormat df = new SimpleDateFormat("HH:mm");
         noti.setDateCreated(df.format(date));
 
         return noti;

@@ -28,4 +28,20 @@
 
     <string name="pref_sync_frequency_summary">Sync summary</string>
     <string name="pref_sync_frequency">Sync frequency</string>
+
+
+    <string name="notification_settings">Notifications</string>
+
+    <string name="location_notification">Location based</string>
+    <string name="location_notification_new_assignment">On new assignment</string>
+    <string name="location_notification_new_assignment_started">Send a notification if you\'re not on place when a new assignment started.</string>
+
+    <string name="schedule_notification">Schedule based</string>
+    <string name="schedule_notification_15_min">15 Minutes left</string>
+    <string name="schedule_notification_15_min_summary">Send a notification to warn when there is 15 minutes left on an assignment.</string>
+
+    <string name="schedule_notification_5_min">5 Minutes left</string>
+    <string name="schedule_notification_5_min_summary">Send a notification to warn when there is 5 minutes left on an assignment.</string>
+
+    <string name="schedule_enabled">Enabled</string>
 </resources>

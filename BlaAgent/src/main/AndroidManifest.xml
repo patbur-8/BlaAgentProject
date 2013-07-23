@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="com.ismobile.blaagent.SettingsActivity"
+                android:name=".menuSettings.SettingsActivity"
                 android:label="settings" >
         </activity>
     </application>

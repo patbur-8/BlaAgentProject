@@ -7,27 +7,13 @@
                 android:padding="5dip" >
 
     <!--  ListRow Left sied Thumbnail image -->
-    <LinearLayout android:id="@+id/llImg"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:padding="3dip"
-                  android:layout_alignParentLeft="true"
-                  android:layout_marginRight="5dip">
-
-        <ImageView
-                android:id="@+id/imgBlaAndroid"
-                android:layout_width="50dip"
-                android:layout_height="50dip"
-                android:src="@drawable/ic_launcher"/>
-
-    </LinearLayout>
 
     <!-- Title Of Song-->
     <TextView
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rihanna Love the way lie"
+            android:text="This is the assignment title wohoooho"
             android:textColor="#040404"
             android:typeface="sans"
             android:textSize="15dip"
@@ -43,29 +29,30 @@
             android:layout_height="wrap_content"
             android:textColor="#343434"
             android:textSize="10dip"
-            android:text="Just gona stand there and ..."
-            android:layout_centerVertical="true"
-            android:layout_alignLeft="@+id/txtTitle"/>
+            android:text="gfdgsdf sdfg sdfg sdfg dsfg dfsg dsfg dsfg dsfg sdfg sdfg dsfg sdfg sdfg sdfg sdfg sdfg sdfg sdfg sdfg sdfg sdfg "
+            android:layout_alignLeft="@+id/txtTitle"
+            android:layout_alignBottom="@+id/imgMaps"
+            android:layout_below="@+id/txtTitle"/>
 
     <!-- Rightend Duration -->
     <TextView
             android:id="@+id/txtDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@id/txtTitle"
             android:gravity="right"
             android:text="5:45"
-            android:layout_marginRight="5dip"
             android:textSize="10dip"
             android:textColor="#10bcc9"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_alignRight="@+id/txtDetail"
+            android:layout_alignTop="@+id/txtTitle"
+            android:layout_above="@+id/txtDetail"/>
 
     <ImageView
             android:id="@+id/imgMaps"
             android:layout_width="50dip"
             android:layout_height="50dip"
             android:src="@drawable/google_maps_logo"
-            android:layout_alignTop="@+id/llImg"
-            android:layout_toRightOf="@+id/llImg"/>
+            android:layout_centerVertical="true"
+            />
 </RelativeLayout>
