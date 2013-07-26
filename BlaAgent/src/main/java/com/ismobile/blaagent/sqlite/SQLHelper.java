@@ -7,6 +7,7 @@ import android.util.Log;
 
 public class SQLHelper extends SQLiteOpenHelper {
 
+    //Table and columns
     public static final String TABLE_NOTIFICATIONS = "notifications";
     public static final String COLUMN_UID = "uid";
     public static final String COLUMN_TITLE = "title";
@@ -19,7 +20,7 @@ public class SQLHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TYPE = "type";
     public static final String COLUMN_DATE = "datecreated";
 
-
+    //Database name
     private static final String DATABASE_NAME = "notifications.db";
     private static final int DATABASE_VERSION = 1;
 

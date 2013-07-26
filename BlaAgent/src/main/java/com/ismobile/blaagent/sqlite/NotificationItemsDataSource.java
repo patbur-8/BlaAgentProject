@@ -42,6 +42,7 @@ public class NotificationItemsDataSource {
         dbHelper.close();
     }
 
+    //Creates a notification item and inserts it into the database
     public NotificationItem createNotificationItem(Assignment ass, String contentText,
                                                     String[] details, String type) {
 
@@ -54,7 +55,10 @@ public class NotificationItemsDataSource {
         float longi = ass.getLongitude();
         Log.d("uid+type", uid + " : " +type);
 
+        //Each notification may only come once for each assignment.
         if(!checkIfNotificationExist(uid,type)) {
+
+            //Convert details array to string as SQLite can't store string arrays.
             String detailString;
             if(details != null) {
                 detailString = convertArrayToString(details);
@@ -75,6 +79,7 @@ public class NotificationItemsDataSource {
             values.put(SQLHelper.COLUMN_TYPE, type);
             values.put(SQLHelper.COLUMN_DATE, (""+System.currentTimeMillis() / 1000L));
             Log.d("TIIIIIID", values.get(SQLHelper.COLUMN_DATE) + "");
+            //Inserts the notification into database.
             long insertId = database.insert(SQLHelper.TABLE_NOTIFICATIONS, null,
                     values);
 
@@ -90,6 +95,7 @@ public class NotificationItemsDataSource {
         return null;
     }
 
+    //Checks if the notification exists in the database
     public boolean checkIfNotificationExist(String uid, String type) {
         Cursor dataCount = database.rawQuery("SELECT " + SQLHelper.COLUMN_TITLE + " FROM " +
                 SQLHelper.TABLE_NOTIFICATIONS + " WHERE " + SQLHelper.COLUMN_UID + " = ? AND " +
@@ -97,13 +103,7 @@ public class NotificationItemsDataSource {
         return (dataCount != null && dataCount.moveToFirst());
     }
 
-    public void deleteNotificationItem(NotificationItem noti) {
-        String uid = noti.getUid();
-        System.out.println("Comment deleted with id: " + uid);
-        database.delete(SQLHelper.TABLE_NOTIFICATIONS, SQLHelper.COLUMN_UID
-                + " = " + uid, null);
-    }
-
+    //Retrieves all notification items from the database
     public List<NotificationItem> getAllNotificationItems() {
         List<NotificationItem> notiList = new ArrayList<NotificationItem>();
 
@@ -135,6 +135,7 @@ public class NotificationItemsDataSource {
         return noti;
     }
 
+    //Converts String Array to String
     public static String convertArrayToString(String[] array){
         String str = "";
         for (int i = 0;i<array.length; i++) {
@@ -146,6 +147,8 @@ public class NotificationItemsDataSource {
         }
         return str;
     }
+
+    //Converts String to String Array
     public static String[] convertStringToArray(String str){
         String[] arr = str.split("#!%");
         return arr;

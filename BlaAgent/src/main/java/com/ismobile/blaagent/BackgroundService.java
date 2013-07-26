@@ -17,6 +17,7 @@ import org.json.JSONException;
  * Created by pbm on 2013-06-24.
  */
 public class BackgroundService {
+
     private final String alarmManagerAction = "com.ismobile.blaagent.alarmManagerAction";
     BroadcastReceiver receiver;
     PendingIntent pi;
@@ -25,16 +26,15 @@ public class BackgroundService {
     AlarmManager am;
     private PowerManager.WakeLock wl;
     private Context context;
+
     public BackgroundService(Context context) {
-        Log.d("Superduper","constructor");
         this.context = context;
         bacon = new BAConnection(context);
         this.receiver = null;
     }
 
+    //Registers a broadcast receiver and creates a new WAKE LOCK
     public void initialize() {
-        // We need to listen to connectivity events to update navigator.connection
-        Log.d("Superduper","initialize");
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(alarmManagerAction);
         if (this.receiver == null) {
@@ -45,8 +45,6 @@ public class BackgroundService {
                     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
                     wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BlaAgent-BackgroundService");
                     wl.acquire();
-                    // (The null check is for the ARM Emulator, please use Intel Emulator for better results)
-                    Log.d("Superduper", "It works!");
                     bacon.startRetrieval();
                     wl.release();
                 }
@@ -57,12 +55,14 @@ public class BackgroundService {
         }
     }
 
+    //Calls initialize and sets a repeating alarm.
     protected void connect() {
         initialize();
         am = (AlarmManager)(context.getSystemService(Context.ALARM_SERVICE));
         am.setRepeating( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),20000, pi );
     }
 
+    //Unregisters the broadcast listener
     protected void removeBroadCastListener() {
         if (this.receiver != null) {
             try {

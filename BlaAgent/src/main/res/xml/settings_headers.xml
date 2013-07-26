@@ -16,4 +16,6 @@
             android:fragment="com.ismobile.blaagent.menuSettings.ScheduleFragment"
             android:title="@string/schedule_notification" />
 
+    <!-- INSERT HEADERS FOR NEW NOTIFICATION TYPES HERE -->
+
 </preference-headers>

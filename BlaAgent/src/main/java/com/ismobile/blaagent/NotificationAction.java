@@ -5,6 +5,8 @@ import android.content.Intent;
 /**
  * Created by pbm on 2013-07-05.
  */
+
+//Action used in nofifications
 public class NotificationAction {
     private int image;
     private String title;

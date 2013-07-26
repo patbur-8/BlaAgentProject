@@ -3,6 +3,7 @@ package com.ismobile.blaagent;
 /**
  * Created by pbm on 2013-07-03.
  */
+
 public class Assignment {
     private float longi;
     private float lati;
@@ -21,29 +22,6 @@ public class Assignment {
         this.lati = latitude;
         this.longi = longitude;
     }
-/*
-    public void setLongi(float longitude) {
-        this.longi = longitude;
-    }
-    public void setLati(float latitude) {
-        this.lati = latitude;
-    }
-    public void setTitle(String titleAss) {
-        this.title = titleAss;
-    }
-    public void setUid(String uId) {
-        this.uid = uId;
-    }
-    public void setBooked(boolean bookedAss) {
-        this.booked = bookedAss;
-    }
-    public void setStart(String startTime) {
-        this.start = startTime;
-    }
-    public void setStop(String stopTime) {
-        this.stop = stopTime;
-    }
-*/
     public String getTitle() {
         return this.title;
     }

@@ -17,7 +17,6 @@ import com.ismobile.blaagent.sqlite.NotificationItem;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
@@ -27,24 +26,39 @@ import java.util.Vector;
  * Created by ats on 2013-07-12.
  */
 public class locationBasedNotification extends NotificationType {
+    static final int TIME_THRESHOLD = 6;
+    static final int DISTANCE_THRESHOLD = 6;
 
+    private String notificationType;
+    /**
+     * Evaluates if a notification should be sent or not.
+     *
+     * @param assignments a vector containing all the assignments.
+     * @param previous The previous assignment, if any.
+     * @param context
+     */
     @Override
     public void evaluate(Vector<Assignment> assignments,Assignment previous, Context context) {
 
+        //Checks in the settings if it's enabled or not
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("locOnNewAss", true);
         Log.d("LOCONNEWASS",""+displayNotification);
         if(!displayNotification) return;
+
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
+
+        //TEST, TA BORT SEN
         Test test = new Test();
         String contentText;
         Assignment first = test.createTestAssignment("2013-07-23 11:53", "2013-07-23 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
         assignments.add(0,first);
 
+        //Start, stop and current timestamp
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String start = first.getStart();
         String stop = first.getStop();
-        String current= new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
 
         String[] details = null;
         // My location.
@@ -52,30 +66,37 @@ public class locationBasedNotification extends NotificationType {
         float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
 
-        // Date object.
+        //Parse timestamp string to Date object, in order to be able to compare them.
         Date currentTime = null, startTime = null, stopTime = null;
-        String myFormatString = "yyyy-MM-dd HH:mm";
-        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         try {
-            currentTime = df.parse(current);
+            currentTime = new Date();
             startTime = df.parse(start);
             stopTime = df.parse(stop);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
+
+        contentText = "A new assignment has started and you are not in place.";
+
+        //The notification has to be unique for each notification type and assignment.
+        //The notification type is used to be sure that each notification can only
+        //be displayed once for each assignment.
+        //A good solution is using the notification type + assignment uid like bellow.
+        notificationType = "loc" + first.getUid();
+
+
+        //If enough time has passed and the technician is not on the location of
+        //the assignment we can just assume that the assignment is over.
+        //But if it's within a certain threshold we can assume that the technician is late
+        //for the assignment.
         long timePassed = (currentTime.getTime() - startTime.getTime())/(1000*60);
-        Log.d("locationB", "TimePassed:" + (timePassed <= 6));
-        if (timePassed <= 6) {
-            Log.d("locationB", (!currentTime.before(startTime) && currentTime.before(stopTime)) + "");
-            Log.d("locationB", "StartTime: " + (startTime.getTime()));
-            Log.d("locationB", "StopTime: " + (stopTime.getTime()));
-            Log.d("locationB", "CurrentTime: " + (currentTime.getTime()));
+        if (timePassed <= TIME_THRESHOLD) {
             if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(stopTime)) {
-                if (!(0 <= distance && distance <= 0.5)) {
+                if (!(distance <= DISTANCE_THRESHOLD)) {
                     Log.d("NOTIF", "Fungerar!!!");
-                    contentText = "A new assignment has started and you are not in place.";
-                    notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"loc"+first.getUid());
+
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details , notificationType);
                     if(notificationItem != null) {
                         Log.d("LocationB", "kommer jag hit?");
                         sendNotification(assignments, details, contentText, context);
@@ -86,6 +107,8 @@ public class locationBasedNotification extends NotificationType {
         }
     }
 
+    //This is used to add a new notification item to the notification feed
+    //Copy this if your new notification type should be displayed in the feed.
     public void addNewItem(final NotificationItem noti) {
         MainActivity.getUIHandler().post(new Runnable() {
             @Override
@@ -95,12 +118,22 @@ public class locationBasedNotification extends NotificationType {
             }
         });
     }
+
+    /**
+     * This is where you create the actions and decide on the notification style.
+     *
+     * @param assignments
+     * @param details
+     * @param contentText
+     * @param context
+     */
     @Override
     public void sendNotification(Vector<Assignment> assignments, String[] details, CharSequence contentText, Context context) {
         CharSequence contentTitle = assignments.firstElement().getTitle();
 
         String uid = assignments.firstElement().getUid();
 
+        //Adding the result intent, this goes directly to a specific assignment in BlaAndroid
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
         resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
 
@@ -108,10 +141,9 @@ public class locationBasedNotification extends NotificationType {
         NotificationAction[] notiActions = new NotificationAction[1];
         notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
 
-        String notificationId = uid+"location";
-
+        //Build the notification using StatusNotificationIntent
         StatusNotificationIntent sni = new StatusNotificationIntent(context);
-        sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions,notificationId);
+        sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions,notificationType);
 
     }
 

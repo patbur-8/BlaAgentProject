@@ -18,6 +18,8 @@ import java.util.List;
 /**
  * Created by pbm on 2013-07-11.
  */
+
+//The custom array adapter for displaying notification items in a list.
 public class NotificationAdapter extends ArrayAdapter {
 
     Context context;
@@ -59,6 +61,7 @@ public class NotificationAdapter extends ArrayAdapter {
         return row;
     }
 
+    //Returns a notification iitem
     public NotificationItem getNoti(int position) {
         return data.get(position-1);
     }

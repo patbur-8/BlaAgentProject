@@ -32,30 +32,31 @@ public class MainActivity extends ListActivity  {
         super.onCreate(savedInstanceState);
         Log.d("Lifecycle","onCreate");
         setContentView(R.layout.activity_main);
+        //Creates an instace of the background service and connects.
         bs = new BackgroundService(this);
         bs.connect();
+
         handler = new Handler();
+
+        //Creates and opens an new data source.
         datasource = new NotificationItemsDataSource(this);
         datasource.open();
 
+        //Retrieves the items from the database
         values = datasource.getAllNotificationItems();
 
         // Use the SimpleCursorAdapter to show the
         // elements in a ListView
         adapter = new NotificationAdapter(this, R.layout.custom_list_item, values);
-        //setListAdapter(adapter);
 
         listView1 = (ListView)findViewById(android.R.id.list);
 
+        //Adds the header row
         View header = getLayoutInflater().inflate(R.layout.listview_header_row, null);
         listView1.addHeaderView(header);
 
         listView1.setAdapter(adapter);
     }
-
-    // Will be called via the onClick attribute
-    // of the buttons in main.xml
-
 
     public static NotificationAdapter getNotificationAdapter() {
         return adapter;
@@ -92,6 +93,7 @@ public class MainActivity extends ListActivity  {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
+
     public void onDestroy() {
         super.onDestroy();
         Log.d("Lifecycle","onDestroy");
@@ -110,6 +112,7 @@ public class MainActivity extends ListActivity  {
     }
 
 
+    //Opens BlaAndroid to view a certain assignment
     protected void onListItemClick (ListView l, View v, int position, long id) {
         NotificationItem noti = adapter.getNoti(position);
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");

@@ -29,7 +29,7 @@ import java.util.Vector;
 public class ScheduleNotification extends NotificationType {
 
     /**
-     * Evaluates what type of notification we want to send.
+     * Evaluates if and what type of notification we want to send.
      *
      * @param assignments
      * @param context

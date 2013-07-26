@@ -40,7 +40,10 @@ import javax.xml.xpath.XPathFactory;
  * Created by pbm on 2013-06-25.
  */
 public class BAConnection {
+
+    //String containing all the field to parse from the XML.
     String nodesToRetrieve = "//assignment/start | //assignment/stop | //assignment/uid | //assignment/workorder/booked | //assignment/workorder/title | //assignment/workorder/location/latitude | //assignment/workorder/location/longitude";
+
     private Vector<Assignment> assignments = new Vector<Assignment>();
     private int nodePerAssignment;
     private String xml = "";
@@ -49,22 +52,29 @@ public class BAConnection {
     private locationBasedNotification lbn;
     private DeadlineMissedNotification dmn;
     private Context context;
+
+    //Retrieves a file containing the port to BlaAndroid
     private File getPortfile() {
         File f = new File(new File(Environment.getExternalStorageDirectory(), "BlaAndroid"), "port.txt");
         f.mkdirs();
         return f;
     }
+
     public BAConnection(Context context) {
         this.context = context;
+        //Creates instaces of each of the notification types.
         sn = new ScheduleNotification();
         lbn = new locationBasedNotification();
         dmn = new DeadlineMissedNotification();
         calculateNodePerAssignment();
     }
 
+    //Calculates the number of XML nodes per assignment
     public void calculateNodePerAssignment() {
         nodePerAssignment = nodesToRetrieve.length() - nodesToRetrieve.replaceAll("\\|", "").length() + 1;
     }
+
+    //Starts retrieving the XML
     public void startRetrieval() {
         Log.i("Progress", "Starting retrieval");
         final File p = getPortfile();
@@ -97,6 +107,7 @@ public class BAConnection {
             os.write(b, 0, i);
     }
 
+    //Reads in file to string
     private String readFileAsString(File file) {
         Log.i("Progress", "Reading file as string");
         FileInputStream ifs = null;
@@ -137,17 +148,7 @@ public class BAConnection {
         return ret;
     }
 
-    private void appendText(String msg, boolean NL) {
-        xml = xml + msg;
-        if(NL) {
-            xml = xml +"\n";
-        }
-    }
-
-    private void appendTextNL(String msg) {
-        appendText(msg, true);
-    }
-
+    //Retrieves the XML data from BlaAndroid and puts in in a string
     private void getXml(final int port, final boolean incCustomXML, final boolean incReports) {
         Log.i("Progress", "Getting XML");
         xml = "";
@@ -172,6 +173,7 @@ public class BAConnection {
         }).start();
     }
 
+    //Creates a XML document from string
     private Document docFromString(String v) {
         Document doc = null;
 
@@ -190,6 +192,7 @@ public class BAConnection {
         return doc;
     }
 
+    //Parses the XML in order to retrieve only the important fields.
     private void parseXML() {
         Document doc = docFromString(xml);
         if (doc == null) return;
@@ -207,6 +210,7 @@ public class BAConnection {
             for (int m = 0; m < nl.getLength(); m=m+nodePerAssignment) {
 
                 String stopTime = nl.item(m+1).getTextContent();
+                //Only adds upcoming notifications
                 //if(isTimestampAfterNow(stopTime)) {
                 if(true) {
                     String startTime = nl.item(m).getTextContent();
@@ -227,6 +231,7 @@ public class BAConnection {
         }
     }
 
+    //Evaluates if any notifications should be sent or not
     public void evaluateNotifications() {
         if(assignments.size() > 0) {
             Assignment previous = null;
@@ -243,6 +248,7 @@ public class BAConnection {
         }
     }
 
+    //Sorts the assignments by stop time
     public void sort(final String field, List<Assignment> itemLocationList) {
         Collections.sort(itemLocationList, new Comparator<Assignment>() {
             @Override
@@ -270,6 +276,11 @@ public class BAConnection {
             }
         });
     }
+
+    //KOLLA UPP DET HÄR
+
+
+    //Filters out old assignments.
     public boolean filterOutOldAssignments(String timestamp) {
         String myFormatString = "yyyy-MM-dd HH:mm"; // for example
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
@@ -283,6 +294,7 @@ public class BAConnection {
         return false;
     }
 
+    //Compares an assignments stop time to see if it has passed or not.
     public boolean isStopTimeBeforeNow(String stopTime) {
         String myFormatString = "yyyy-MM-dd HH:mm"; // for example
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
