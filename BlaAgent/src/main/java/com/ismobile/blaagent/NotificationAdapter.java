@@ -1,7 +1,10 @@
 package com.ismobile.blaagent;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,23 +40,34 @@ public class NotificationAdapter extends ArrayAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
         NotificationHolder holder = null;
+        final NotificationItem noti = data.get(position);
         if(row == null) {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new NotificationHolder();
             holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
+            holder.imgMaps.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("HEJJJJJAA","click");
+                    Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
+                            Uri.parse("http://maps.google.com/maps?f=d&daddr=" + noti.getLatitude() + "," + noti.getLongitude()));
+                    mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
+                            "com.google.android.maps.MapsActivity"));
+                    context.startActivity(mapsIntent);
+                }
+            });
             holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
             holder.txtDetail = (TextView)row.findViewById(R.id.txtDetail);
             holder.txtDate = (TextView)row.findViewById(R.id.txtDate);
-
             row.setTag(holder);
         }
         else
         {
             holder = (NotificationHolder)row.getTag();
         }
-        NotificationItem noti = data.get(position);
+
 
         holder.txtDetail.setText(noti.getContentText());
         holder.txtTitle.setText(noti.getTitle());

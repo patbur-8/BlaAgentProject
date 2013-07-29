@@ -27,7 +27,7 @@ import java.util.Vector;
  * Created by pbm on 2013-07-04.
  */
 public class ScheduleNotification extends NotificationType {
-
+    static final double DISTANCE_THRESHOLD = 0.5;
     /**
      * Evaluates if and what type of notification we want to send.
      *
@@ -59,7 +59,7 @@ public class ScheduleNotification extends NotificationType {
         String myFormatString = "yyyy-MM-dd HH:mm";
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
 
-        if (0 <= distance && distance <= 0.5) { // Check if we are in place.
+        if (distance <= DISTANCE_THRESHOLD) { // Check if we are in place.
             if (assignments.size() > 0) {
                 String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
                 try {

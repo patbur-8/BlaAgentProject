@@ -46,7 +46,6 @@ public class NotificationItemsDataSource {
     public NotificationItem createNotificationItem(Assignment ass, String contentText,
                                                     String[] details, String type) {
 
-
         String title = ass.getTitle();
         String uid = ass.getUid();
         String start = ass.getStart();
@@ -123,8 +122,13 @@ public class NotificationItemsDataSource {
 
     private NotificationItem cursorToNotification(Cursor cursor) {
         NotificationItem noti = new NotificationItem();
+
+        Log.d("cursor", cursor.getFloat(3) + ", " + cursor.getFloat(4));
+
         noti.setUid(cursor.getString(0));
         noti.setTitle(cursor.getString(1));
+        noti.setLatitude(cursor.getFloat(3));
+        noti.setLongitude(cursor.getFloat(4));
         noti.setDetails(cursor.getString(5));
         noti.setContentText(cursor.getString(2));
         Date date = new Date ();

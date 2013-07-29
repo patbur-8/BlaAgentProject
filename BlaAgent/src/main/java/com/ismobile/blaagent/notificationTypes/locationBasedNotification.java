@@ -27,7 +27,7 @@ import java.util.Vector;
  */
 public class locationBasedNotification extends NotificationType {
     static final int TIME_THRESHOLD = 6;
-    static final int DISTANCE_THRESHOLD = 6;
+    static final double DISTANCE_THRESHOLD = 0.5;
 
     private String notificationType;
     /**
@@ -52,7 +52,7 @@ public class locationBasedNotification extends NotificationType {
         //TEST, TA BORT SEN
         Test test = new Test();
         String contentText;
-        Assignment first = test.createTestAssignment("2013-07-23 11:53", "2013-07-23 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-07-29 13:26", "2013-07-29 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
         assignments.add(0,first);
 
         //Start, stop and current timestamp
@@ -92,7 +92,9 @@ public class locationBasedNotification extends NotificationType {
         //for the assignment.
         long timePassed = (currentTime.getTime() - startTime.getTime())/(1000*60);
         if (timePassed <= TIME_THRESHOLD) {
+            Log.d("HEJJJJJAA", "time");
             if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(stopTime)) {
+                Log.d("HEJJJJJAA", "time2");
                 if (!(distance <= DISTANCE_THRESHOLD)) {
                     Log.d("NOTIF", "Fungerar!!!");
 

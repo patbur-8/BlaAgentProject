@@ -241,7 +241,7 @@ public class BAConnection {
                 assignments.removeElementAt(0);
                 sn.evaluate(assignments,previous,context);
                 lbn.evaluate(assignments,previous,context);
-                dmn.evaluate(assignments, previous,context);
+                //dmn.evaluate(assignments, previous,context);
                 sort("stop", assignments);
             }
 
