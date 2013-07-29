@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.ismobile.blaagent.Assignment;
+import com.ismobile.blaagent.GetDirections;
 import com.ismobile.blaagent.MainActivity;
 import com.ismobile.blaagent.NotificationAction;
 import com.ismobile.blaagent.R;
@@ -42,7 +43,8 @@ public class DeadlineMissedNotification extends NotificationType {
         NotificationItem notificationItem;
         String contentText;
         Test test = new Test();
-        Assignment first = test.createTestAssignment("2013-07-23 09:11", "2013-07-23 15:50", "hgfd732jgfd7y32");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-07-29 09:11", "2013-07-29 15:08", "hgfd732jgfd7y32");//assignments.firstElement();
+        assignments.add(0,first);
         String stopTime = first.getStop();
 
         // My location.
@@ -256,6 +258,14 @@ public class DeadlineMissedNotification extends NotificationType {
         Assignment nextAss = getNextAssigment(assignments);
         double totalTime = 0;
 
+        // Get estimated drive time.
+        GetDirections getDirections = new GetDirections();
+        String from = "40.080,-76.31"; //"Lancaster,PA";
+        String to = "40.019,-76.73"; //"York,PA";
+        getDirections.getJSON(from,to);
+        //http://www.mapquestapi.com/directions/v1/route?key=Fmjtd%7Cluub20012d%2Cbl%3Do5-9ura14&fr
+        // om=59.33,18.07&to=59.4333,17.95&callback=renderNarrative sollentuna-sthlm.
+
         // Check if we have any booked meetings today.
         if (nextBooked != null) {
             // We have a booked meeting.
@@ -264,7 +274,7 @@ public class DeadlineMissedNotification extends NotificationType {
             String myFormatString = "yyyy-MM-dd HH:mm";
             SimpleDateFormat df = new SimpleDateFormat(myFormatString);
 
-            // Calculate the drive time between the next assignments to the booked assignment.
+            // Calculate the drive time between the next assignments to the booked meeting.
             // assignments.indexOf(nextAss); is either 0 or 1.
             for (int i=assignments.indexOf(nextAss); i<nrOfCriticAssignments; i++) {
                 String start = assignments.elementAt(i).getStart();
@@ -277,6 +287,7 @@ public class DeadlineMissedNotification extends NotificationType {
                 }
 
                 difference = (d2.getTime() - d1.getTime())/(1000*60);
+                //getDirections.getJSON(from,to);
                 totalTime += difference + getCurrentTrafficTime(assignments, i);
             }
 

@@ -14,8 +14,9 @@ import java.net.URL;
 public class GetDirections {
     private String key = "Fmjtd%7Cluub20012d%2Cbl%3Do5-9ura14";
     //http://www.mapquestapi.com/directions/v1/route?key=Fmjtd%7Cluub20012d%2Cbl%3Do5-9ura14&from=Lancaster,PA&to=York,PA&callback=renderNarrative
-    String from = "Lancaster,PA";
-    String to = "York,PA";
+    //http://www.mapquestapi.com/directions/v1/route?key=Fmjtd%7Cluub20012d%2Cbl%3Do5-9ura14&from=40.080,-76.31&to=40.019,-76.73&callback=renderNarrative
+    String from = "40.080,-76.31"; //"Lancaster,PA";
+    String to = "40.019,-76.73"; //"York,PA";
 
     public void getJSON(String from, String to) {
         try {
