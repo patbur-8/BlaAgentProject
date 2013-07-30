@@ -46,7 +46,7 @@ public class NotificationAdapter extends ArrayAdapter {
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new NotificationHolder();
-            holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
+            /*holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
             holder.imgMaps.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -57,7 +57,7 @@ public class NotificationAdapter extends ArrayAdapter {
                             "com.google.android.maps.MapsActivity"));
                     context.startActivity(mapsIntent);
                 }
-            });
+            });*/
             holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
             holder.txtDetail = (TextView)row.findViewById(R.id.txtDetail);
             holder.txtDate = (TextView)row.findViewById(R.id.txtDate);

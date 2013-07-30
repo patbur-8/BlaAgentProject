@@ -52,7 +52,7 @@ public class locationBasedNotification extends NotificationType {
         //TEST, TA BORT SEN
         Test test = new Test();
         String contentText;
-        Assignment first = test.createTestAssignment("2013-07-29 13:26", "2013-07-29 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-07-29 16:28", "2013-07-29 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
         assignments.add(0,first);
 
         //Start, stop and current timestamp
