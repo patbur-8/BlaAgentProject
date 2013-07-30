@@ -211,8 +211,8 @@ public class BAConnection {
 
                 String stopTime = nl.item(m+1).getTextContent();
                 //Only adds upcoming notifications
-                //if(isTimestampAfterNow(stopTime)) {
-                if(true) {
+                if(filterOutOldAssignments(stopTime)) {
+                //if(true) {
                     String startTime = nl.item(m).getTextContent();
                     String uid = nl.item(m+2).getTextContent();
                     boolean booked = Boolean.parseBoolean(nl.item(m + 3).getTextContent());
@@ -222,9 +222,8 @@ public class BAConnection {
                     Assignment a = new Assignment(title, uid, booked, startTime, stopTime, latitude, longitude);
                     assignments.add(a);
                 }
-                evaluateNotifications();
             }
-
+            evaluateNotifications();
         } catch (XPathExpressionException e) {
             Log.e("Progress","XPath error: " + e);
             e.printStackTrace();
@@ -233,17 +232,20 @@ public class BAConnection {
 
     //Evaluates if any notifications should be sent or not
     public void evaluateNotifications() {
-        if(assignments.size() > 0) {
+
+        //if(assignments.size() > 0) {
+        if(true) {
             Assignment previous = null;
 
-            if(isStopTimeBeforeNow(assignments.firstElement().getStop())) {
-                previous = assignments.firstElement();
-                assignments.removeElementAt(0);
-                sn.evaluate(assignments,previous,context);
-                lbn.evaluate(assignments,previous,context);
+            //if(isStopTimeBeforeNow(assignments.firstElement().getStop())) {
+              //  previous = assignments.firstElement();
+               // assignments.removeElementAt(0);
+                //sort("stop", assignments);
+                //sn.evaluate(assignments,previous,context);
+                //lbn.evaluate(assignments,previous,context);
                 dmn.evaluate(assignments, previous,context);
-                sort("stop", assignments);
-            }
+
+            //}
 
         }
     }
