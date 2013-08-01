@@ -3,6 +3,7 @@ package com.ismobile.blaagent;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.TaskStackBuilder;
@@ -26,6 +27,7 @@ public class MainActivity extends ListActivity  {
     BackgroundService bs = new BackgroundService(this);
     private ListView listView1;
     private static Handler handler;
+    static MyLocation loc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class MainActivity extends ListActivity  {
         listView1.addHeaderView(header);
 
         listView1.setAdapter(adapter);
+        loc = new MyLocation(this);
     }
 
     public static NotificationAdapter getNotificationAdapter() {
@@ -68,6 +71,11 @@ public class MainActivity extends ListActivity  {
 
     public static Handler getUIHandler() {
         return handler;
+    }
+    public static Location getMyLocation() {
+        Location hej = loc.getLocation();
+        Log.d("sopa", hej.getLatitude()+"");
+        return hej;
     }
 
    @Override

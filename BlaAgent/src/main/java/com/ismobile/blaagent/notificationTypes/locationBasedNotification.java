@@ -157,10 +157,10 @@ public class locationBasedNotification extends NotificationType {
      */
     public double getDistance(float latitude, float longitude) {
         // My location.
-        Location location = new Location("");
-        location.setLatitude(location.getLatitude());
-        location.setLongitude(location.getLongitude());
-        location.distanceTo(location);
+        Location location = getMyLocation();
+        //location.setLatitude(location.getLatitude());
+        //location.setLongitude(location.getLongitude());
+        //location.distanceTo(location);
 
         // The assignments location.
         Location aLocation = new Location("");
@@ -171,5 +171,12 @@ public class locationBasedNotification extends NotificationType {
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
         return  0.6;//distance;
+    }
+
+    public Location getMyLocation() {
+        Location location = new Location("");
+        location.setLatitude(location.getLatitude());
+        location.setLongitude(location.getLongitude());
+        return location;
     }
 }

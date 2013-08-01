@@ -4,12 +4,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.ismobile.blaagent.Assignment;
 import com.ismobile.blaagent.GetDirections;
 import com.ismobile.blaagent.MainActivity;
+import com.ismobile.blaagent.MyLocation;
 import com.ismobile.blaagent.NotificationAction;
 import com.ismobile.blaagent.R;
 import com.ismobile.blaagent.StatusNotificationIntent;
@@ -24,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -34,7 +39,7 @@ public class DeadlineMissedNotification extends NotificationType {
     private final int MISSBOOKED = 0;
     private final int MISSNEXTASS = 1;
     private final int NOTMISS = 2;
-
+    GetDirections dir = new GetDirections();
     private int missStatus;
     /**
      *
@@ -44,7 +49,7 @@ public class DeadlineMissedNotification extends NotificationType {
      */
     @Override
     public void evaluate(Vector<Assignment> assignments, Assignment previous, Context context) {
-        // Assignments is sorted by stop time. Earliest stop time  = first element in assignments.
+
         NotificationItem notificationItem;
         String contentText;
         String[] details;
@@ -57,7 +62,7 @@ public class DeadlineMissedNotification extends NotificationType {
         // My location.
         float latitude = previous.getLatitude();
         float longitude = previous.getLongitude();
-        double distance = 0.4; //getDistance(latitude, longitude);
+        double distance = getDistance(latitude, longitude);
 
         Date d1 = null, d2 = null;
         String myFormatString = "yyyy-MM-dd HH:mm";
@@ -111,7 +116,7 @@ public class DeadlineMissedNotification extends NotificationType {
                                 contentText = "You have to leave this assignment now";
                                 details[0] = "Next assignment starts at: " + first.getStart();
                                 details[1] = "Assignment: " + first.getTitle();
-                                details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 0) + " min";
+                                //details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 0) + " min";
                                 notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"deadNM"+first.getUid());
                                 if(notificationItem != null) {
                                     Log.d("Sending: ", "NOTMISS+booked");
@@ -125,7 +130,7 @@ public class DeadlineMissedNotification extends NotificationType {
                                 contentText = "You have to leave this assignment now";
                                 details[0] = "Next assignment starts at: " + first.getStart();
                                 details[1] = "Assignment: " + first.getTitle();
-                                details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 0) + " min";
+                                //details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 0) + " min";
                                 notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"deadNM"+first.getUid());
                                 if(notificationItem != null) {
                                     Log.d("Sending: ", "NOTMISS+notbooked");
@@ -260,9 +265,33 @@ public class DeadlineMissedNotification extends NotificationType {
         return null;
     }
 
-    public int getCurrentTrafficTime(Vector<Assignment> assignments, int i) {
+    public double getCurrentTrafficTime(String from, String to, boolean traffic) {
         // Beräkna current traffic time och returnera.
-        return 30;
+        // Get estimated drive time.
+        int realTimeInSec;
+        double realTime = -1;
+        double time = 9999;
+        try {
+            JSONObject obj = dir.getDirectionsJSON(from, to);
+            //Log.d("JSON", obj.getInt("realTime")+"");
+            Log.d("JSON", obj.getJSONObject("route").getInt("time")+"");
+            if(traffic) {
+                realTimeInSec = obj.getJSONObject("route").getInt("realTime");
+                if(realTimeInSec > 0) {
+                    realTime = secondsToMinute(realTimeInSec);
+                }
+            }
+
+            time = secondsToMinute(obj.getJSONObject("route").getInt("time"));
+            Log.d("JSON",time +", " + realTime);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(realTime > 0) return realTime;
+        return time;
     }
 
     public boolean timeToLeaveForNextAss(Vector<Assignment> assignments) {
@@ -279,8 +308,40 @@ public class DeadlineMissedNotification extends NotificationType {
             e.printStackTrace();
         }
 
-        double totalTime = ((startTime.getTime() - currentTime.getTime())/(1000*60)) - getCurrentTrafficTime(assignments, 0);
-        return !(totalTime > 0);
+        //double totalTime = ((startTime.getTime() - currentTime.getTime())/(1000*60)) - getCurrentTrafficTime(assignments, 0);
+        //return !(totalTime > 0);
+        return true;
+    }
+
+    public long calculateTotalTime(Vector<Assignment> assignments, int nrOfAssignments) {
+        Long difference = 0L;
+        double totalTime = 0;
+        Date startTime = null, stopTime = null, nextAssStartTime = null;
+        String from, to;
+        String myFormatString = "yyyy-MM-dd HH:mm";
+        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+
+
+        for (int i=0; i<nrOfAssignments; i++) {
+            String start = assignments.elementAt(i).getStart();
+            String stop = assignments.elementAt(i).getStop();
+            try {
+                startTime = df.parse(start);
+                stopTime = df.parse(stop);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            difference = (stopTime.getTime() - startTime.getTime())/(1000*60);
+            if (i == 0) {
+                from = getMyLocation();
+                to = assignments.elementAt(i).getLatitude() + "," + assignments.elementAt(i).getLongitude();
+                //totalTime += difference + getCurrentTrafficTime(to, from, true);
+            }
+            to = assignments.elementAt(i).getLatitude() + "," + assignments.elementAt(i).getLongitude();
+            //totalTime += difference + getCurrentTrafficTime(to, from, true);
+        }
+        return difference;
     }
 
     /**
@@ -299,28 +360,6 @@ public class DeadlineMissedNotification extends NotificationType {
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         Date currentTime = new Date();
 
-        // Get estimated drive time.
-        GetDirections getDirections = new GetDirections();
-        String from = "40.080,-76.31"; //"Lancaster,PA";
-        String to = "40.019,-76.73"; //"York,PA";
-        try {
-            JSONObject obj = getDirections.getDirectionsJSON(from, to);
-            //Log.d("JSON", obj.getInt("realTime")+"");
-            Log.d("JSON", obj.getJSONObject("route").getInt("time")+"");
-            int realTimeInSec = obj.getJSONObject("route").getInt("realTime");
-            double realTime = -1;
-            if(realTimeInSec > 0) {
-                realTime = secondsToMinute(realTimeInSec);
-            }
-            double time = secondsToMinute(obj.getJSONObject("route").getInt("time"));
-            Log.d("JSON",time +", " + realTime);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
         //http://www.mapquestapi.com/directions/v1/route?key=Fmjtd%7Cluub20012d%2Cbl%3Do5-9ura14&fr
         // om=59.33,18.07&to=59.4333,17.95&callback=renderNarrative sollentuna-sthlm.
 
@@ -329,23 +368,11 @@ public class DeadlineMissedNotification extends NotificationType {
             // We have a booked meeting.
             Long difference;
             Date startTime = null, stopTime = null, nextAssStartTime = null;
+            String from, to;
 
             // Calculate the drive time between the next assignments to the booked meeting.
             // assignments.indexOf(nextAss); is either 0 or 1.
-            for (int i=assignments.indexOf(nextAss); i<nrOfCriticAssignments; i++) {
-                String start = assignments.elementAt(i).getStart();
-                String stop = assignments.elementAt(i).getStop();
-                try {
-                    startTime = df.parse(start);
-                    stopTime = df.parse(stop);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
 
-                difference = (stopTime.getTime() - startTime.getTime())/(1000*60);
-                //getDirections.getJSON(from,to);
-                totalTime += difference + getCurrentTrafficTime(assignments, i);
-            }
 
             // Will the total drive time + estimated work time exceed the stop time for the
             // booked assignment.
@@ -368,7 +395,7 @@ public class DeadlineMissedNotification extends NotificationType {
         } else {
             // We do not have booked meeting
             // Check if we will make it to next assignment
-            if (assignments.firstElement() != null) {
+          /*  if (assignments.firstElement() != null) {
                 Date starTime = null;
                 String start = nextAss.getStart();
                 try {
@@ -383,12 +410,18 @@ public class DeadlineMissedNotification extends NotificationType {
                 Log.d("newDate", df.format(newDate)+"");
 
                 if (newDate.after(starTime)) return MISSNEXTASS;
-            }
+            }*/
         }
 
         Log.d("notify", NOTMISS + "");
         return NOTMISS;
     }
+
+    public String getMyLocation() {
+        Location loc = MainActivity.getMyLocation();
+        return loc.getLatitude() + "," + loc.getLongitude();
+    }
+
 
     public double secondsToMinute(int seconds) {
         return seconds/60;
