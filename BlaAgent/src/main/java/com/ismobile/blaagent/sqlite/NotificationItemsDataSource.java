@@ -65,7 +65,6 @@ public class NotificationItemsDataSource {
                 detailString = "";
             }
 
-
             ContentValues values = new ContentValues();
             values.put(SQLHelper.COLUMN_UID, uid);
             values.put(SQLHelper.COLUMN_TITLE, title);
@@ -127,10 +126,11 @@ public class NotificationItemsDataSource {
 
         noti.setUid(cursor.getString(0));
         noti.setTitle(cursor.getString(1));
+        noti.setContentText(cursor.getString(2));
         noti.setLatitude(cursor.getFloat(3));
         noti.setLongitude(cursor.getFloat(4));
         noti.setDetails(cursor.getString(5));
-        noti.setContentText(cursor.getString(2));
+        noti.setType(cursor.getString(8));
         Date date = new Date ();
         date.setTime((long)cursor.getInt(9) * 1000);
         DateFormat df = new SimpleDateFormat("HH:mm");

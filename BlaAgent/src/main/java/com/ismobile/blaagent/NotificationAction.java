@@ -11,6 +11,7 @@ public class NotificationAction {
     private int image;
     private String title;
     private Intent pi;
+
     public NotificationAction(int image, String title, Intent pi) {
         this.image = image;
         this.title = title;
@@ -24,6 +25,7 @@ public class NotificationAction {
     public String getTitle() {
         return this.title;
     }
+
     public Intent getIntent() {
         return this.pi;
     }

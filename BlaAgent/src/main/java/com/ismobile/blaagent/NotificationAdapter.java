@@ -46,25 +46,31 @@ public class NotificationAdapter extends ArrayAdapter {
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new NotificationHolder();
-            /*holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
-            holder.imgMaps.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.d("HEJJJJJAA","click");
-                    Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
-                            Uri.parse("http://maps.google.com/maps?f=d&daddr=" + noti.getLatitude() + "," + noti.getLongitude()));
-                    mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
-                            "com.google.android.maps.MapsActivity"));
-                    context.startActivity(mapsIntent);
-                }
-            });*/
+
+            if (checkIfUseMapsIntent(noti)) {
+                Log.d("gfadgsdgd","hejj");
+
+                holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
+                holder.imgMaps.setVisibility(View.VISIBLE);
+                holder.imgMaps.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.d("HEJJJJJAA","click");
+                        Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
+                                Uri.parse("http://maps.google.com/maps?f=d&daddr=" + noti.getLatitude() + "," + noti.getLongitude()));
+                        mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
+                                "com.google.android.maps.MapsActivity"));
+                        context.startActivity(mapsIntent);
+                    }
+                });
+            }
+
             holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
             holder.txtDetail = (TextView)row.findViewById(R.id.txtDetail);
             holder.txtDate = (TextView)row.findViewById(R.id.txtDate);
             row.setTag(holder);
         }
-        else
-        {
+        else {
             holder = (NotificationHolder)row.getTag();
         }
 
@@ -75,16 +81,40 @@ public class NotificationAdapter extends ArrayAdapter {
         return row;
     }
 
-    //Returns a notification iitem
+    //Returns a notification item
     public NotificationItem getNoti(int position) {
         return data.get(position-1);
     }
 
-    static class NotificationHolder
-    {
+    static class NotificationHolder {
         ImageView imgMaps;
         TextView txtTitle;
         TextView txtDetail;
         TextView txtDate;
+    }
+
+    public boolean checkIfUseMapsIntent(NotificationItem noti) {
+
+        String type = noti.getType();
+        String deadlineMissBooked = "deadMB" + noti.getUid();
+        String deadlineMissNotMiss = "deadNM"+ noti.getUid();
+        String deadlineMissNextAss = "deadMN"+ noti.getUid();
+        String locationBased = "loc" + noti.getUid();
+        String schedule = "scheme" + noti.getUid();
+
+
+
+        if (type.equals(deadlineMissBooked)) {
+            return false;
+        } else if (type == deadlineMissNotMiss) {
+            return true;
+        } else if (type == deadlineMissNextAss) {
+            return false;
+        } else if (type == locationBased) {
+            return true;
+        } else if (type == schedule) {
+            return true;
+        }
+        return false;
     }
 }

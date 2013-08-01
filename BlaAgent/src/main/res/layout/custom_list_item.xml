@@ -13,14 +13,19 @@
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="This is the assignment title wohoooho"
+            android:text="This is the assignment title wohooohowohooohowohooohowohoooho wohooohowohoooho wohooohowohoooho"
             android:textColor="#040404"
             android:typeface="sans"
             android:textSize="15dip"
             android:textStyle="bold"
             android:layout_alignTop="@+id/imgMaps"
             android:layout_toRightOf="@+id/imgMaps"
-            android:layout_marginLeft="11dp"/>
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:lines="1"
+            android:layout_marginLeft="11dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="28dp"/>
 
     <!-- Artist Name -->
     <TextView
@@ -54,5 +59,5 @@
             android:layout_height="50dip"
             android:src="@drawable/google_maps_logo"
             android:layout_centerVertical="true"
-            />
+            android:visibility="gone"/>
 </RelativeLayout>
