@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.ListView;
 
 import com.ismobile.blaagent.menuSettings.SettingsActivity;
@@ -34,9 +33,7 @@ public class MainActivity extends ListActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("Lifecycle","onCreate");
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
         //Creates an instace of the background service and connects.
         bs = new BackgroundService(this);
         bs.connect();

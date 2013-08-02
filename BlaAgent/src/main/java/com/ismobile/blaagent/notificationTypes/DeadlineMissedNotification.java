@@ -184,18 +184,25 @@ public class DeadlineMissedNotification extends NotificationType {
         Intent mapsIntent = null;
         NotificationAction[] notiActions;
 
-        // Opens Blå Android and show assignment.
-        resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
-        resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
+        if (missStatus == NOTMISS) {
+            // Make the booked meeting
+            // Opens Blå Android and show assignment.
+            resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
+            resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
 
-        float longi = assignments.firstElement().getLongitude();
-        float lati = assignments.firstElement().getLatitude();
+            float longi = assignments.firstElement().getLongitude();
+            float lati = assignments.firstElement().getLatitude();
 
-        // Opens google maps, from: My Location to: an assignments lat, long.
-        mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
-                Uri.parse("http://maps.google.com/maps?f=d&daddr=" + lati + "," + longi));
-        mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
-                "com.google.android.maps.MapsActivity"));
+            // Opens google maps, from: My Location to: an assignments lat, long.
+            mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
+                    Uri.parse("http://maps.google.com/maps?f=d&daddr=" + lati + "," + longi));
+            mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
+                    "com.google.android.maps.MapsActivity"));
+        } else {
+            // Opens Blå Agent and show the list of critical assignments.
+            // Will make the user choose an assignment to skip.
+            resultIntent = new Intent("com.ismobile.blaagent.XXX");
+        }
 
         boolean bigStyle = true;
 
@@ -306,16 +313,15 @@ public class DeadlineMissedNotification extends NotificationType {
         return true;
     }
 
-    public double calculateTotalTime(Vector<Assignment> assignments, int nrOfAssignments) {
+    public long calculateTotalTime(Vector<Assignment> assignments, int nrOfAssignments) {
         Long difference = 0L;
         double totalTime = 0;
         Date startTime = null, stopTime = null, nextAssStartTime = null;
-        String locationOfLastAss = "";
         String from, to;
         String myFormatString = "yyyy-MM-dd HH:mm";
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
 
-        from = getMyLocation();
+
         for (int i=0; i<nrOfAssignments; i++) {
             String start = assignments.elementAt(i).getStart();
             String stop = assignments.elementAt(i).getStop();
@@ -328,16 +334,14 @@ public class DeadlineMissedNotification extends NotificationType {
 
             difference = (stopTime.getTime() - startTime.getTime())/(1000*60);
             if (i == 0) {
+                from = getMyLocation();
                 to = assignments.elementAt(i).getLatitude() + "," + assignments.elementAt(i).getLongitude();
-                locationOfLastAss = to;
-                totalTime += difference + getCurrentTrafficTime(to, from, true);
-            } else {
-                to = assignments.elementAt(i).getLatitude() + "," + assignments.elementAt(i).getLongitude();
-                totalTime += difference + getCurrentTrafficTime(to, locationOfLastAss, false);
-                locationOfLastAss = to;
+                //totalTime += difference + getCurrentTrafficTime(to, from, true);
             }
+            to = assignments.elementAt(i).getLatitude() + "," + assignments.elementAt(i).getLongitude();
+            //totalTime += difference + getCurrentTrafficTime(to, from, true);
         }
-        return totalTime;
+        return difference;
     }
 
     /**
@@ -368,7 +372,7 @@ public class DeadlineMissedNotification extends NotificationType {
 
             // Calculate the drive time between the next assignments to the booked meeting.
             // assignments.indexOf(nextAss); is either 0 or 1.
-            totalTime = calculateTotalTime(assignments, nrOfCriticAssignments);
+
 
             // Will the total drive time + estimated work time exceed the stop time for the
             // booked assignment.

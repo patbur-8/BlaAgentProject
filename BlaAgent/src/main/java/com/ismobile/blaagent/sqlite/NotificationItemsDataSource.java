@@ -6,9 +6,7 @@ package com.ismobile.blaagent.sqlite;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -38,13 +36,13 @@ public class NotificationItemsDataSource {
 
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
-        removeOldEntries();
     }
 
     public void close() {
         dbHelper.close();
     }
 
+<<<<<<< HEAD
     public void removeOldEntries() {
         Date hej = new Date();
         hej.setMinutes(0);
@@ -57,6 +55,8 @@ public class NotificationItemsDataSource {
                 new String[] {today*1000+""}).moveToFirst();
     }
 
+=======
+>>>>>>> parent of 299754a... COWMITTEN
     //Creates a notification item and inserts it into the database
     public NotificationItem createNotificationItem(Assignment ass, String contentText,
                                                     String[] details, String type) {
@@ -150,8 +150,11 @@ public class NotificationItemsDataSource {
         date.setTime((long)cursor.getInt(9)*1000);
         DateFormat df = new SimpleDateFormat("HH:mm");
         noti.setDateCreated(df.format(date));
+<<<<<<< HEAD
         Log.d("TODAYMindre", date.getTime()+"");
         Log.d("TODAYMindre", (long)cursor.getInt(9)+"");
+=======
+>>>>>>> parent of 299754a... COWMITTEN
 
         return noti;
     }
