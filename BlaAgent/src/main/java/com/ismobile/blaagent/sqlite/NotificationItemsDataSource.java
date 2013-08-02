@@ -54,7 +54,7 @@ public class NotificationItemsDataSource {
         Log.d("TODAYStörre",""+today/1000);
         database.rawQuery("DELETE FROM " +
                 SQLHelper.TABLE_NOTIFICATIONS + " WHERE " + SQLHelper.COLUMN_DATE + " <= ? ",
-                new String[] {today/1000+""}).moveToFirst();
+                new String[] {today*1000+""}).moveToFirst();
     }
 
     //Creates a notification item and inserts it into the database
@@ -70,7 +70,7 @@ public class NotificationItemsDataSource {
         Log.d("uid+type", uid + " : " +type);
 
         //Each notification may only come once for each assignment.
-        if(!checkIfNotificationExist(uid,type)) {
+        //if(!checkIfNotificationExist(uid,type)) {
 
             //Convert details array to string as SQLite can't store string arrays.
             String detailString;
@@ -104,8 +104,8 @@ public class NotificationItemsDataSource {
             NotificationItem newNoti = cursorToNotification(cursor);
             cursor.close();
             return newNoti;
-        }
-        return null;
+        //}
+        //return null;
     }
 
     //Checks if the notification exists in the database
@@ -147,7 +147,7 @@ public class NotificationItemsDataSource {
         noti.setDetails(cursor.getString(5));
         noti.setType(cursor.getString(8));
         Date date = new Date ();
-        date.setTime((long)cursor.getInt(9));
+        date.setTime((long)cursor.getInt(9)*1000);
         DateFormat df = new SimpleDateFormat("HH:mm");
         noti.setDateCreated(df.format(date));
         Log.d("TODAYMindre", date.getTime()+"");
