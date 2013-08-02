@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.ismobile.blaagent.Assignment;
+import com.ismobile.blaagent.GetDirections;
 import com.ismobile.blaagent.MainActivity;
 import com.ismobile.blaagent.NotificationAction;
 import com.ismobile.blaagent.R;
@@ -17,20 +18,27 @@ import com.ismobile.blaagent.StatusNotificationIntent;
 import com.ismobile.blaagent.Test.Test;
 import com.ismobile.blaagent.sqlite.NotificationItem;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
 
 /**
+ * If the deadline is close, this notification will appear.
  * Created by pbm on 2013-07-04.
  */
 public class ScheduleNotification extends NotificationType {
     static final double DISTANCE_THRESHOLD = 0.5;
+    SharedPreferences prefs;
+    Test test;
+    GetDirections dir = new GetDirections();
+
     /**
-     * Evaluates if and what type of notification we want to send.
-     *
+     * Evaluates if a notification should be sent or not.
      * @param assignments
      * @param context
      * @return
@@ -45,9 +53,9 @@ public class ScheduleNotification extends NotificationType {
         NotificationItem notificationItem;
         String contentText;
         Test test = new Test();
-        Assignment first = test.createTestAssignment("2013-07-22 10:00", "2013-07-22 16:23", "ghfd3dfbg45n3j42");//assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-08-22 10:00", "2013-08-22 17:44", "ghfd3dfbg45n3j42"); //assignments.firstElement();
+        assignments.add(0,first);
         String title = first.getTitle();
-        String stopTime = first.getStop();
         String[] details = new String [3];
 
         // My location.
@@ -55,21 +63,14 @@ public class ScheduleNotification extends NotificationType {
         float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
 
-        Date d1 = null, d2 = null;
-        String myFormatString = "yyyy-MM-dd HH:mm";
-        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+        String from = getMyLocation();
+        String to = latitude + "," + longitude;
 
         if (distance <= DISTANCE_THRESHOLD) { // Check if we are in place.
             if (assignments.size() > 0) {
-                String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Calendar.getInstance().getTime());
-                try {
-                    d1 = df.parse(currentTime);
-                    d2 = df.parse(stopTime);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                Long difference = (d2.getTime() - d1.getTime())/(1000*60);
+                Date currentTime = new Date();
+                Date stopTime = getDateFromString(first.getStop());
+                Long difference = (stopTime.getTime() - currentTime.getTime())/(1000*60);
 
                 if(0 <= difference && difference <= 5) {
                     boolean display5MinWarning =  prefs.getBoolean("sch5Min", true);
@@ -79,8 +80,10 @@ public class ScheduleNotification extends NotificationType {
                         contentText = difference + " min left to deadline";
                         details[0] = "Deadline: " + stopTime;
                         details[1] = "Assignment: " + title;
-                        details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
-                        notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
+                        details[2] = "Next assignment in current traffic: " +
+                                getCurrentTrafficTime(from,to,true) + " min";
+                        notificationItem = MainActivity.getDatasource().createNotificationItem(
+                                first, contentText, details ,"scheme"+first.getUid());
                         if(notificationItem != null) {
                             sendNotification(assignments, details, contentText, context);
                             addNewItem(notificationItem);
@@ -95,7 +98,7 @@ public class ScheduleNotification extends NotificationType {
                         contentText = difference + " min left to deadline";
                         details[0] = "Deadline: " + stopTime;
                         details[1] = "Assignment: " + title;
-                        details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(assignments, 1) + " min";
+                        details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
                         notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
                         if(notificationItem != null) {
                             sendNotification(assignments, details, contentText, context);
@@ -151,10 +154,13 @@ public class ScheduleNotification extends NotificationType {
      */
     public double getDistance(float latitude, float longitude) {
         // My location.
-        Location location = new Location("");
-        location.setLatitude(location.getLatitude());
-        location.setLongitude(location.getLongitude());
-        location.distanceTo(location);
+        Location location;
+        boolean testEnabled = prefs.getBoolean("testEnabled", true);
+        if(testEnabled) {
+            location = stringToLocation(test.getMyLocation());
+        } else {
+            location = MainActivity.getMyLocation();
+        }
 
         // The assignments location.
         Location aLocation = new Location("");
@@ -164,15 +170,76 @@ public class ScheduleNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return 0.4;//distance;
+        return  0.4;//distance;
     }
 
-    public int getCurrentTrafficTime(Vector<Assignment> assignments, int i) {
-        //Hämta lat, long för nästa uppdrag, i = 1.
-        // Beräkna current traffic time och returnera.
-        return 30;
+    /**
+     * Gets estimated drive time.
+     * @param from
+     * @param to
+     * @param traffic
+     * @return
+     */
+    public double getCurrentTrafficTime(String from, String to, boolean traffic) {
+        int realTimeInSec;
+        double realTime = -1;
+        double time = 9999;
+        try {
+            JSONObject obj = dir.getDirectionsJSON(from, to);
+            if(traffic) {
+                realTimeInSec = obj.getJSONObject("route").getInt("realTime");
+                if(realTimeInSec > 0) {
+                    realTime = secondsToMinute(realTimeInSec);
+                }
+            }
+
+            time = secondsToMinute(obj.getJSONObject("route").getInt("time"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(realTime > 0) return realTime;
+        return time;
     }
 
+    /**
+     * Returns seconds into minutes.
+     * @param seconds
+     * @return
+     */
+    public double secondsToMinute(int seconds) {
+        return seconds/60;
+    }
+
+    /**
+     *
+     * @param loc
+     * @return
+     */
+    public Location stringToLocation(String loc) {
+        String[] latlong = loc.split(",");
+        Location location = new Location("");
+        location.setLatitude(Double.parseDouble(latlong[0]));
+        location.setLongitude(Double.parseDouble(latlong[1]));
+        return location;
+    }
+
+    /**
+     * Gets my location with help from the GPS on the phone.
+     * @return
+     */
+    public String getMyLocation() {
+        Location loc = MainActivity.getMyLocation();
+        return loc.getLatitude() + "," + loc.getLongitude();
+    }
+
+    /**
+     * Adds new notification to the database.
+     * @param noti
+     */
     public void addNewItem(final NotificationItem noti) {
         MainActivity.getUIHandler().post(new Runnable() {
             @Override
@@ -181,5 +248,22 @@ public class ScheduleNotification extends NotificationType {
                 MainActivity.getNotificationAdapter().notifyDataSetChanged();
             }
         });
+    }
+
+    /**
+     * Converts a String to a Date.
+     * @param time
+     * @return
+     */
+    public Date getDateFromString(String time) {
+        String myFormatString = "yyyy-MM-dd HH:mm";
+        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+        Date date = new Date();
+        try {
+            date = df.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 }
