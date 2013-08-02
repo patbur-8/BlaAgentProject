@@ -51,7 +51,7 @@ public class LocationBasedNotification extends NotificationType {
         NotificationItem notificationItem;
 
         //TEST, TA BORT SEN
-        Test test = new Test();
+        test = new Test();
         String contentText;
         Assignment first = test.createTestAssignment("2013-07-29 16:28", "2013-07-29 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
         assignments.add(0,first);
@@ -158,6 +158,9 @@ public class LocationBasedNotification extends NotificationType {
         Location location;
         boolean testEnabled = prefs.getBoolean("testEnabled", true);
         if(testEnabled) {
+            //TESTSET;
+            Log.d("TESTLoc",test.getMyLocation());
+            Log.d("TESTLoc",stringToLocation(test.getMyLocation()).getLatitude()+"");
             location = stringToLocation(test.getMyLocation());
         } else {
             location = MainActivity.getMyLocation();

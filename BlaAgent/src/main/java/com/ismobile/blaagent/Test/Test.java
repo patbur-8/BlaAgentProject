@@ -1,6 +1,7 @@
 package com.ismobile.blaagent.Test;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.ismobile.blaagent.Assignment;
 import com.ismobile.blaagent.notificationTypes.DeadlineMissedNotification;
@@ -18,11 +19,15 @@ import java.util.Vector;
 public class Test {
 
     static Date currentTime;
-    private String myLocation = "";
+    static String myLocation = "";
     private ScheduleNotification sn;
     private LocationBasedNotification lbn;
     private DeadlineMissedNotification dmn;
     public Test() {
+        currentTime = new Date();
+        currentTime.setMinutes(0);
+        currentTime.setHours(6);
+        currentTime.setSeconds(0);
         sn = new ScheduleNotification();
         lbn = new LocationBasedNotification();
         dmn = new DeadlineMissedNotification();
@@ -52,8 +57,12 @@ public class Test {
     public void runTest(Vector<Assignment> assignments, Assignment previous, Context context){
         Assignment first = assignments.firstElement();
         //Remove old assignments
+
         while(assignments.size() >= 1) {
+            Log.w("asSize2",assignments.size()+"");
+            Log.w("asCurrentTime",currentTime.getTime()+"");
             if(isStopTimeBeforeCurrentTime(first.getStop())) {
+                Log.d("SLUT","SLUT");
                 if(assignments.size() >= 1) {
                     previous = first;
                     assignments.removeElementAt(0);
@@ -63,9 +72,9 @@ public class Test {
                 }
             }
             //evaluate
-            sn.evaluate(assignments,previous,context);
+            //sn.evaluate(assignments,previous,context);
             lbn.evaluate(assignments,previous,context);
-            dmn.evaluate(assignments, previous,context);
+            //dmn.evaluate(assignments, previous,context);
             addToDate(5);
         }
     }
@@ -75,6 +84,8 @@ public class Test {
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         try {
             Date d1 = df.parse(stopTime);
+            Log.d("TIME1", d1.getTime()+"");
+            Log.d("TIME2", currentTime.getTime()+"");
             return d1.before(currentTime);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -82,12 +93,24 @@ public class Test {
         return false;
     }
 
-    public void setMyLocation(long lati, long longi) {
+    public void setMyLocation(float lati, float longi) {
         myLocation = lati +","+ longi;
     }
 
     public String getMyLocation() {
+        Log.d("TEST",myLocation);
         return myLocation;
+    }
+
+    public Vector<Assignment> createAssignmentList() {
+        Vector<Assignment> assignments = new Vector<Assignment>();
+        assignments.add(createTestAssignment("2013-08-02 17:13", "2013-08-02 18:23", "gdfbg45n331j42"));
+        return assignments;
+    }
+
+    public Assignment createPrevious() {
+        Assignment previous = createTestAssignment("2013-07-22 10:00", "2013-07-22 16:23", "ghfd3dfbg45n3j42");
+        return previous;
     }
 
 }

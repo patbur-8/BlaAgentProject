@@ -3,9 +3,11 @@ package com.ismobile.blaagent;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ListView;
 
+import com.ismobile.blaagent.Test.Test;
 import com.ismobile.blaagent.menuSettings.SettingsActivity;
 import com.ismobile.blaagent.sqlite.NotificationItem;
 import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
@@ -25,6 +28,7 @@ public class MainActivity extends ListActivity  {
     private static NotificationAdapter adapter;
     private static NotificationItemsDataSource datasource;
     StatusNotificationIntent sn = new StatusNotificationIntent(this);
+    SharedPreferences prefs;
     BackgroundService bs = new BackgroundService(this);
     private ListView listView1;
     private static Handler handler;
@@ -34,11 +38,9 @@ public class MainActivity extends ListActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("Lifecycle","onCreate");
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        //Creates an instace of the background service and connects.
-        bs = new BackgroundService(this);
-        bs.connect();
 
         handler = new Handler();
 
@@ -61,6 +63,17 @@ public class MainActivity extends ListActivity  {
 
         listView1.setAdapter(adapter);
         loc = new MyLocation(this);
+        //Creates an instace of the background service and connects.
+        boolean testEnabled = prefs.getBoolean("testEnabled", true);
+        if(testEnabled) {
+            Test test = new Test();
+            test.setMyLocation(18.05123f,59.33010f);
+            test.runTest(test.createAssignmentList(), test.createPrevious(),this);
+        } else {
+            bs = new BackgroundService(this);
+            bs.connect();
+        }
+
     }
 
     public static NotificationAdapter getNotificationAdapter() {
