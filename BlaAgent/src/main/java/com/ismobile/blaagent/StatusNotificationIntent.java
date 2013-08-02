@@ -66,6 +66,7 @@ public class StatusNotificationIntent {
             }
             builder.setStyle(inboxStyle);
         }
+
         int id;
         if(hm.containsKey(notificationId)) {
             Log.d("NotifID", "Contains ID");
@@ -75,7 +76,7 @@ public class StatusNotificationIntent {
             id = notiId;
             notiId++;
         }
-        Log.d("NotifID", id+"");
-        nm.notify(id, builder.build()); // Ska inte va samma för alla.
+
+        nm.notify(id, builder.build());
     }
 }
