@@ -50,10 +50,11 @@ public class NotificationItemsDataSource {
         hej.setMinutes(0);
         hej.setHours(0);
         hej.setSeconds(0);
-        long today = hej.getTime()/1000;
+        long today = hej.getTime();
+        Log.d("TODAYStörre",""+today/1000);
         database.rawQuery("DELETE FROM " +
                 SQLHelper.TABLE_NOTIFICATIONS + " WHERE " + SQLHelper.COLUMN_DATE + " <= ? ",
-                new String[] {today+""});
+                new String[] {today/1000+""}).moveToFirst();
     }
 
     //Creates a notification item and inserts it into the database
@@ -146,10 +147,11 @@ public class NotificationItemsDataSource {
         noti.setDetails(cursor.getString(5));
         noti.setType(cursor.getString(8));
         Date date = new Date ();
-        date.setTime((long)cursor.getInt(9) * 1000);
+        date.setTime((long)cursor.getInt(9));
         DateFormat df = new SimpleDateFormat("HH:mm");
         noti.setDateCreated(df.format(date));
-        Log.d("TODAY", date.getTime()+"");
+        Log.d("TODAYMindre", date.getTime()+"");
+        Log.d("TODAYMindre", (long)cursor.getInt(9)+"");
 
         return noti;
     }
