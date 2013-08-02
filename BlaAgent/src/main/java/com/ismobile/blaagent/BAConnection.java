@@ -5,8 +5,8 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.ismobile.blaagent.notificationTypes.DeadlineMissedNotification;
+import com.ismobile.blaagent.notificationTypes.LocationBasedNotification;
 import com.ismobile.blaagent.notificationTypes.ScheduleNotification;
-import com.ismobile.blaagent.notificationTypes.locationBasedNotification;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -49,7 +49,7 @@ public class BAConnection {
     private String xml = "";
     private String events = "";
     private ScheduleNotification sn;
-    private locationBasedNotification lbn;
+    private LocationBasedNotification lbn;
     private DeadlineMissedNotification dmn;
     private Context context;
 
@@ -64,7 +64,7 @@ public class BAConnection {
         this.context = context;
         //Creates instaces of each of the notification types.
         sn = new ScheduleNotification();
-        lbn = new locationBasedNotification();
+        lbn = new LocationBasedNotification();
         dmn = new DeadlineMissedNotification();
         calculateNodePerAssignment();
     }

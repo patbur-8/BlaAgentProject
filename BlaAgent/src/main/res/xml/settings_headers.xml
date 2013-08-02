@@ -16,6 +16,13 @@
             android:fragment="com.ismobile.blaagent.menuSettings.ScheduleFragment"
             android:title="@string/schedule_notification" />
 
+
     <!-- INSERT HEADERS FOR NEW NOTIFICATION TYPES HERE -->
 
+
+    <!-- ############################################## -->
+    <header
+            android:id="@+id/testScenario"
+            android:fragment="com.ismobile.blaagent.menuSettings.TestFragment"
+            android:title="@string/test_scenario" />
 </preference-headers>

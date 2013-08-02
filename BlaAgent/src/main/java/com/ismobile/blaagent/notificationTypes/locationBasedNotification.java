@@ -25,10 +25,11 @@ import java.util.Vector;
  * this notification will appear.
  * Created by ats on 2013-07-12.
  */
-public class locationBasedNotification extends NotificationType {
+public class LocationBasedNotification extends NotificationType {
     static final int TIME_THRESHOLD = 6;
     static final double DISTANCE_THRESHOLD = 0.5;
-
+    SharedPreferences prefs;
+    Test test;
     private String notificationType;
     /**
      * Evaluates if a notification should be sent or not.
@@ -41,7 +42,7 @@ public class locationBasedNotification extends NotificationType {
     public void evaluate(Vector<Assignment> assignments,Assignment previous, Context context) {
 
         //Checks in the settings if it's enabled or not
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("locOnNewAss", true);
         Log.d("LOCONNEWASS",""+displayNotification);
         if(!displayNotification) return;
@@ -69,7 +70,7 @@ public class locationBasedNotification extends NotificationType {
         //Parse timestamp string to Date object, in order to be able to compare them.
         Date currentTime = null, startTime = null, stopTime = null;
         try {
-            currentTime = new Date();
+            currentTime = test.getCurrentDate();
             startTime = df.parse(start);
             stopTime = df.parse(stop);
         } catch (ParseException e) {
@@ -92,15 +93,12 @@ public class locationBasedNotification extends NotificationType {
         //for the assignment.
         long timePassed = (currentTime.getTime() - startTime.getTime())/(1000*60);
         if (timePassed <= TIME_THRESHOLD) {
-            Log.d("HEJJJJJAA", "time");
             if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(stopTime)) {
-                Log.d("HEJJJJJAA", "time2");
                 if (!(distance <= DISTANCE_THRESHOLD)) {
-                    Log.d("NOTIF", "Fungerar!!!");
 
                     notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details , notificationType);
                     if(notificationItem != null) {
-                        Log.d("LocationB", "kommer jag hit?");
+                        Log.i("Notification", "Location notification sent");
                         sendNotification(assignments, details, contentText, context);
                         addNewItem(notificationItem);
                     }
@@ -157,7 +155,14 @@ public class locationBasedNotification extends NotificationType {
      */
     public double getDistance(float latitude, float longitude) {
         // My location.
-        Location location = getMyLocation();
+        Location location;
+        boolean testEnabled = prefs.getBoolean("testEnabled", true);
+        if(testEnabled) {
+            location = stringToLocation(test.getMyLocation());
+        } else {
+            location = MainActivity.getMyLocation();
+        }
+
         //location.setLatitude(location.getLatitude());
         //location.setLongitude(location.getLongitude());
         //location.distanceTo(location);
@@ -173,10 +178,12 @@ public class locationBasedNotification extends NotificationType {
         return  0.6;//distance;
     }
 
-    public Location getMyLocation() {
+    public Location stringToLocation(String loc) {
+        String[] latlong = loc.split(",");
         Location location = new Location("");
-        location.setLatitude(location.getLatitude());
-        location.setLongitude(location.getLongitude());
+        location.setLatitude(Double.parseDouble(latlong[0]));
+        location.setLongitude(Double.parseDouble(latlong[1]));
         return location;
     }
+
 }

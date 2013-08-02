@@ -1,13 +1,33 @@
 package com.ismobile.blaagent.Test;
 
-import com.ismobile.blaagent.Assignment;
+import android.content.Context;
 
-import java.util.Random;
+import com.ismobile.blaagent.Assignment;
+import com.ismobile.blaagent.notificationTypes.DeadlineMissedNotification;
+import com.ismobile.blaagent.notificationTypes.LocationBasedNotification;
+import com.ismobile.blaagent.notificationTypes.ScheduleNotification;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Vector;
 
 /**
  * Created by pbm on 2013-07-17.
  */
 public class Test {
+
+    static Date currentTime;
+    private String myLocation = "";
+    private ScheduleNotification sn;
+    private LocationBasedNotification lbn;
+    private DeadlineMissedNotification dmn;
+    public Test() {
+        sn = new ScheduleNotification();
+        lbn = new LocationBasedNotification();
+        dmn = new DeadlineMissedNotification();
+    }
+
 
     public Assignment createTestAssignment(String start, String stop, String uid) {
         String title = "TestAssignment wohooohowohoooho wohooohowohoooho wohoooho wohooohowohooohowohoooho";
@@ -19,5 +39,56 @@ public class Test {
 
         return ass;
     }
+
+    public Date getCurrentDate() {
+        return currentTime;
+    }
+
+    public void addToDate(int minutes) {
+        long t = currentTime.getTime();
+        currentTime = new Date(t+(minutes*60000));
+    }
+
+    public void runTest(Vector<Assignment> assignments, Assignment previous, Context context){
+        Assignment first = assignments.firstElement();
+        //Remove old assignments
+        while(assignments.size() >= 1) {
+            if(isStopTimeBeforeCurrentTime(first.getStop())) {
+                if(assignments.size() >= 1) {
+                    previous = first;
+                    assignments.removeElementAt(0);
+                    first = assignments.firstElement();
+                } else {
+                    break;
+                }
+            }
+            //evaluate
+            sn.evaluate(assignments,previous,context);
+            lbn.evaluate(assignments,previous,context);
+            dmn.evaluate(assignments, previous,context);
+            addToDate(5);
+        }
+    }
+
+    public boolean isStopTimeBeforeCurrentTime(String stopTime) {
+        String myFormatString = "yyyy-MM-dd HH:mm"; // for example
+        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+        try {
+            Date d1 = df.parse(stopTime);
+            return d1.before(currentTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public void setMyLocation(long lati, long longi) {
+        myLocation = lati +","+ longi;
+    }
+
+    public String getMyLocation() {
+        return myLocation;
+    }
+
 }
 

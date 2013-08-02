@@ -44,4 +44,7 @@
     <string name="schedule_notification_5_min_summary">Send a notification to warn when there is 5 minutes left on an assignment.</string>
 
     <string name="schedule_enabled">Enabled</string>
+
+    <string name="test_scenario">Testing</string>
+    <string name="test_enabled">Enabled</string>
 </resources>
