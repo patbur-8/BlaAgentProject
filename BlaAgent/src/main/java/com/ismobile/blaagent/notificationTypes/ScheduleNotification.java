@@ -35,6 +35,7 @@ public class ScheduleNotification extends NotificationType {
     static final double DISTANCE_THRESHOLD = 0.5;
     SharedPreferences prefs;
     Test test;
+    Boolean testEnabled;
     GetDirections dir = new GetDirections();
 
     /**
@@ -45,15 +46,16 @@ public class ScheduleNotification extends NotificationType {
      */
     @Override
     public void evaluate(Vector<Assignment> assignments, Assignment previous, Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("schEnabled", true);
+        testEnabled = prefs.getBoolean("testEnabled", true);
         if(!displayNotification) return;
 
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
         String contentText;
         Test test = new Test();
-        Assignment first = test.createTestAssignment("2013-08-22 10:00", "2013-08-22 17:44", "ghfd3dfbg45n3j42"); //assignments.firstElement();
+        Assignment first = test.createTestAssignment("2013-08-02 10:00", "2013-08-02 18:05", "ghfd3dfbg45n3j42"); //assignments.firstElement();
         assignments.add(0,first);
         String title = first.getTitle();
         String[] details = new String [3];
@@ -155,7 +157,6 @@ public class ScheduleNotification extends NotificationType {
     public double getDistance(float latitude, float longitude) {
         // My location.
         Location location;
-        boolean testEnabled = prefs.getBoolean("testEnabled", true);
         if(testEnabled) {
             location = stringToLocation(test.getMyLocation());
         } else {

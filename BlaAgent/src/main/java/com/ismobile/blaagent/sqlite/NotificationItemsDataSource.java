@@ -67,7 +67,7 @@ public class NotificationItemsDataSource {
         Log.d("uid+type", uid + " : " +type);
 
         //Each notification may only come once for each assignment.
-        //if(!checkIfNotificationExist(uid,type)) {
+        if(!checkIfNotificationExist(uid,type)) {
 
             //Convert details array to string as SQLite can't store string arrays.
             String detailString;
@@ -101,8 +101,8 @@ public class NotificationItemsDataSource {
             NotificationItem newNoti = cursorToNotification(cursor);
             cursor.close();
             return newNoti;
-        //}
-        //return null;
+        }
+        return null;
     }
 
     //Checks if the notification exists in the database

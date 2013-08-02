@@ -89,7 +89,6 @@ public class MainActivity extends ListActivity  {
     }
     public static Location getMyLocation() {
         Location hej = loc.getLocation();
-        Log.d("sopa", hej.getLatitude()+"");
         return hej;
     }
 
