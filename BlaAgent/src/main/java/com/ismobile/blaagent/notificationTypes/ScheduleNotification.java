@@ -54,9 +54,7 @@ public class ScheduleNotification extends NotificationType {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
         String contentText;
-        Test test = new Test();
-        Assignment first = test.createTestAssignment("2013-08-02 10:00", "2013-08-02 18:05", "ghfd3dfbg45n3j42"); //assignments.firstElement();
-        assignments.add(0,first);
+        Assignment first = assignments.firstElement();
         String title = first.getTitle();
         String[] details = new String [3];
 
@@ -65,19 +63,21 @@ public class ScheduleNotification extends NotificationType {
         float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
 
-        String from = getMyLocation();
+        String from = Test.getMyLocation();
         String to = latitude + "," + longitude;
 
         if (distance <= DISTANCE_THRESHOLD) { // Check if we are in place.
             if (assignments.size() > 0) {
-                Date currentTime = new Date();
+                Date currentTime = Test.getCurrentDate();
                 Date stopTime = getDateFromString(first.getStop());
                 Long difference = (stopTime.getTime() - currentTime.getTime())/(1000*60);
-
+                String contentTitle = assignments.firstElement().getTitle();
+                String notiType;
                 if(0 <= difference && difference <= 5) {
                     boolean display5MinWarning =  prefs.getBoolean("sch5Min", true);
                     if(display5MinWarning) {
                         Log.d("NOTIF", "<5min");
+                        notiType = "scheme5" + first.getUid();
                         //Warning
                         contentText = difference + " min left to deadline";
                         details[0] = "Deadline: " + stopTime;
@@ -85,9 +85,9 @@ public class ScheduleNotification extends NotificationType {
                         details[2] = "Next assignment in current traffic: " +
                                 getCurrentTrafficTime(from,to,true) + " min";
                         notificationItem = MainActivity.getDatasource().createNotificationItem(
-                                first, contentText, details ,"scheme"+first.getUid());
+                                first, contentText, details ,notiType);
                         if(notificationItem != null) {
-                            sendNotification(assignments, details, contentText, context);
+                            sendNotification(assignments, details, contentTitle, contentText, context);
                             addNewItem(notificationItem);
                         }
                         return;
@@ -96,14 +96,15 @@ public class ScheduleNotification extends NotificationType {
                     boolean display15MinWarning =  prefs.getBoolean("sch15Min", true);
                     if(display15MinWarning) {
                         Log.d("NOTIF", "<15min");
+                        notiType = "scheme15" + first.getUid();
                         //Info
                         contentText = difference + " min left to deadline";
                         details[0] = "Deadline: " + stopTime;
                         details[1] = "Assignment: " + title;
                         details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
-                        notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"scheme"+first.getUid());
+                        notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,notiType);
                         if(notificationItem != null) {
-                            sendNotification(assignments, details, contentText, context);
+                            sendNotification(assignments, details, contentTitle, contentText, context);
                             addNewItem(notificationItem);
                         }
                         return;
@@ -121,9 +122,7 @@ public class ScheduleNotification extends NotificationType {
      * @param context
      */
     @Override
-    public void sendNotification(Vector<Assignment> assignments, String[] details, CharSequence contentText, Context context) {
-        CharSequence contentTitle = assignments.firstElement().getTitle();
-
+    public void sendNotification(Vector<Assignment> assignments, String[] details, String contentTitle, CharSequence contentText, Context context) {
         String uid = assignments.firstElement().getUid();
         float longi = assignments.firstElement().getLongitude();
         float lati = assignments.firstElement().getLatitude();
@@ -158,7 +157,7 @@ public class ScheduleNotification extends NotificationType {
         // My location.
         Location location;
         if(testEnabled) {
-            location = stringToLocation(test.getMyLocation());
+            location = stringToLocation(Test.getMyLocation());
         } else {
             location = MainActivity.getMyLocation();
         }
@@ -171,7 +170,7 @@ public class ScheduleNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return  0.4;//distance;
+        return distance;
     }
 
     /**

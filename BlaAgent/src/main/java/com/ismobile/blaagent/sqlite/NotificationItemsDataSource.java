@@ -11,14 +11,18 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.ismobile.blaagent.Assignment;
+import com.ismobile.blaagent.MainActivity;
+import com.ismobile.blaagent.Test.Test;
 
 public class NotificationItemsDataSource {
 
@@ -77,6 +81,7 @@ public class NotificationItemsDataSource {
                 detailString = "";
             }
 
+
             ContentValues values = new ContentValues();
             values.put(SQLHelper.COLUMN_UID, uid);
             values.put(SQLHelper.COLUMN_TITLE, title);
@@ -87,7 +92,7 @@ public class NotificationItemsDataSource {
             values.put(SQLHelper.COLUMN_START, start);
             values.put(SQLHelper.COLUMN_STOP, stop);
             values.put(SQLHelper.COLUMN_TYPE, type);
-            values.put(SQLHelper.COLUMN_DATE, (""+System.currentTimeMillis() / 1000L));
+            values.put(SQLHelper.COLUMN_DATE, (""+Test.getCurrentDate().getTime()/1000L));
             Log.d("TIIIIIID", values.get(SQLHelper.COLUMN_DATE) + "");
             //Inserts the notification into database.
             long insertId = database.insert(SQLHelper.TABLE_NOTIFICATIONS, null,

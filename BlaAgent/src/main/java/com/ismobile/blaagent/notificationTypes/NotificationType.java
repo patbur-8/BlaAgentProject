@@ -19,5 +19,5 @@ public abstract class NotificationType {
     //SendNotification.
     //This is where you assemble the information
     //for the notification and call the notification builder.
-    public abstract void sendNotification(Vector<Assignment> assignments, String[] details, CharSequence contentText, Context context);
+    public abstract void sendNotification(Vector<Assignment> assignments, String[] details,String contentTitle, CharSequence contentText, Context context);
 }

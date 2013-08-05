@@ -51,8 +51,8 @@ public class LocationBasedNotification extends NotificationType {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
 
-
         String contentText;
+        String contentTitle = assignments.firstElement().getTitle();
         Assignment first = assignments.firstElement();
 
         //Parse timestamp string to Date object, in order to be able to compare them.
@@ -88,7 +88,7 @@ public class LocationBasedNotification extends NotificationType {
                     notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details , notificationType);
                     if(notificationItem != null) {
                         Log.i("Notification", "Location notification sent");
-                        sendNotification(assignments, details, contentText, context);
+                        sendNotification(assignments, details, contentTitle, contentText, context);
                         addNewItem(notificationItem);
                     }
                 }
@@ -119,9 +119,7 @@ public class LocationBasedNotification extends NotificationType {
      * @param context
      */
     @Override
-    public void sendNotification(Vector<Assignment> assignments, String[] details, CharSequence contentText, Context context) {
-        CharSequence contentTitle = assignments.firstElement().getTitle();
-
+    public void sendNotification(Vector<Assignment> assignments, String[] details, String contentTitle, CharSequence contentText, Context context) {
         String uid = assignments.firstElement().getUid();
 
         //Adding the result intent, this goes directly to a specific assignment in BlaAndroid
@@ -163,7 +161,7 @@ public class LocationBasedNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return  0.6;//distance;
+        return  distance;
     }
 
     /**

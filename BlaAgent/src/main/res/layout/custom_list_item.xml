@@ -13,7 +13,7 @@
             android:id="@+id/txtTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="This is the assignment title wohooohowohooohowohooohowohoooho wohooohowohoooho wohooohowohoooho"
+            android:text="This is the assignment title"
             android:textColor="#040404"
             android:typeface="sans"
             android:textSize="15sp"
@@ -23,8 +23,8 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:lines="1"
+            android:gravity="left"
             android:layout_marginLeft="11dp"
-            android:layout_alignParentRight="true"
             android:layout_marginRight="28dp"/>
 
     <!-- Artist Name -->

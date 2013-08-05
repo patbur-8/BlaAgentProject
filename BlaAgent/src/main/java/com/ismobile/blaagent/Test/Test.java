@@ -23,6 +23,7 @@ public class Test {
     private ScheduleNotification sn;
     private LocationBasedNotification lbn;
     private DeadlineMissedNotification dmn;
+    private int assignmentNumber = 1;
     public Test() {
         currentTime = new Date();
         currentTime.setMinutes(0);
@@ -34,14 +35,12 @@ public class Test {
     }
 
 
-    public Assignment createTestAssignment(String start, String stop, String uid) {
-        String title = "TestAssignment wohooohowohoooho wohooohowohoooho wohoooho wohooohowohooohowohoooho";
+    public Assignment createTestAssignment(String start, String stop, String uid, float lati, float longi, boolean booked) {
+        String title = "TestAssignment " + assignmentNumber;
         //"yyyy-MM-dd HH:mm";
-        float lati = 59.33019f;
-        float longi = 18.05723f;
-        boolean booked = true;
-        Assignment ass = new Assignment(title, uid, booked, start, stop, lati, longi );
 
+        Assignment ass = new Assignment(title, uid, booked, start, stop, lati, longi );
+        assignmentNumber ++;
         return ass;
     }
 
@@ -55,27 +54,41 @@ public class Test {
     }
 
     public void runTest(Vector<Assignment> assignments, Assignment previous, Context context){
-        Assignment first = assignments.firstElement();
-        //Remove old assignments
+        if (assignments.size() == 0) {
+            setMyLocation(59.30932f, 18.16613f);
 
-        while(assignments.size() >= 1) {
-            Log.w("asSize2",assignments.size()+"");
-            Log.w("asCurrentTime",currentTime.getTime()+"");
-            if(isStopTimeBeforeCurrentTime(first.getStop())) {
-                Log.d("SLUT","SLUT");
-                    previous = first;
-                    assignments.removeElementAt(0);
-                if(assignments.size() >= 1) {
-                    first = assignments.firstElement();
-                } else {
-                    break;
-                }
+            while(!isStopTimeBeforeCurrentTime(previous.getStop())) {
+                //sn.evaluate(assignments,previous,context);
+                //lbn.evaluate(assignments,previous,context);
+                dmn.evaluate(assignments, previous,context);
+                addMinutesToDate(5);
             }
-            //evaluate
-            //sn.evaluate(assignments,previous,context);
-            lbn.evaluate(assignments,previous,context);
-            //dmn.evaluate(assignments, previous,context);
-            addMinutesToDate(5);
+            dmn.evaluate(assignments, previous,context);
+            Log.d("WhileEnded",""+Test.getCurrentDate());
+        } else {
+            Assignment first = assignments.firstElement();
+            setMyLocation(59.30932f, 18.16613f);
+
+            //Remove old assignments
+            while(assignments.size() >= 1) {
+                Log.w("asSize2",assignments.size()+"");
+                Log.w("asCurrentTime",currentTime.getTime()+"");
+                if(isStopTimeBeforeCurrentTime(first.getStop())) {
+                    Log.d("SLUT","SLUT");
+                        previous = first;
+                        assignments.removeElementAt(0);
+                    if(assignments.size() >= 1) {
+                        first = assignments.firstElement();
+                    } else {
+                        break;
+                    }
+                }
+                //evaluate
+                sn.evaluate(assignments,previous,context);
+                lbn.evaluate(assignments,previous,context);
+                dmn.evaluate(assignments, previous,context);
+                addMinutesToDate(5);
+            }
         }
     }
 
@@ -101,15 +114,16 @@ public class Test {
         Log.d("TEST",myLocation);
         return myLocation;
     }
-
     public Vector<Assignment> createAssignmentList() {
         Vector<Assignment> assignments = new Vector<Assignment>();
-        assignments.add(createTestAssignment("2013-08-05 09:13", "2013-08-05 11:23", "gdfbg45n331j42"));
+        assignments.add(createTestAssignment("2013-08-05 09:15", "2013-08-05 10:15", "gdfbg45n331j42",59.4433f, 17.942f,false));
+        assignments.add(1,createTestAssignment("2013-08-05 10:30", "2013-08-05 11:25", "gdfbg45n331a42",59.3337f, 18.056f,false));
+
         return assignments;
     }
 
     public Assignment createPrevious() {
-        Assignment previous = createTestAssignment("2013-07-22 10:00", "2013-07-22 16:23", "ghfd3dfbg45n3j42");
+        Assignment previous = createTestAssignment("2013-08-05 07:30", "2013-08-05 08:45", "ghfd3dfbg45n3j42",59.30932f, 18.16613f,false);
         return previous;
     }
 
