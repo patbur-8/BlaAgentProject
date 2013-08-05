@@ -31,6 +31,7 @@ public class LocationBasedNotification extends NotificationType {
     SharedPreferences prefs;
     Test test;
     private String notificationType;
+
     /**
      * Evaluates if a notification should be sent or not.
      *
@@ -56,27 +57,17 @@ public class LocationBasedNotification extends NotificationType {
         Assignment first = test.createTestAssignment("2013-07-29 16:28", "2013-07-29 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
         assignments.add(0,first);
 
-        //Start, stop and current timestamp
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String start = first.getStart();
-        String stop = first.getStop();
+        //Parse timestamp string to Date object, in order to be able to compare them.
+        Date startTime = getDateFromString(first.getStart());
+        Date stopTime = getDateFromString(first.getStop());
+        Date currentTime = test.getCurrentDate();
 
         String[] details = null;
+
         // My location.
         float latitude = first.getLatitude();
         float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
-
-        //Parse timestamp string to Date object, in order to be able to compare them.
-        Date currentTime = null, startTime = null, stopTime = null;
-        try {
-            currentTime = test.getCurrentDate();
-            startTime = df.parse(start);
-            stopTime = df.parse(stop);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
 
         contentText = "A new assignment has started and you are not in place.";
 
@@ -107,8 +98,11 @@ public class LocationBasedNotification extends NotificationType {
         }
     }
 
-    //This is used to add a new notification item to the notification feed
-    //Copy this if your new notification type should be displayed in the feed.
+    /**
+     * This is used to add a new notification item to the notification feed.
+     * Copy this if your new notification type should be displayed in the feed.
+     * @param noti
+     */
     public void addNewItem(final NotificationItem noti) {
         MainActivity.getUIHandler().post(new Runnable() {
             @Override
@@ -120,8 +114,7 @@ public class LocationBasedNotification extends NotificationType {
     }
 
     /**
-     * This is where you create the actions and decide on the notification style.
-     *
+     * This is where you create the actions and decide on the notification style.     *
      * @param assignments
      * @param details
      * @param contentText
@@ -166,10 +159,6 @@ public class LocationBasedNotification extends NotificationType {
             location = MainActivity.getMyLocation();
         }
 
-        //location.setLatitude(location.getLatitude());
-        //location.setLongitude(location.getLongitude());
-        //location.distanceTo(location);
-
         // The assignments location.
         Location aLocation = new Location("");
         aLocation.setLatitude(latitude);
@@ -181,12 +170,34 @@ public class LocationBasedNotification extends NotificationType {
         return  0.6;//distance;
     }
 
+    /**
+     *
+     * @param loc
+     * @return
+     */
     public Location stringToLocation(String loc) {
         String[] latlong = loc.split(",");
         Location location = new Location("");
         location.setLatitude(Double.parseDouble(latlong[0]));
         location.setLongitude(Double.parseDouble(latlong[1]));
         return location;
+    }
+
+    /**
+     * Converts a String to a Date.
+     * @param time
+     * @return
+     */
+    public Date getDateFromString(String time) {
+        String myFormatString = "yyyy-MM-dd HH:mm";
+        SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+        Date date = new Date();
+        try {
+            date = df.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
 }
