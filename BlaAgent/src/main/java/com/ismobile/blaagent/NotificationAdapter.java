@@ -100,7 +100,9 @@ public class NotificationAdapter extends ArrayAdapter {
         String deadlineMissNextAss = "deadMN"+ noti.getUid();
         String locationBased = "loc" + noti.getUid();
         String schedule = "scheme" + noti.getUid();
-
+        Log.d("CHECKTYPE",type);
+        Log.d("CHECKTYPE",locationBased);
+        Log.d("CHECKTYPE",type.equals(locationBased)+"");
         if (type.equals(deadlineMissBooked)) {
             return false;
         } else if (type.equals(deadlineMissNotMiss)) {
