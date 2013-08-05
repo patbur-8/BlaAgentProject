@@ -73,7 +73,7 @@ public class ScheduleNotification extends NotificationType {
                 Long difference = (stopTime.getTime() - currentTime.getTime())/(1000*60);
                 String contentTitle = assignments.firstElement().getTitle();
                 String notiType;
-                if(0 <= difference && difference <= 5) {
+                if(0 <= difference && difference <= 6) {
                     boolean display5MinWarning =  prefs.getBoolean("sch5Min", true);
                     if(display5MinWarning) {
                         Log.d("NOTIF", "<5min");
@@ -92,7 +92,7 @@ public class ScheduleNotification extends NotificationType {
                         }
                         return;
                     }
-                } else if(10 <= difference && difference <= 15) {
+                } else if(10 <= difference && difference <= 16) {
                     boolean display15MinWarning =  prefs.getBoolean("sch15Min", true);
                     if(display15MinWarning) {
                         Log.d("NOTIF", "<15min");
