@@ -94,7 +94,6 @@ public class NotificationAdapter extends ArrayAdapter {
     }
 
     public boolean checkIfUseMapsIntent(NotificationItem noti) {
-
         String type = noti.getType();
         String deadlineMissBooked = "deadMB" + noti.getUid();
         String deadlineMissNotMiss = "deadNM"+ noti.getUid();
@@ -102,17 +101,15 @@ public class NotificationAdapter extends ArrayAdapter {
         String locationBased = "loc" + noti.getUid();
         String schedule = "scheme" + noti.getUid();
 
-
-
         if (type.equals(deadlineMissBooked)) {
             return false;
-        } else if (type == deadlineMissNotMiss) {
+        } else if (type.equals(deadlineMissNotMiss)) {
             return true;
-        } else if (type == deadlineMissNextAss) {
+        } else if (type.equals(deadlineMissNextAss)) {
             return false;
-        } else if (type == locationBased) {
+        } else if (type.equals(locationBased)) {
             return true;
-        } else if (type == schedule) {
+        } else if (type.equals(schedule)) {
             return true;
         }
         return false;

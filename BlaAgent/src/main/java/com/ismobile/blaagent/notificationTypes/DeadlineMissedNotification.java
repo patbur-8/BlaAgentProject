@@ -217,9 +217,8 @@ public class DeadlineMissedNotification extends NotificationType {
             }
 
         } else if (missStatus == MISSNEXTASS) {
-            notiActions = new NotificationAction[2];
+            notiActions = new NotificationAction[1];
             notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
-            notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
         } else {
             notiActions = new NotificationAction[1];
             notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
