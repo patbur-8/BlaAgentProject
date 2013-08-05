@@ -244,8 +244,8 @@ public class ScheduleNotification extends NotificationType {
         MainActivity.getUIHandler().post(new Runnable() {
             @Override
             public void run() {
-                MainActivity.getNotificationAdapter().add(noti);
-                MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                MainActivity.addNotificationItem(noti);
+
             }
         });
     }

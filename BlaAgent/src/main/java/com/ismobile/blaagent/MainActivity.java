@@ -80,6 +80,11 @@ public class MainActivity extends ListActivity  {
         return adapter;
     }
 
+    public static void addNotificationItem(NotificationItem noti) {
+        adapter.data.add(0,noti);
+        adapter.notifyDataSetChanged();
+    }
+
     public static NotificationItemsDataSource getDatasource() {
         return datasource;
     }
@@ -156,7 +161,8 @@ public class MainActivity extends ListActivity  {
         protected Void doInBackground(Context... context) {
             Test test = new Test();
             test.setMyLocation(18.05123f,59.33010f);
-            test.runTest(test.createAssignmentList(), test.createPrevious(),context[0]);
+            Assignment prev = test.createPrevious();
+            test.runTest(test.createAssignmentList(), prev,context[0]);
             return null;
         }
     }
