@@ -170,8 +170,8 @@ public class DeadlineMissedNotification extends NotificationType {
         MainActivity.getUIHandler().post(new Runnable() {
             @Override
             public void run() {
-                MainActivity.getNotificationAdapter().add(noti);
-                MainActivity.getNotificationAdapter().notifyDataSetChanged();
+                MainActivity.addNotificationItem(noti);
+
             }
         });
     }
@@ -185,7 +185,6 @@ public class DeadlineMissedNotification extends NotificationType {
      */
     @Override
     public void sendNotification(Vector<Assignment> assignments, String[] details, String contentTitle, CharSequence contentText, Context context) {
-        Log.d("currentDate", Test.getCurrentDate()+"");
         String uid = assignments.firstElement().getUid();
         Intent resultIntent;
         Intent mapsIntent = null;
@@ -208,12 +207,19 @@ public class DeadlineMissedNotification extends NotificationType {
 
         // Adds intent/intents depending on what type of notification that will be sent.
         if (missStatus == NOTMISS) {
-            notiActions = new NotificationAction[2];
-            notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
-            notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
+            if (assignments.size() > 0) {
+                notiActions = new NotificationAction[2];
+                notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+                notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
+            } else {
+                notiActions = new NotificationAction[2];
+                notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+            }
+
         } else if (missStatus == MISSNEXTASS) {
             notiActions = new NotificationAction[1];
             notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+            notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
         } else {
             notiActions = new NotificationAction[1];
             notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
