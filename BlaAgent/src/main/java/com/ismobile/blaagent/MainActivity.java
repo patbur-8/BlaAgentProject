@@ -2,9 +2,11 @@ package com.ismobile.blaagent;
 
 import android.app.ListActivity;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -66,9 +68,7 @@ public class MainActivity extends ListActivity  {
         //Creates an instace of the background service and connects.
         boolean testEnabled = prefs.getBoolean("testEnabled", true);
         if(testEnabled) {
-            Test test = new Test();
-            test.setMyLocation(18.05123f,59.33010f);
-            test.runTest(test.createAssignmentList(), test.createPrevious(),this);
+            new DownloadFilesTask().execute(this);
         } else {
             bs = new BackgroundService(this);
             bs.connect();
@@ -147,6 +147,17 @@ public class MainActivity extends ListActivity  {
             resultPendingIntent.send();
         } catch (PendingIntent.CanceledException e) {
             e.printStackTrace();
+        }
+    }
+
+    private class DownloadFilesTask extends AsyncTask<Context , Void, Void> {
+
+        @Override
+        protected Void doInBackground(Context... context) {
+            Test test = new Test();
+            test.setMyLocation(18.05123f,59.33010f);
+            test.runTest(test.createAssignmentList(), test.createPrevious(),context[0]);
+            return null;
         }
     }
 }

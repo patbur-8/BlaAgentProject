@@ -51,16 +51,14 @@ public class LocationBasedNotification extends NotificationType {
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
 
-        //TEST, TA BORT SEN
-        test = new Test();
+
         String contentText;
-        Assignment first = test.createTestAssignment("2013-07-29 16:28", "2013-07-29 23:05","xFDGDF2234xfhhy24");//assignments.firstElement();
-        assignments.add(0,first);
+        Assignment first = assignments.firstElement();
 
         //Parse timestamp string to Date object, in order to be able to compare them.
         Date startTime = getDateFromString(first.getStart());
         Date stopTime = getDateFromString(first.getStop());
-        Date currentTime = test.getCurrentDate();
+        Date currentTime = Test.getCurrentDate();
 
         String[] details = null;
 
@@ -152,8 +150,6 @@ public class LocationBasedNotification extends NotificationType {
         boolean testEnabled = prefs.getBoolean("testEnabled", true);
         if(testEnabled) {
             //TESTSET;
-            Log.d("TESTLoc",test.getMyLocation());
-            Log.d("TESTLoc",stringToLocation(test.getMyLocation()).getLatitude()+"");
             location = stringToLocation(test.getMyLocation());
         } else {
             location = MainActivity.getMyLocation();

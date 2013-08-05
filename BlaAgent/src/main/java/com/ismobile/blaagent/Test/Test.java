@@ -45,11 +45,11 @@ public class Test {
         return ass;
     }
 
-    public Date getCurrentDate() {
+    static public Date getCurrentDate() {
         return currentTime;
     }
 
-    public void addToDate(int minutes) {
+    public void addMinutesToDate(int minutes) {
         long t = currentTime.getTime();
         currentTime = new Date(t+(minutes*60000));
     }
@@ -63,9 +63,9 @@ public class Test {
             Log.w("asCurrentTime",currentTime.getTime()+"");
             if(isStopTimeBeforeCurrentTime(first.getStop())) {
                 Log.d("SLUT","SLUT");
-                if(assignments.size() >= 1) {
                     previous = first;
                     assignments.removeElementAt(0);
+                if(assignments.size() >= 1) {
                     first = assignments.firstElement();
                 } else {
                     break;
@@ -75,7 +75,7 @@ public class Test {
             //sn.evaluate(assignments,previous,context);
             lbn.evaluate(assignments,previous,context);
             //dmn.evaluate(assignments, previous,context);
-            addToDate(5);
+            addMinutesToDate(5);
         }
     }
 
@@ -97,14 +97,14 @@ public class Test {
         myLocation = lati +","+ longi;
     }
 
-    public String getMyLocation() {
+    static public String getMyLocation() {
         Log.d("TEST",myLocation);
         return myLocation;
     }
 
     public Vector<Assignment> createAssignmentList() {
         Vector<Assignment> assignments = new Vector<Assignment>();
-        assignments.add(createTestAssignment("2013-08-02 17:13", "2013-08-02 18:23", "gdfbg45n331j42"));
+        assignments.add(createTestAssignment("2013-08-05 09:13", "2013-08-05 11:23", "gdfbg45n331j42"));
         return assignments;
     }
 
