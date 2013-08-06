@@ -1,11 +1,9 @@
 package com.ismobile.blaagent.notificationTypes;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -35,7 +33,8 @@ public class LocationBasedNotification extends NotificationType {
     private String notificationType;
 
     /**
-     * Evaluates if a notification should be sent or not.     *
+     * Evaluates if a notification should be sent or not.
+     *
      * @param assignments a vector containing all the assignments.
      * @param previous The previous assignment, if any.
      * @param context
@@ -118,7 +117,7 @@ public class LocationBasedNotification extends NotificationType {
     }
 
     /**
-     * This is where you create the actions and decide on the notification style.
+     * This is where you create the actions and decide on the notification style.     *
      * @param assignments
      * @param details
      * @param contentText
@@ -127,23 +126,14 @@ public class LocationBasedNotification extends NotificationType {
     @Override
     public void sendNotification(Vector<Assignment> assignments, String[] details, String contentTitle, CharSequence contentText, Context context) {
         String uid = assignments.firstElement().getUid();
-        float longi = assignments.firstElement().getLongitude();
-        float lati = assignments.firstElement().getLatitude();
 
         //Adding the result intent, this goes directly to a specific assignment in BlaAndroid
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
         resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
 
-        // Opens google maps, from: My Location to: an assignments lat, long.
-        Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
-                Uri.parse("http://maps.google.com/maps?f=d&daddr=" + lati + "," + longi));
-        mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
-                "com.google.android.maps.MapsActivity"));
-
         boolean bigStyle = false;
-        NotificationAction[] notiActions = new NotificationAction[2];
+        NotificationAction[] notiActions = new NotificationAction[1];
         notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
-        notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
 
         //Build the notification using StatusNotificationIntent
         StatusNotificationIntent sni = new StatusNotificationIntent(context);
