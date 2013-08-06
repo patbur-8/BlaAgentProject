@@ -96,20 +96,30 @@ public class NotificationAdapter extends ArrayAdapter {
     public boolean checkIfUseMapsIntent(NotificationItem noti) {
         String type = noti.getType();
         String deadlineMissBooked = "deadMB" + noti.getUid();
-        String deadlineMissNotMiss = "deadNM"+ noti.getUid();
+        String deadlineMissNotMissBooked = "deadNMB"+ noti.getUid();
+        String deadlineMissNotMissNextAss = "deadNMN"+ noti.getUid();
+        String deadlineMissNotMiss = "deadNM0"+ noti.getUid();
         String deadlineMissNextAss = "deadMN"+ noti.getUid();
         String locationBased = "loc" + noti.getUid();
         String schedule5 = "scheme5" + noti.getUid();
         String schedule15 = "scheme15" + noti.getUid();
         Log.d("CHECKTYPE",type);
+
         if (type.equals(deadlineMissBooked)) {
             return false;
-        } else if (type.equals(deadlineMissNotMiss)) {
-            return true;
         } else if (type.equals(deadlineMissNextAss)) {
             return false;
+
+        } else if (type.equals(deadlineMissNotMissBooked)) {
+            return true;
+        } else if (type.equals(deadlineMissNotMissNextAss)) {
+            return true;
+        } else if (type.equals(deadlineMissNotMiss)) {
+            return false;
+
         } else if (type.equals(locationBased)) {
             return true;
+
         } else if (type.equals(schedule5)) {
             return true;
         } else if (type.equals(schedule15)) {

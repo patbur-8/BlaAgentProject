@@ -102,7 +102,7 @@ public class DeadlineMissedNotification extends NotificationType {
                                 details[0] = "Next assignment starts at: " + first.getStart();
                                 details[1] = "Assignment: " + first.getTitle();
                                 details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
-                                notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"deadNM"+first.getUid());
+                                notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"deadNMB"+first.getUid());
                                 if(notificationItem != null) {
                                     Log.d("Sending: ", "NOTMISS+booked");
                                     sendNotification(assignments, details, contentTitle, contentText, context);
@@ -119,7 +119,7 @@ public class DeadlineMissedNotification extends NotificationType {
                                 details[0] = "Next assignment starts at: " + first.getStart();
                                 details[1] = "Assignment: " + first.getTitle();
                                 details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
-                                notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNM"+first.getUid());
+                                notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNMN"+first.getUid());
                                 if(notificationItem != null) {
                                     Log.d("Sending: ", "NOTMISS+notbooked");
                                     sendNotification(assignments, details, contentTitle, contentText, context);
@@ -150,7 +150,7 @@ public class DeadlineMissedNotification extends NotificationType {
                     contentText = "The deadline for this assignment has passed.";
                     details = new String [1];
                     details[0] =  "The deadline for this assignment has passed but you have no upcoming assignments.";
-                    notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNM"+previous.getUid());
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNM0"+previous.getUid());
                     if(notificationItem != null) {
                         Vector<Assignment> prevAss = new Vector<Assignment>();
                         prevAss.addElement(previous);
