@@ -67,7 +67,7 @@ public class Test {
 
     public void runTest(Vector<Assignment> assignments, Assignment previous, Context context){
         if (assignments.size() == 0) {
-            setMyLocation(59.30932f, 18.16613f);
+            setMyLocation(59.4433f, 17.942f);
 
             while(!isStopTimeBeforeCurrentTime(previous.getStop())) {
                 //sn.evaluate(assignments,previous,context);
@@ -79,7 +79,7 @@ public class Test {
             Log.d("WhileEnded",""+Test.getCurrentDate());
         } else {
             Assignment first = assignments.firstElement();
-            setMyLocation(59.30932f, 18.16613f);
+            setMyLocation(59.4433f, 17.942f);
 
             //Remove old assignments
             while(assignments.size() >= 1) {
@@ -130,14 +130,15 @@ public class Test {
     }
     public Vector<Assignment> createAssignmentList() {
         Vector<Assignment> assignments = new Vector<Assignment>();
-        assignments.add(createTestAssignment("2013-08-06 09:15", "2013-08-06 10:15", "bbbbbbbbbbbbb",59.4433f, 17.942f,false));
-        assignments.add(1,createTestAssignment("2013-08-06 10:30", "2013-08-06 11:25", "ccccccccccccc",59.3337f, 18.056f,false));
+        assignments.add(createTestAssignment("2013-08-06 09:15", "2013-08-06 10:15", "bbbbbbbbbbbbb",59.4433f, 17.942f,false)); //sollentuna
+        assignments.add(1,createTestAssignment("2013-08-06 10:30", "2013-08-06 11:25", "ccccccccccccc",59.3337f, 18.056f,false)); //sthlm c
+        assignments.add(2,createTestAssignment("2013-08-06 10:30", "2013-08-06 11:25", "ddddddddddddd",59.30932f, 18.16613f,false)); //nacka
 
         return assignments;
     }
 
     public Assignment createPrevious() {
-        Assignment previous = createTestAssignment("2013-08-06 07:30", "2013-08-06 08:45", "aaaaaaaaaaaaaa",59.30932f, 18.16613f,false);
+        Assignment previous = createTestAssignment("2013-08-06 07:30", "2013-08-06 08:45", "aaaaaaaaaaaaaa",59.30932f, 18.16613f,false); //nacka
         return previous;
     }
 

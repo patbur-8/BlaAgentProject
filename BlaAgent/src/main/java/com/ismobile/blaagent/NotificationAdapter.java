@@ -99,7 +99,8 @@ public class NotificationAdapter extends ArrayAdapter {
         String deadlineMissNotMiss = "deadNM"+ noti.getUid();
         String deadlineMissNextAss = "deadMN"+ noti.getUid();
         String locationBased = "loc" + noti.getUid();
-        String schedule = "scheme" + noti.getUid();
+        String schedule5 = "scheme5" + noti.getUid();
+        String schedule15 = "scheme15" + noti.getUid();
         Log.d("CHECKTYPE",type);
         if (type.equals(deadlineMissBooked)) {
             return false;
@@ -109,7 +110,9 @@ public class NotificationAdapter extends ArrayAdapter {
             return false;
         } else if (type.equals(locationBased)) {
             return true;
-        } else if (type.equals(schedule)) {
+        } else if (type.equals(schedule5)) {
+            return true;
+        } else if (type.equals(schedule15)) {
             return true;
         }
         return false;
