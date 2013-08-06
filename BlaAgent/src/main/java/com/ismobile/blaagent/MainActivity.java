@@ -82,7 +82,8 @@ public class MainActivity extends ListActivity  {
 
     public static void addNotificationItem(NotificationItem noti) {
         adapter.data.add(0,noti);
-        adapter.notifyDataSetChanged();
+        Log.d("STEP SEVEN", "Notify data set changed");
+        //adapter.notifyDataSetChanged();
     }
 
     public static NotificationItemsDataSource getDatasource() {

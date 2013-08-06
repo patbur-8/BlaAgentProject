@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.ismobile.blaagent.Assignment;
+import com.ismobile.blaagent.MainActivity;
 import com.ismobile.blaagent.notificationTypes.DeadlineMissedNotification;
 import com.ismobile.blaagent.notificationTypes.LocationBasedNotification;
 import com.ismobile.blaagent.notificationTypes.ScheduleNotification;
+import com.ismobile.blaagent.sqlite.NotificationItem;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -53,6 +55,16 @@ public class Test {
         currentTime = new Date(t+(minutes*60000));
     }
 
+    public void setDataChanged() {
+        MainActivity.getUIHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.getNotificationAdapter().notifyDataSetChanged();
+
+            }
+        });
+    }
+
     public void runTest(Vector<Assignment> assignments, Assignment previous, Context context){
         if (assignments.size() == 0) {
             setMyLocation(59.30932f, 18.16613f);
@@ -75,6 +87,7 @@ public class Test {
                 Log.w("asCurrentTime",currentTime.getTime()+"");
                 if(isStopTimeBeforeCurrentTime(first.getStop())) {
                     Log.d("SLUT","SLUT");
+
                         previous = first;
                         assignments.removeElementAt(0);
                     if(assignments.size() >= 1) {
@@ -90,6 +103,7 @@ public class Test {
                 addMinutesToDate(5);
             }
         }
+        setDataChanged();
     }
 
     public boolean isStopTimeBeforeCurrentTime(String stopTime) {
@@ -116,14 +130,14 @@ public class Test {
     }
     public Vector<Assignment> createAssignmentList() {
         Vector<Assignment> assignments = new Vector<Assignment>();
-        assignments.add(createTestAssignment("2013-08-05 09:15", "2013-08-05 10:15", "bbbbbbbbbbbbb",59.4433f, 17.942f,false));
-        assignments.add(1,createTestAssignment("2013-08-05 10:30", "2013-08-05 11:25", "ccccccccccccc",59.3337f, 18.056f,false));
+        assignments.add(createTestAssignment("2013-08-06 09:15", "2013-08-06 10:15", "bbbbbbbbbbbbb",59.4433f, 17.942f,false));
+        assignments.add(1,createTestAssignment("2013-08-06 10:30", "2013-08-06 11:25", "ccccccccccccc",59.3337f, 18.056f,false));
 
         return assignments;
     }
 
     public Assignment createPrevious() {
-        Assignment previous = createTestAssignment("2013-08-05 07:30", "2013-08-05 08:45", "aaaaaaaaaaaaaa",59.30932f, 18.16613f,false);
+        Assignment previous = createTestAssignment("2013-08-06 07:30", "2013-08-06 08:45", "aaaaaaaaaaaaaa",59.30932f, 18.16613f,false);
         return previous;
     }
 

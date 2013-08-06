@@ -72,7 +72,8 @@ public class NotificationItemsDataSource {
 
         //Each notification may only come once for each assignment.
         if(!checkIfNotificationExist(uid,type)) {
-
+            Log.d("STEP THREE", "Retrieve the item from database");
+            Log.d("STEP - TYPE", type);
             //Convert details array to string as SQLite can't store string arrays.
             String detailString;
             if(details != null) {
@@ -104,6 +105,7 @@ public class NotificationItemsDataSource {
 
             cursor.moveToLast();
             NotificationItem newNoti = cursorToNotification(cursor);
+
             cursor.close();
             return newNoti;
         }
@@ -112,6 +114,7 @@ public class NotificationItemsDataSource {
 
     //Checks if the notification exists in the database
     public boolean checkIfNotificationExist(String uid, String type) {
+        Log.d("STEP TWO", "Check if item exists");
         Cursor dataCount = database.rawQuery("SELECT " + SQLHelper.COLUMN_TITLE + " FROM " +
                 SQLHelper.TABLE_NOTIFICATIONS + " WHERE " + SQLHelper.COLUMN_UID + " = ? AND " +
                 SQLHelper.COLUMN_TYPE + " = ?", new String[] {uid, type});
@@ -138,7 +141,7 @@ public class NotificationItemsDataSource {
 
     private NotificationItem cursorToNotification(Cursor cursor) {
         NotificationItem noti = new NotificationItem();
-
+        Log.d("STEP FOUR", "Cursor to nofitication");
         Log.d("cursor", cursor.getFloat(3) + ", " + cursor.getFloat(4));
 
         noti.setUid(cursor.getString(0));
@@ -148,6 +151,7 @@ public class NotificationItemsDataSource {
         noti.setLongitude(cursor.getFloat(4));
         noti.setDetails(cursor.getString(5));
         noti.setType(cursor.getString(8));
+        Log.d("STEP - TYPE", cursor.getString(8));
         Date date = new Date ();
         date.setTime((long)cursor.getInt(9)*1000);
         DateFormat df = new SimpleDateFormat("HH:mm");

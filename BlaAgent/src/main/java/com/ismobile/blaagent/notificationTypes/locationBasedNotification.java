@@ -28,7 +28,7 @@ import java.util.Vector;
  * Created by ats on 2013-07-12.
  */
 public class LocationBasedNotification extends NotificationType {
-    static final int TIME_THRESHOLD = 6;
+    static final int TIME_THRESHOLD = 5;
     static final double DISTANCE_THRESHOLD = 0.5;
     SharedPreferences prefs;
     Test test;
@@ -85,11 +85,15 @@ public class LocationBasedNotification extends NotificationType {
         if (timePassed <= TIME_THRESHOLD) {
             if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(stopTime)) {
                 if (!(distance <= DISTANCE_THRESHOLD)) {
-
+                    Log.d("STEP ONE", "Create notification item");
+                    Log.d("STEP - TYPE", notificationType);
                     notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details , notificationType);
                     if(notificationItem != null) {
-                        Log.i("Notification", "Location notification sent");
+                        Log.d("STEP FIVE", "Send notification");
+                        Log.d("STEP - TYPE", notificationItem.getType());
+                        Log.i("CHECKTYPE", "Location notification sent");
                         sendNotification(assignments, details, contentTitle, contentText, context);
+                        Log.d("STEP SIX", "Add notification item");
                         addNewItem(notificationItem);
                     }
                 }
@@ -106,6 +110,7 @@ public class LocationBasedNotification extends NotificationType {
         MainActivity.getUIHandler().post(new Runnable() {
             @Override
             public void run() {
+                Log.d("STEP - TYPE", noti.getType());
                 MainActivity.addNotificationItem(noti);
 
             }

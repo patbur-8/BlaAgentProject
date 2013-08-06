@@ -46,7 +46,7 @@ public class NotificationAdapter extends ArrayAdapter {
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new NotificationHolder();
-
+            Log.d("CHECKTYPE1",noti.getType());
             if (checkIfUseMapsIntent(noti)) {
                 Log.d("gfadgsdgd","hejj");
 
@@ -101,8 +101,6 @@ public class NotificationAdapter extends ArrayAdapter {
         String locationBased = "loc" + noti.getUid();
         String schedule = "scheme" + noti.getUid();
         Log.d("CHECKTYPE",type);
-        Log.d("CHECKTYPE",locationBased);
-        Log.d("CHECKTYPE",type.equals(locationBased)+"");
         if (type.equals(deadlineMissBooked)) {
             return false;
         } else if (type.equals(deadlineMissNotMiss)) {
