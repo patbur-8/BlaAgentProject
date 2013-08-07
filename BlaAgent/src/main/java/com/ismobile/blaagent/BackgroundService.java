@@ -6,8 +6,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -26,11 +28,15 @@ public class BackgroundService {
     AlarmManager am;
     private PowerManager.WakeLock wl;
     private Context context;
+    SharedPreferences prefs;
+    int TIME_THRESHOLD = 5*60*1000;
 
     public BackgroundService(Context context) {
         this.context = context;
         bacon = new BAConnection(context);
         this.receiver = null;
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"))*60*1000;
     }
 
     //Registers a broadcast receiver and creates a new WAKE LOCK

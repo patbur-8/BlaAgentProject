@@ -1,6 +1,8 @@
 package com.ismobile.blaagent.Test;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.ismobile.blaagent.Assignment;
@@ -26,6 +28,8 @@ public class Test {
     private LocationBasedNotification lbn;
     private DeadlineMissedNotification dmn;
     private int assignmentNumber = 1;
+    private int TIME_THRESHOLD;
+    SharedPreferences prefs;
     public Test() {
         currentTime = new Date();
         currentTime.setMinutes(0);
@@ -34,6 +38,7 @@ public class Test {
         sn = new ScheduleNotification();
         lbn = new LocationBasedNotification();
         dmn = new DeadlineMissedNotification();
+
     }
 
 
@@ -66,6 +71,8 @@ public class Test {
     }
 
     public void runTest(Vector<Assignment> assignments, Assignment previous, Context context){
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"));
         if (assignments.size() == 0) {
             setMyLocation(59.4433f, 17.942f);
 
@@ -103,6 +110,8 @@ public class Test {
                 addMinutesToDate(5);
             }
         }
+        dmn.evaluate(assignments, previous,context);
+        addMinutesToDate(5);
         setDataChanged();
     }
 
