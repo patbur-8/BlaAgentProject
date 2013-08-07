@@ -36,7 +36,6 @@
             android:textSize="12sp"
             android:text="gfdgsdf sdfg sdfg sdfg dsfg dfsg dsfg dsfg dsfg sdfg sdfg dsfg sdfg sdfg sdfg sdfg sdfg sdfg sdfg sdfg sdfg sdfg "
             android:layout_alignLeft="@+id/txtTitle"
-            android:layout_alignBottom="@+id/imgMaps"
             android:layout_below="@+id/txtTitle"/>
 
     <!-- Rightend Duration -->
@@ -59,5 +58,6 @@
             android:layout_height="50dip"
             android:src="@drawable/google_maps_logo"
             android:layout_centerVertical="true"
-            android:visibility="gone"/>
+            />
+
 </RelativeLayout>
