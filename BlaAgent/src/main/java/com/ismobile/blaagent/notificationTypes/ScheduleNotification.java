@@ -32,7 +32,9 @@ import java.util.Vector;
  * Created by pbm on 2013-07-04.
  */
 public class ScheduleNotification extends NotificationType {
-    static final double DISTANCE_THRESHOLD = 0.5;
+    double DISTANCE_THRESHOLD = 0.5;
+    int EARLY_WARNING = 15;
+    int LATE_WARNING = 5;
     SharedPreferences prefs;
     Test test;
     Boolean testEnabled;
@@ -48,6 +50,9 @@ public class ScheduleNotification extends NotificationType {
     public void evaluate(Vector<Assignment> assignments, Assignment previous, Context context) {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("schEnabled", true);
+        DISTANCE_THRESHOLD = Double.parseDouble(prefs.getString("prefDistanceThreshold","0.5"));
+        LATE_WARNING = Integer.parseInt(prefs.getString("prefLateWarning","5"));
+        EARLY_WARNING = Integer.parseInt(prefs.getString("prefEarlyWarning","15"));
         testEnabled = prefs.getBoolean("testEnabled", true);
         if(!displayNotification) return;
 

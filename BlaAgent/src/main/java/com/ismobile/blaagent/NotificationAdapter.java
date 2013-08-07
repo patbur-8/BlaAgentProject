@@ -60,6 +60,7 @@ public class NotificationAdapter extends ArrayAdapter {
                                 Uri.parse("http://maps.google.com/maps?f=d&daddr=" + noti.getLatitude() + "," + noti.getLongitude()));
                         mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
                                 "com.google.android.maps.MapsActivity"));
+                        mapsIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         context.startActivity(mapsIntent);
                     }
                 });

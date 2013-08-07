@@ -14,6 +14,13 @@
                 android:summary="@string/schedule_notification_15_min_summary"
                 android:title="@string/schedule_notification_15_min" >
         </CheckBoxPreference>
+        <EditTextPreference
+                android:defaultValue="5"
+                android:key="schLateWarning"
+                android:dependency="schEnabled"
+                android:summary="How many minutes before assignment end"
+                android:title="Late warning" >
+        </EditTextPreference>
         <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="sch5Min"
@@ -21,6 +28,13 @@
                 android:summary="@string/schedule_notification_5_min_summary"
                 android:title="@string/schedule_notification_5_min" >
         </CheckBoxPreference>
+        <EditTextPreference
+                android:defaultValue="5"
+                android:key="prefEarlyWarning"
+                android:dependency="schEnabled"
+                android:summary="How many minutes before assignment end"
+                android:title="Early warning" >
+        </EditTextPreference>
     </PreferenceCategory>
 
 </PreferenceScreen>

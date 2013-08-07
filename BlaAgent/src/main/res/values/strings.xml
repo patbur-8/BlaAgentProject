@@ -37,14 +37,16 @@
     <string name="location_notification_new_assignment_started">Send a notification if you\'re not on place when a new assignment started.</string>
 
     <string name="schedule_notification">Schedule based</string>
-    <string name="schedule_notification_15_min">15 Minutes left</string>
-    <string name="schedule_notification_15_min_summary">Send a notification to warn when there is 15 minutes left on an assignment.</string>
+    <string name="schedule_notification_15_min">Early warning</string>
+    <string name="schedule_notification_15_min_summary">Send an early notification to warn when a notification is about to end. Default: 5 min.</string>
 
-    <string name="schedule_notification_5_min">5 Minutes left</string>
-    <string name="schedule_notification_5_min_summary">Send a notification to warn when there is 5 minutes left on an assignment.</string>
+    <string name="schedule_notification_5_min">Late warning</string>
+    <string name="schedule_notification_5_min_summary">Send a notification to warn when a notification is about to end. Default: 15 min.</string>
 
     <string name="schedule_enabled">Enabled</string>
 
     <string name="test_scenario">Testing</string>
     <string name="test_enabled">Enabled</string>
+
+    <string name="general_settings">General settings</string>
 </resources>

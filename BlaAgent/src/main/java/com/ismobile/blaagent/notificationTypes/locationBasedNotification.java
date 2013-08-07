@@ -26,8 +26,8 @@ import java.util.Vector;
  * Created by ats on 2013-07-12.
  */
 public class LocationBasedNotification extends NotificationType {
-    static final int TIME_THRESHOLD = 5;
-    static final double DISTANCE_THRESHOLD = 0.5;
+    int TIME_THRESHOLD = 5;
+    double DISTANCE_THRESHOLD = 0.5;
     SharedPreferences prefs;
     Test test;
     private String notificationType;
@@ -45,6 +45,8 @@ public class LocationBasedNotification extends NotificationType {
         //Checks in the settings if it's enabled or not
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("locOnNewAss", true);
+        DISTANCE_THRESHOLD = Double.parseDouble(prefs.getString("prefDistanceThreshold","0.5"));
+        TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"));
         Log.d("LOCONNEWASS",""+displayNotification);
         if(!displayNotification) return;
 
@@ -166,7 +168,7 @@ public class LocationBasedNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return  distance;
+        return  0.6;//distance;
     }
 
     /**

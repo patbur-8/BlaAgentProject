@@ -4,7 +4,10 @@
 
     <!-- NOTIFICATION TYPES -->
     <header android:title="@string/notification_settings" />
-
+    <header
+            android:id="@+id/generalSettings"
+            android:fragment="com.ismobile.blaagent.menuSettings.GeneralFragment"
+            android:title="@string/general_settings" />
     <!-- LOCATION -->
     <header
             android:id="@+id/locationNotification"

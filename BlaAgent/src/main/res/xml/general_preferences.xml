@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/pref_update_setting" >
+        <EditTextPreference
+                android:defaultValue="0.5"
+                android:key="prefOnSite"
+                android:summary="The radius in kilometer around an assignment, in which counts as being on site."
+                android:title="Distance threshold" >
+        </EditTextPreference>
+        <EditTextPreference
+                android:defaultValue="5"
+                android:key="prefTimeInterval"
+                android:summary="The interval(minutes) in which the application runs."
+                android:title="Time threshold" >
+        </EditTextPreference>
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
