@@ -67,7 +67,7 @@ public class DeadlineMissedNotification extends NotificationType {
         String from = getMyLocation();
 
         // Check if stop time has passed --> We missed a deadline.
-        Date currentTime = Test.getCurrentDate();
+        Date currentTime = getCurrentDate();
         Date stopTime = getDateFromString(previous.getStop());
         if (currentTime.after(stopTime)) {
             if (assignments.size() > 0) {
@@ -275,7 +275,7 @@ public class DeadlineMissedNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return  distance;
+        return  0.4; //distance;
     }
 
     /**
@@ -335,7 +335,7 @@ public class DeadlineMissedNotification extends NotificationType {
      * @return
      */
     public boolean timeToLeaveForNextAss(Vector<Assignment> assignments) {
-        Date currentTime = Test.getCurrentDate();
+        Date currentTime = getCurrentDate();
         Date startTime = getDateFromString(assignments.firstElement().getStart());
         String from = getMyLocation();
         String to = assignments.firstElement().getLatitude() + "," + assignments.firstElement().getLongitude();
@@ -388,7 +388,7 @@ public class DeadlineMissedNotification extends NotificationType {
     public int checkIfMakeNextAss(Vector<Assignment> assignments) {
         Assignment nextBooked = getNextBooked(assignments);
         Assignment nextAss = assignments.firstElement();
-        Date currentTime = Test.getCurrentDate();
+        Date currentTime = getCurrentDate();
         Log.d("Totaltime-currentTime", currentTime+"");
 
         // Check if there is any booked meetings today.
@@ -479,5 +479,14 @@ public class DeadlineMissedNotification extends NotificationType {
         location.setLatitude(Double.parseDouble(latlong[0]));
         location.setLongitude(Double.parseDouble(latlong[1]));
         return location;
+    }
+
+    public Date getCurrentDate() {
+        boolean testEnabled = MainActivity.testEnabled();
+        if(testEnabled) {
+            return Test.getCurrentDate();
+        } else {
+            return new Date();
+        }
     }
 }

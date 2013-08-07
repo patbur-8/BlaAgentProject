@@ -65,6 +65,7 @@ public class MyLocation extends Service implements LocationListener {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
+                Log.d("NOLOC","FAIL");
 
             } else {
                 this.canGetLocation = true;
@@ -81,6 +82,7 @@ public class MyLocation extends Service implements LocationListener {
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
+                            Log.d("MYLOCATION1", latitude + "," + longitude);
                         }
                     }
                 }
@@ -98,6 +100,7 @@ public class MyLocation extends Service implements LocationListener {
                             if (location != null) {
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
+                                Log.d("MYLOCATION2", latitude + "," + longitude);
                             }
                         }
                     }

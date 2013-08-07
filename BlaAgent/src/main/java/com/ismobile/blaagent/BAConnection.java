@@ -232,22 +232,19 @@ public class BAConnection {
 
     //Evaluates if any notifications should be sent or not
     public void evaluateNotifications() {
-
-        //if(assignments.size() > 0) {
-        if(true) {
-            Assignment previous = null;
-
-            //if(isStopTimeBeforeNow(assignments.firstElement().getStop())) {
-              //  previous = assignments.firstElement();
-               // assignments.removeElementAt(0);
-                //sort("stop", assignments);
-                sn.evaluate(assignments,previous,context);
-                //lbn.evaluate(assignments,previous,context);
-                //evaluate(assignments, previous,context);
-
-            //}
-
+        sort("stop", assignments);
+        Assignment previous = null;
+        for(int i = 0; i<assignments.size(); i++) {
+            if(isStopTimeBeforeNow(assignments.elementAt(i).getStop())) {
+                previous = assignments.elementAt(i);
+                assignments.removeElementAt(i);
+            }
         }
+
+        sn.evaluate(assignments,previous,context);
+        lbn.evaluate(assignments,previous,context);
+        dmn.evaluate(assignments, previous,context);
+
     }
 
     //Sorts the assignments by stop time
@@ -279,16 +276,13 @@ public class BAConnection {
         });
     }
 
-    //KOLLA UPP DET HÄR
-
-
     //Filters out old assignments.
     public boolean filterOutOldAssignments(String timestamp) {
         String myFormatString = "yyyy-MM-dd HH:mm"; // for example
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         try {
             Date d1 = df.parse(timestamp);
-            Date now = new Date(System.currentTimeMillis() - (60 * 60 * 1000));
+            Date now = new Date(System.currentTimeMillis() - 60*60*1000);
             return d1.after(now);
         } catch (ParseException e) {
             e.printStackTrace();

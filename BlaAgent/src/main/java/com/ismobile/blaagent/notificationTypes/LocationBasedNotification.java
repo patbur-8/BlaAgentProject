@@ -43,7 +43,7 @@ public class LocationBasedNotification extends NotificationType {
      */
     @Override
     public void evaluate(Vector<Assignment> assignments,Assignment previous, Context context) {
-
+        if(assignments == null || assignments.size() == 0) return;
         //Checks in the settings if it's enabled or not
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("locOnNewAss", true);
@@ -62,7 +62,7 @@ public class LocationBasedNotification extends NotificationType {
         //Parse timestamp string to Date object, in order to be able to compare them.
         Date startTime = getDateFromString(first.getStart());
         Date stopTime = getDateFromString(first.getStop());
-        Date currentTime = Test.getCurrentDate();
+        Date currentTime = getCurrentDate();
 
         String[] details = null;
 
@@ -164,7 +164,7 @@ public class LocationBasedNotification extends NotificationType {
     public double getDistance(float latitude, float longitude) {
         // My location.
         Location location;
-        boolean testEnabled = prefs.getBoolean("testEnabled", true);
+        boolean testEnabled = MainActivity.testEnabled();
         if(testEnabled) {
             //TESTSET;
             location = stringToLocation(test.getMyLocation());
@@ -180,7 +180,7 @@ public class LocationBasedNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return  0.6;//distance;
+        return distance;
     }
 
     /**
@@ -211,6 +211,15 @@ public class LocationBasedNotification extends NotificationType {
             e.printStackTrace();
         }
         return date;
+    }
+
+    public Date getCurrentDate() {
+        boolean testEnabled = MainActivity.testEnabled();
+        if(testEnabled) {
+            return Test.getCurrentDate();
+        } else {
+            return new Date();
+        }
     }
 
 }

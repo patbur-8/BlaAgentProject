@@ -38,7 +38,6 @@ public class Test {
         sn = new ScheduleNotification();
         lbn = new LocationBasedNotification();
         dmn = new DeadlineMissedNotification();
-
     }
 
 
@@ -52,6 +51,7 @@ public class Test {
     }
 
     static public Date getCurrentDate() {
+
         return currentTime;
     }
 

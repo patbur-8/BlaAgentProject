@@ -36,7 +36,6 @@ public class ScheduleNotification extends NotificationType {
     int EARLY_WARNING = 15;
     int LATE_WARNING = 5;
     SharedPreferences prefs;
-    Test test;
     Boolean testEnabled;
     GetDirections dir = new GetDirections();
 
@@ -48,9 +47,11 @@ public class ScheduleNotification extends NotificationType {
      */
     @Override
     public void evaluate(Vector<Assignment> assignments, Assignment previous, Context context) {
+        if(assignments.size() == 0) return;
+
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("schEnabled", true);
-        DISTANCE_THRESHOLD = Double.parseDouble(prefs.getString("prefDistanceThreshold","0.5"));
+        DISTANCE_THRESHOLD = Double.parseDouble(prefs.getString("prefDistanceThreshold", "0.5"));
         LATE_WARNING = Integer.parseInt(prefs.getString("prefLateWarning","5"));
         EARLY_WARNING = Integer.parseInt(prefs.getString("prefEarlyWarning","15"));
         testEnabled = prefs.getBoolean("testEnabled", true);
@@ -61,62 +62,74 @@ public class ScheduleNotification extends NotificationType {
         String contentText;
         Assignment first = assignments.firstElement();
         String title = first.getTitle();
-        String[] details = new String [3];
+        String[] details;
+        String from, to;
 
-        // My location.
         float latitude = first.getLatitude();
         float longitude = first.getLongitude();
-        double distance = getDistance(latitude, longitude);
+        from = getMyLocation();
 
-        String from = Test.getMyLocation();
-        String to = latitude + "," + longitude;
+        double distance = getDistance(stringToLocation(from),latitude, longitude);
+        boolean hasNext = assignments.size() > 1;
+        if(hasNext) {
+            details = new String[3];
+        } else {
+            details = new String[2];
+        }
 
         if (distance <= DISTANCE_THRESHOLD) { // Check if we are in place.
-            if (assignments.size() > 0) {
-                Date currentTime = Test.getCurrentDate();
-                Date stopTime = getDateFromString(first.getStop());
-                Long difference = (stopTime.getTime() - currentTime.getTime())/(1000*60);
-                String contentTitle = assignments.firstElement().getTitle();
-                String notiType;
-                if(0 <= difference && difference <= 6) {
-                    boolean display5MinWarning =  prefs.getBoolean("sch5Min", true);
-                    if(display5MinWarning) {
-                        Log.d("NOTIF", "<5min");
-                        notiType = "scheme5" + first.getUid();
-                        //Warning
-                        contentText = difference + " min left to deadline";
-                        details[0] = "Deadline: " + stopTime;
-                        details[1] = "Assignment: " + title;
+
+            Date currentTime = getCurrentDate();
+            Date stopTime = getDateFromString(first.getStop());
+            Long difference = (stopTime.getTime() - currentTime.getTime())/(1000*60);
+            String contentTitle = assignments.firstElement().getTitle();
+            String notiType;
+            if(0 <= difference && difference <= 6) {
+                boolean display5MinWarning =  prefs.getBoolean("sch5Min", true);
+                if(display5MinWarning) {
+                    Log.d("NOTIF", "<5min");
+                    notiType = "scheme5" + first.getUid();
+                    //Warning
+                    contentText = difference + " min left to deadline";
+                    details[0] = "Deadline: " + stopTime;
+                    details[1] = "Assignment: " + title;
+                    if(hasNext) {
+                        to = assignments.elementAt(1).getLatitude() + "," + assignments.elementAt(1).getLongitude();
                         details[2] = "Next assignment in current traffic: " +
                                 getCurrentTrafficTime(from,to,true) + " min";
-                        notificationItem = MainActivity.getDatasource().createNotificationItem(
-                                first, contentText, details ,notiType);
-                        if(notificationItem != null) {
-                            sendNotification(assignments, details, contentTitle, contentText, context);
-                            addNewItem(notificationItem);
-                        }
-                        return;
                     }
-                } else if(10 <= difference && difference <= 16) {
-                    boolean display15MinWarning =  prefs.getBoolean("sch15Min", true);
-                    if(display15MinWarning) {
-                        Log.d("NOTIF", "<15min");
-                        notiType = "scheme15" + first.getUid();
-                        //Info
-                        contentText = difference + " min left to deadline";
-                        details[0] = "Deadline: " + stopTime;
-                        details[1] = "Assignment: " + title;
-                        details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
-                        notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,notiType);
-                        if(notificationItem != null) {
-                            sendNotification(assignments, details, contentTitle, contentText, context);
-                            addNewItem(notificationItem);
-                        }
-                        return;
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(
+                            first, contentText, details ,notiType);
+                    if(notificationItem != null) {
+                        sendNotification(assignments, details, contentTitle, contentText, context);
+                        addNewItem(notificationItem);
                     }
+                    return;
+                }
+            } else if(10 <= difference && difference <= 16) {
+                boolean display15MinWarning =  prefs.getBoolean("sch15Min", true);
+                if(display15MinWarning) {
+                    Log.d("NOTIF", "<15min");
+                    notiType = "scheme15" + first.getUid();
+                    //Info
+                    contentText = difference + " min left to deadline";
+                    details[0] = "Deadline: " + stopTime;
+                    details[1] = "Assignment: " + title;
+                    if(hasNext) {
+                        to = assignments.elementAt(1).getLatitude() + "," + assignments.elementAt(1).getLongitude();
+                        details[2] = "Next assignment in current traffic: " +
+                                getCurrentTrafficTime(from,to,true) + " min";
+                    }
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,notiType);
+                    if(notificationItem != null) {
+                        sendNotification(assignments, details, contentTitle, contentText, context);
+                        addNewItem(notificationItem);
+                    }
+                    return;
                 }
             }
         }
+
     }
 
     /**
@@ -158,24 +171,17 @@ public class ScheduleNotification extends NotificationType {
      * @param longitude
      * @return
      */
-    public double getDistance(float latitude, float longitude) {
-        // My location.
-        Location location;
-        if(testEnabled) {
-            location = stringToLocation(Test.getMyLocation());
-        } else {
-            location = MainActivity.getMyLocation();
-        }
+    public double getDistance(Location myLocation, float latitude, float longitude) {
 
         // The assignments location.
         Location aLocation = new Location("");
         aLocation.setLatitude(latitude);
         aLocation.setLongitude(longitude);
 
-        int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
+        int distance = (int)aLocation.distanceTo(myLocation) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return distance;
+        return 0.4; //distance;
     }
 
     /**
@@ -197,9 +203,15 @@ public class ScheduleNotification extends NotificationType {
                     realTime = secondsToMinute(realTimeInSec);
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
+        try {
+            JSONObject obj = dir.getDirectionsJSON(from, to);
             time = secondsToMinute(obj.getJSONObject("route").getInt("time"));
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -270,5 +282,14 @@ public class ScheduleNotification extends NotificationType {
             e.printStackTrace();
         }
         return date;
+    }
+
+    public Date getCurrentDate() {
+        boolean testEnabled = MainActivity.testEnabled();
+        if(testEnabled) {
+            return Test.getCurrentDate();
+        } else {
+            return new Date();
+        }
     }
 }

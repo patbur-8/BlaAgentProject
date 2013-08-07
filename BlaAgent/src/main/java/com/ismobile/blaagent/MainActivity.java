@@ -31,10 +31,12 @@ public class MainActivity extends ListActivity  {
     private static NotificationItemsDataSource datasource;
     StatusNotificationIntent sn = new StatusNotificationIntent(this);
     SharedPreferences prefs;
-    BackgroundService bs = new BackgroundService(this);
+    BackgroundService bs;
     private ListView listView1;
     private static Handler handler;
     static MyLocation loc;
+    private static boolean isTestEnabled;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +67,10 @@ public class MainActivity extends ListActivity  {
 
         listView1.setAdapter(adapter);
         loc = new MyLocation(this);
+        getMyLocation();
         //Creates an instace of the background service and connects.
-        boolean testEnabled = prefs.getBoolean("testEnabled", true);
-        if(testEnabled) {
+        isTestEnabled = prefs.getBoolean("testEnabled", true);
+        if(isTestEnabled) {
             new DownloadFilesTask().execute(this);
         } else {
             bs = new BackgroundService(this);
@@ -81,9 +84,9 @@ public class MainActivity extends ListActivity  {
     }
 
     public static void addNotificationItem(NotificationItem noti) {
-        adapter.data.add(0,noti);
+        adapter.data.add(0, noti);
         Log.d("STEP SEVEN", "Notify data set changed");
-        //adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     public static NotificationItemsDataSource getDatasource() {
@@ -94,8 +97,27 @@ public class MainActivity extends ListActivity  {
         return handler;
     }
     public static Location getMyLocation() {
-        Location hej = loc.getLocation();
-        return hej;
+        Location location;
+        if(isTestEnabled) {
+            //TESTSET;
+            location = stringToLocation(Test.getMyLocation());
+        } else {
+            location = loc.getLocation();
+        }
+        return location;
+    }
+
+    public static Location stringToLocation(String loc) {
+        String[] latlong = loc.split(",");
+        Location location = new Location("");
+        location.setLatitude(Double.parseDouble(latlong[0]));
+        location.setLongitude(Double.parseDouble(latlong[1]));
+        return location;
+    }
+
+
+    public static boolean testEnabled() {
+        return isTestEnabled;
     }
 
    @Override
@@ -126,7 +148,7 @@ public class MainActivity extends ListActivity  {
         super.onDestroy();
         Log.d("Lifecycle","onDestroy");
         datasource.close();
-        bs.removeBroadCastListener();
+        if(bs != null) bs.removeBroadCastListener();
     }
 
     @Override

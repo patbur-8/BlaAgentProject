@@ -58,6 +58,7 @@ public class NotificationItemsDataSource {
                 new String[] {today*1000+""}).moveToFirst();
     }
 
+    Test test = new Test();
     //Creates a notification item and inserts it into the database
     public NotificationItem createNotificationItem(Assignment ass, String contentText,
                                                     String[] details, String type) {
@@ -93,7 +94,7 @@ public class NotificationItemsDataSource {
             values.put(SQLHelper.COLUMN_START, start);
             values.put(SQLHelper.COLUMN_STOP, stop);
             values.put(SQLHelper.COLUMN_TYPE, type);
-            values.put(SQLHelper.COLUMN_DATE, (""+Test.getCurrentDate().getTime()/1000L));
+            values.put(SQLHelper.COLUMN_DATE, (""+getCurrentDate().getTime()/1000L));
             Log.d("TIIIIIID", values.get(SQLHelper.COLUMN_DATE) + "");
             //Inserts the notification into database.
             long insertId = database.insert(SQLHelper.TABLE_NOTIFICATIONS, null,
@@ -180,4 +181,14 @@ public class NotificationItemsDataSource {
         String[] arr = str.split("#!%");
         return arr;
     }
+
+    public Date getCurrentDate() {
+        boolean testEnabled = MainActivity.testEnabled();
+        if(testEnabled) {
+            return Test.getCurrentDate();
+        } else {
+            return new Date();
+        }
+    }
+
 }

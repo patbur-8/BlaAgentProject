@@ -29,7 +29,7 @@
                 android:title="@string/schedule_notification_5_min" >
         </CheckBoxPreference>
         <EditTextPreference
-                android:defaultValue="5"
+                android:defaultValue="15"
                 android:key="prefEarlyWarning"
                 android:dependency="schEnabled"
                 android:summary="How many minutes before assignment end"

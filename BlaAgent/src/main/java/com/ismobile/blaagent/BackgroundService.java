@@ -35,7 +35,8 @@ public class BackgroundService {
         this.context = context;
         bacon = new BAConnection(context);
         this.receiver = null;
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this.context);
         TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"))*60*1000;
     }
 
