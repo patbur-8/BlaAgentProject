@@ -51,7 +51,7 @@ public class NotificationAdapter extends ArrayAdapter {
                 Log.d("gfadgsdgd","hejj");
 
                 holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
-                holder.imgMaps.setVisibility(View.VISIBLE);
+                //holder.imgMaps.setVisibility(View.VISIBLE);
                 holder.imgMaps.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -64,6 +64,10 @@ public class NotificationAdapter extends ArrayAdapter {
                         context.startActivity(mapsIntent);
                     }
                 });
+            } else {
+                holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
+                holder.imgMaps.setVisibility(View.INVISIBLE);
+                holder.imgMaps.setVisibility(View.GONE);
             }
 
             holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
@@ -75,8 +79,7 @@ public class NotificationAdapter extends ArrayAdapter {
             holder = (NotificationHolder)row.getTag();
         }
 
-
-        holder.txtDetail.setText(noti.getContentText() + "\n" + noti.getDetails());
+        holder.txtDetail.setText(noti.getContentText() + "\n" + noti.getDetails().replace("#!%", "\n"));
         holder.txtTitle.setText(noti.getTitle());
         holder.txtDate.setText(noti.getDateCreated());
         return row;
@@ -108,9 +111,9 @@ public class NotificationAdapter extends ArrayAdapter {
         Log.d("CheckType: notmissnext",type.equals(deadlineMissNotMissNextAss)+"");
 
         if (type.equals(deadlineMissBooked)) {
-            return false;
+            return true;
         } else if (type.equals(deadlineMissNextAss)) {
-            return false;
+            return true;
 
         } else if (type.equals(deadlineMissNotMissBooked)) {
             return true;

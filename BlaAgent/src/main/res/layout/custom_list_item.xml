@@ -58,6 +58,6 @@
             android:layout_height="50dip"
             android:src="@drawable/google_maps_logo"
             android:layout_centerVertical="true"
-            />
+            android:visibility="visible"/>
 
 </RelativeLayout>

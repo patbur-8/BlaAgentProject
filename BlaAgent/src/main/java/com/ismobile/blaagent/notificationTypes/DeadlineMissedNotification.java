@@ -41,6 +41,9 @@ public class DeadlineMissedNotification extends NotificationType {
     private int missStatus;
     SharedPreferences prefs;
     Test test;
+    private final int TIME_MINUTE = 60000;
+    Boolean noMoreAss = false;
+    double DISTANCE_THRESHOLD = 0.5;
 
     /**
      * Evaluates if a notification should be sent or not.
@@ -51,37 +54,40 @@ public class DeadlineMissedNotification extends NotificationType {
     @Override
     public void evaluate(Vector<Assignment> assignments, Assignment previous, Context context) {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        DISTANCE_THRESHOLD = Double.parseDouble(prefs.getString("prefDistanceThreshold","0.5"));
         NotificationItem notificationItem;
         String contentText;
         String[] details;
 
-        // My location.
-        float latitude = previous.getLatitude();
-        float longitude = previous.getLongitude();
+        // A deadline miss can only happen if we have a previous assignment, mean current time
+        // is after stoptime for an assignment.
+        if(previous == null) return;
 
+        // My location.
+        String from = getMyLocation();
+
+        // Check if stop time has passed --> We missed a deadline.
         Date currentTime = Test.getCurrentDate();
         Date stopTime = getDateFromString(previous.getStop());
         if (currentTime.after(stopTime)) {
             if (assignments.size() > 0) {
                 missStatus = checkIfMakeNextAss(assignments);
                 Assignment first = assignments.firstElement();
-                String from = getMyLocation();
                 String to = first.getLatitude() + "," + first.getLongitude();
 
-                // Check if stop time has passed --> We missed a deadline.
-                double distance = getDistance(latitude, longitude);
-                if (distance <= 0.5) {
+                // Check were we are, have to be att previous assignment.
+                double distance = getDistance(previous.getLatitude(), previous.getLongitude());
+                if (distance <= DISTANCE_THRESHOLD) {
 
                     // Miss the booked meeting.
                     if (missStatus == MISSBOOKED) {
-                        Log.d("MissBooked","här kan man va");
-                        String contentTitle = "Miss booked meeting";
+                        String contentTitle = getNextBooked(assignments).getTitle();
                         details = new String [2];
-                        contentText = "You will miss your next booked meeting with the current" +
+                        contentText = "You will miss this booked meeting with the current" +
                                 " traffic time.";
                         details[0] = "Booked meeting starting: " + getNextBooked(assignments).getStart();
-                        details[1] = "Assignment: " + getNextBooked(assignments).getTitle();
-                        notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadMB"+previous.getUid());
+                        details[1] = "Booked meeting: " + getNextBooked(assignments).getTitle();
+                        notificationItem = MainActivity.getDatasource().createNotificationItem(getNextBooked(assignments), contentText, details ,"deadMB"+getNextBooked(assignments).getUid());
                         if(notificationItem != null) {
                             Log.d("Sending: ", "MISSBOOKED");
                             sendNotification(assignments, details, contentTitle, contentText, context);
@@ -95,14 +101,15 @@ public class DeadlineMissedNotification extends NotificationType {
                     } else if (missStatus == NOTMISS) {
 
                          if(getNextBooked(assignments) != null) {
-                            String contentTitle = "Booked meeting";
+                            String contentTitle = previous.getTitle();
                             if(timeToLeaveForNextAss(assignments)) {
-                                details = new String [3];
+                                details = new String [4];
                                 contentText = "You have to leave this assignment now";
-                                details[0] = "Next assignment starts at: " + first.getStart();
-                                details[1] = "Assignment: " + first.getTitle();
-                                details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
-                                notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"deadNMB"+first.getUid());
+                                details[0] = "You have a booked meeting starting: " + getNextBooked(assignments).getStart();
+                                details[1] = "Next assignment starts: " + first.getStart();
+                                details[2] = "Assignment: " + first.getTitle();
+                                details[3] = "Travel time in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
+                                notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNMB"+previous.getUid());
                                 if(notificationItem != null) {
                                     Log.d("Sending: ", "NOTMISS+booked");
                                     sendNotification(assignments, details, contentTitle, contentText, context);
@@ -113,13 +120,13 @@ public class DeadlineMissedNotification extends NotificationType {
                         // If we have a next assignment.
                         } else {
                             if(timeToLeaveForNextAss(assignments)) {
-                                String contentTitle = "Next assignment";
+                                String contentTitle = previous.getTitle();
                                 details = new String [3];
                                 contentText = "You have to leave this assignment now";
                                 details[0] = "Next assignment starts at: " + first.getStart();
                                 details[1] = "Assignment: " + first.getTitle();
-                                details[2] = "Next assignment in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
-                                notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNMN"+first.getUid());
+                                details[2] = "Travel time in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
+                                notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNMN"+previous.getUid());
                                 if(notificationItem != null) {
                                     Log.d("Sending: ", "NOTMISS+notbooked");
                                     sendNotification(assignments, details, contentTitle, contentText, context);
@@ -130,12 +137,12 @@ public class DeadlineMissedNotification extends NotificationType {
 
                     // Miss the next assignment.
                     } else if (missStatus == MISSNEXTASS) {
-                        String contentTitle = "Miss next assignment";
+                        String contentTitle = first.getTitle();
                         details = new String [2];
-                        contentText = "You will miss your next assignment with the current" +
+                        contentText = "You will miss this assignment with the current" +
                                 " traffic time.";
-                        details[0] = "Next assignment starting: " + assignments.firstElement().getStart();
-                        details[1] = "Assignment: " + assignments.firstElement().getTitle();
+                        details[0] = "Next assignment starting: " + first.getStart();
+                        details[1] = "Assignment: " + first.getTitle();
                         notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"deadMN"+first.getUid());
                         if(notificationItem != null) {
                             Log.d("Sending: ", "MISSNEXTASS");
@@ -146,34 +153,21 @@ public class DeadlineMissedNotification extends NotificationType {
                 }
             } else {
                 //If no upcoming assignments.
-                    String contentTitle = "No more assignments";
-                    contentText = "The deadline for this assignment has passed.";
-                    details = new String [1];
-                    details[0] =  "The deadline for this assignment has passed but you have no upcoming assignments.";
-                    notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNM0"+previous.getUid());
-                    if(notificationItem != null) {
-                        Vector<Assignment> prevAss = new Vector<Assignment>();
-                        prevAss.addElement(previous);
-                        Log.d("Sending: ", "NOTMISS");
-                        sendNotification(prevAss, details, contentTitle, contentText, context);
-                        addNewItem(notificationItem);
-                    }
+                String contentTitle = previous.getTitle();
+                contentText = "The deadline for this assignment has passed.";
+                details = new String [1];
+                details[0] =  "The deadline for this assignment has passed and you have no upcoming assignments.";
+                notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNM0"+previous.getUid());
+                noMoreAss = true;
+                if(notificationItem != null) {
+                    Vector<Assignment> prevAss = new Vector<Assignment>();
+                    prevAss.addElement(previous);
+                    Log.d("Sending: ", "NOTMISS");
+                    sendNotification(prevAss, details, contentTitle, contentText, context);
+                    addNewItem(notificationItem);
+                }
             }
         }
-    }
-
-    /**
-     * Adds new notification to the database.
-     * @param noti
-     */
-    public void addNewItem(final NotificationItem noti) {
-        MainActivity.getUIHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity.addNotificationItem(noti);
-
-            }
-        });
     }
 
     /**
@@ -206,7 +200,18 @@ public class DeadlineMissedNotification extends NotificationType {
         boolean bigStyle = true;
 
         // Adds intent/intents depending on what type of notification that will be sent.
-        if (missStatus == NOTMISS) {
+        // Alla fall förutom "deadNM0"+ noti.getUid()
+
+        if (noMoreAss) {
+            notiActions = new NotificationAction[1];
+            notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+        } else {
+            notiActions = new NotificationAction[2];
+            notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+            notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
+        }
+
+        /*if (missStatus == NOTMISS) {
             if (assignments.size() > 0) {
                 notiActions = new NotificationAction[2];
                 notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
@@ -222,13 +227,27 @@ public class DeadlineMissedNotification extends NotificationType {
         } else {
             notiActions = new NotificationAction[1];
             notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
-        }
+        }*/
 
         String notificationId = uid+"deadlineMiss";
 
         // Builds the notification.
         StatusNotificationIntent sni = new StatusNotificationIntent(context);
         sni.buildNotification(contentTitle,contentText,resultIntent,details,bigStyle,notiActions,notificationId);
+    }
+
+    /**
+     * Adds new notification to the database.
+     * @param noti
+     */
+    public void addNewItem(final NotificationItem noti) {
+        MainActivity.getUIHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.addNotificationItem(noti);
+
+            }
+        });
     }
 
     /**
@@ -267,8 +286,10 @@ public class DeadlineMissedNotification extends NotificationType {
     public Assignment getNextBooked(Vector<Assignment> assignments) {
         nrOfCriticAssignments = 0;
         for (int i=0; i<assignments.size(); i++) {
+            Log.d("SIZE", assignments.size()+"");
             if (assignments.elementAt(i).getBooked()) {
                 nrOfCriticAssignments = i;
+                Log.d("SIZE-nrOfCriticAssignments", nrOfCriticAssignments+"");
                 return assignments.elementAt(i);
             }
         }
@@ -319,7 +340,7 @@ public class DeadlineMissedNotification extends NotificationType {
         String from = getMyLocation();
         String to = assignments.firstElement().getLatitude() + "," + assignments.firstElement().getLongitude();
 
-        double totalTime = ((startTime.getTime() - currentTime.getTime())/(1000*60)) - getCurrentTrafficTime(from,to,true);
+        double totalTime = ((startTime.getTime() - currentTime.getTime())/(TIME_MINUTE)) - getCurrentTrafficTime(from,to,true);
         return !(totalTime > 0);
     }
 
@@ -337,10 +358,10 @@ public class DeadlineMissedNotification extends NotificationType {
         String from = getMyLocation();
         String to;
 
-        for (int i=0; i<nrOfAssignments; i++) {
+        for (int i=0; i<=nrOfAssignments; i++) {
             startTime = getDateFromString(assignments.elementAt(i).getStart());
             stopTime = getDateFromString(assignments.elementAt(i).getStop());
-            estimatedWorkTime = (stopTime.getTime() - startTime.getTime())/(1000*60);
+            estimatedWorkTime = (stopTime.getTime() - startTime.getTime())/(TIME_MINUTE);
             if (i == 0) {
                 to = assignments.elementAt(i).getLatitude() + "," + assignments.elementAt(i).getLongitude();
                 locationOfLastAss = to;
@@ -353,6 +374,7 @@ public class DeadlineMissedNotification extends NotificationType {
                 totalTime += estimatedWorkTime + getCurrentTrafficTime(to, locationOfLastAss, false);
                 locationOfLastAss = to;
             }
+            Log.d("TOTALTIME-TOT",totalTime+"");
         }
         Log.d("TOTALTIME", totalTime+"");
         return totalTime;
@@ -367,14 +389,16 @@ public class DeadlineMissedNotification extends NotificationType {
         Assignment nextBooked = getNextBooked(assignments);
         Assignment nextAss = assignments.firstElement();
         Date currentTime = Test.getCurrentDate();
+        Log.d("Totaltime-currentTime", currentTime+"");
 
         // Check if there is any booked meetings today.
         if (nextBooked != null) {
             double totalTime = calculateTotalTime(assignments, nrOfCriticAssignments);
+            Log.d("Totaltime-booked", totalTime+"");
             Date nextBookedStartTime = getDateFromString(nextBooked.getStart());
 
             // A new date with current time + drive time + estimated work time.
-            Date newDate = new Date((long) (currentTime.getTime() + totalTime));
+            Date newDate = new Date((long) (currentTime.getTime() + totalTime*TIME_MINUTE));
             if (newDate.after(nextBookedStartTime)) {
                 Log.d("notify", "MISSBOOKED");
                 return MISSBOOKED;
@@ -383,11 +407,14 @@ public class DeadlineMissedNotification extends NotificationType {
         } else {
             // Check if we will make it to next assignment.
             if (assignments.firstElement() != null) {
-                double totalTime = calculateTotalTime(assignments, 1);
+                String from = getMyLocation();
+                String to = assignments.firstElement().getLatitude() + "," + assignments.firstElement().getLongitude();
+                double totalTime = getCurrentTrafficTime(from,to,true); //calculateTotalTime(assignments, 1);
+                Log.d("Totaltime-NOTbooked", totalTime+"");
                 Date nextAssStarTime = getDateFromString(nextAss.getStart());
 
                 // A new date with current time + drive time + estimated work time.
-                Date newDate = new Date((long) (currentTime.getTime() + totalTime));
+                Date newDate = new Date((long) (currentTime.getTime() + totalTime*TIME_MINUTE));
                 if (newDate.after(nextAssStarTime)) {
                     Log.d("notify", "MISSNEXTASS");
                     return MISSNEXTASS;
