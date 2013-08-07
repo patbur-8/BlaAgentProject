@@ -1,9 +1,11 @@
 package com.ismobile.blaagent.notificationTypes;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -133,9 +135,19 @@ public class LocationBasedNotification extends NotificationType {
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
         resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", uid);
 
+        float longi = assignments.firstElement().getLongitude();
+        float lati = assignments.firstElement().getLatitude();
+
+        // Opens google maps, from: My Location to: an assignments lat, long.
+        Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?f=d&daddr=" + lati + "," + longi));
+        mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
+                "com.google.android.maps.MapsActivity"));
+
         boolean bigStyle = false;
-        NotificationAction[] notiActions = new NotificationAction[1];
+        NotificationAction[] notiActions = new NotificationAction[2];
         notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
+        notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
 
         //Build the notification using StatusNotificationIntent
         StatusNotificationIntent sni = new StatusNotificationIntent(context);
