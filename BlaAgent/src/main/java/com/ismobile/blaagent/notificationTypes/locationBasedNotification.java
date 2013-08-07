@@ -67,7 +67,7 @@ public class LocationBasedNotification extends NotificationType {
         float longitude = first.getLongitude();
         double distance = getDistance(latitude, longitude);
 
-        contentText = "A new assignment has started and you are not in place.";
+        contentText = "Just started and you are not in place.";
 
         //The notification has to be unique for each notification type and assignment.
         //The notification type is used to be sure that each notification can only
@@ -117,7 +117,7 @@ public class LocationBasedNotification extends NotificationType {
     }
 
     /**
-     * This is where you create the actions and decide on the notification style.     *
+     * This is where you create the actions and decide on the notification style.
      * @param assignments
      * @param details
      * @param contentText

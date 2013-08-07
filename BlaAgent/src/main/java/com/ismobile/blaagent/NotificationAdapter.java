@@ -75,7 +75,7 @@ public class NotificationAdapter extends ArrayAdapter {
         }
 
 
-        holder.txtDetail.setText(noti.getContentText());
+        holder.txtDetail.setText(noti.getContentText() + "\n" + noti.getDetails());
         holder.txtTitle.setText(noti.getTitle());
         holder.txtDate.setText(noti.getDateCreated());
         return row;
@@ -104,6 +104,7 @@ public class NotificationAdapter extends ArrayAdapter {
         String schedule5 = "scheme5" + noti.getUid();
         String schedule15 = "scheme15" + noti.getUid();
         Log.d("CHECKTYPE",type);
+        Log.d("CheckType: notmissnext",type.equals(deadlineMissNotMissNextAss)+"");
 
         if (type.equals(deadlineMissBooked)) {
             return false;

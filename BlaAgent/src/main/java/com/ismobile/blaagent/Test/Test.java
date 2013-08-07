@@ -128,6 +128,7 @@ public class Test {
         Log.d("TEST",myLocation);
         return myLocation;
     }
+
     public Vector<Assignment> createAssignmentList() {
         Vector<Assignment> assignments = new Vector<Assignment>();
         assignments.add(createTestAssignment("2013-08-06 09:15", "2013-08-06 10:15", "bbbbbbbbbbbbb",59.4433f, 17.942f,false)); //sollentuna
