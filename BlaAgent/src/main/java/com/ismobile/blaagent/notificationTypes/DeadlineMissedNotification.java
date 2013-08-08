@@ -79,9 +79,26 @@ public class DeadlineMissedNotification extends NotificationType {
                 double distance = getDistance(previous.getLatitude(), previous.getLongitude());
                 if (distance <= DISTANCE_THRESHOLD) {
 
+                    // Inform the user that a deadline is missed.
+                    String contentTitle = previous.getTitle();
+                    contentText = "The deadline for this assignment has passed.";
+                    details = new String [1];
+                    details[0] =  "The deadline for this assignment has passed, now checking if " +
+                            "you have any booked meetings or assignments upcoming.";
+                    notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNM1"+previous.getUid());
+                    noMoreAss = true;
+                    if(notificationItem != null) {
+                        Vector<Assignment> prevAss = new Vector<Assignment>();
+                        prevAss.addElement(previous);
+                        Log.d("Sending: ", "Missed deadline");
+                        sendNotification(prevAss, details, contentTitle, contentText, context);
+                        addNewItem(notificationItem);
+                    }
+
+
                     // Miss the booked meeting.
                     if (missStatus == MISSBOOKED) {
-                        String contentTitle = getNextBooked(assignments).getTitle();
+                        contentTitle = getNextBooked(assignments).getTitle();
                         details = new String [2];
                         contentText = "You will miss this booked meeting with the current" +
                                 " traffic time.";
@@ -101,7 +118,7 @@ public class DeadlineMissedNotification extends NotificationType {
                     } else if (missStatus == NOTMISS) {
 
                          if(getNextBooked(assignments) != null) {
-                            String contentTitle = previous.getTitle();
+                            contentTitle = previous.getTitle();
                             if(timeToLeaveForNextAss(assignments)) {
                                 details = new String [4];
                                 contentText = "You have to leave this assignment now";
@@ -120,7 +137,7 @@ public class DeadlineMissedNotification extends NotificationType {
                         // If we have a next assignment.
                         } else {
                             if(timeToLeaveForNextAss(assignments)) {
-                                String contentTitle = previous.getTitle();
+                                contentTitle = previous.getTitle();
                                 details = new String [3];
                                 contentText = "You have to leave this assignment now";
                                 details[0] = "Next assignment starts at: " + first.getStart();
@@ -137,7 +154,7 @@ public class DeadlineMissedNotification extends NotificationType {
 
                     // Miss the next assignment.
                     } else if (missStatus == MISSNEXTASS) {
-                        String contentTitle = first.getTitle();
+                        contentTitle = first.getTitle();
                         details = new String [2];
                         contentText = "You will miss this assignment with the current" +
                                 " traffic time.";
@@ -200,8 +217,6 @@ public class DeadlineMissedNotification extends NotificationType {
         boolean bigStyle = true;
 
         // Adds intent/intents depending on what type of notification that will be sent.
-        // Alla fall förutom "deadNM0"+ noti.getUid()
-
         if (noMoreAss) {
             notiActions = new NotificationAction[1];
             notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
@@ -210,24 +225,6 @@ public class DeadlineMissedNotification extends NotificationType {
             notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
             notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
         }
-
-        /*if (missStatus == NOTMISS) {
-            if (assignments.size() > 0) {
-                notiActions = new NotificationAction[2];
-                notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
-                notiActions[1] = new NotificationAction(R.drawable.google_maps_logo, "", mapsIntent);
-            } else {
-                notiActions = new NotificationAction[1];
-                notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
-            }
-
-        } else if (missStatus == MISSNEXTASS) {
-            notiActions = new NotificationAction[1];
-            notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
-        } else {
-            notiActions = new NotificationAction[1];
-            notiActions[0] = new NotificationAction(R.drawable.ic_launcher, "", resultIntent);
-        }*/
 
         String notificationId = uid+"deadlineMiss";
 
@@ -245,7 +242,6 @@ public class DeadlineMissedNotification extends NotificationType {
             @Override
             public void run() {
                 MainActivity.addNotificationItem(noti);
-
             }
         });
     }
@@ -261,7 +257,6 @@ public class DeadlineMissedNotification extends NotificationType {
         Location location;
         boolean testEnabled = prefs.getBoolean("testEnabled", true);
         if(testEnabled) {
-            //TESTSET;
             location = stringToLocation(test.getMyLocation());
         } else {
             location = MainActivity.getMyLocation();
@@ -469,7 +464,7 @@ public class DeadlineMissedNotification extends NotificationType {
     }
 
     /**
-     *
+     * Converts a string of (lat,long) to a location.
      * @param loc
      * @return
      */
@@ -481,6 +476,10 @@ public class DeadlineMissedNotification extends NotificationType {
         return location;
     }
 
+    /**
+     * If test is enabled, returns the current date modified by test, otherwisw, current date.
+     * @return
+     */
     public Date getCurrentDate() {
         boolean testEnabled = MainActivity.testEnabled();
         if(testEnabled) {

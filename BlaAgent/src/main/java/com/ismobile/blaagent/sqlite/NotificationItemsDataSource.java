@@ -34,18 +34,32 @@ public class NotificationItemsDataSource {
             SQLHelper.COLUMN_DETAILS, SQLHelper.COLUMN_START, SQLHelper.COLUMN_STOP,
             SQLHelper.COLUMN_TYPE, SQLHelper.COLUMN_DATE};
 
+    /**
+     * Constructor.
+     * @param context
+     */
     public NotificationItemsDataSource(Context context) {
         dbHelper = new SQLHelper(context);
     }
 
+    /**
+     *
+     * @throws SQLException
+     */
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
     }
 
+    /**
+     *
+     */
     public void close() {
         dbHelper.close();
     }
 
+    /**
+     * Removes old items from the list.
+     */
     public void removeOldEntries() {
         Date hej = new Date();
         hej.setMinutes(0);
@@ -59,10 +73,17 @@ public class NotificationItemsDataSource {
     }
 
     Test test = new Test();
-    //Creates a notification item and inserts it into the database
+
+    /**
+     * Creates a notification item and inserts it into the database
+     * @param ass
+     * @param contentText
+     * @param details
+     * @param type
+     * @return
+     */
     public NotificationItem createNotificationItem(Assignment ass, String contentText,
                                                     String[] details, String type) {
-
         String title = ass.getTitle();
         String uid = ass.getUid();
         String start = ass.getStart();
@@ -82,7 +103,6 @@ public class NotificationItemsDataSource {
             } else {
                 detailString = "";
             }
-
 
             ContentValues values = new ContentValues();
             values.put(SQLHelper.COLUMN_UID, uid);
@@ -113,7 +133,12 @@ public class NotificationItemsDataSource {
         return null;
     }
 
-    //Checks if the notification exists in the database
+    /**
+     * Checks if the notification exists in the database.
+     * @param uid
+     * @param type
+     * @return
+     */
     public boolean checkIfNotificationExist(String uid, String type) {
         Log.d("STEP TWO", "Check if item exists");
         Cursor dataCount = database.rawQuery("SELECT " + SQLHelper.COLUMN_TITLE + " FROM " +
@@ -122,7 +147,10 @@ public class NotificationItemsDataSource {
         return (dataCount != null && dataCount.moveToFirst());
     }
 
-    //Retrieves all notification items from the database
+    /**
+     * Retrieves all notification items from the database.
+     * @return
+     */
     public List<NotificationItem> getAllNotificationItems() {
         List<NotificationItem> notiList = new ArrayList<NotificationItem>();
 
@@ -135,11 +163,17 @@ public class NotificationItemsDataSource {
             notiList.add(noti);
             cursor.moveToNext();
         }
+
         // Make sure to close the cursor
         cursor.close();
         return notiList;
     }
 
+    /**
+     *
+     * @param cursor
+     * @return
+     */
     private NotificationItem cursorToNotification(Cursor cursor) {
         NotificationItem noti = new NotificationItem();
         Log.d("STEP FOUR", "Cursor to nofitication");
@@ -163,7 +197,11 @@ public class NotificationItemsDataSource {
         return noti;
     }
 
-    //Converts String Array to String
+    /**
+     * Converts String Array to String.
+     * @param array
+     * @return
+     */
     public static String convertArrayToString(String[] array){
         String str = "";
         for (int i = 0;i<array.length; i++) {
@@ -176,12 +214,20 @@ public class NotificationItemsDataSource {
         return str;
     }
 
-    //Converts String to String Array
+    /**
+     * Converts String to String Array.
+     * @param str
+     * @return
+     */
     public static String[] convertStringToArray(String str){
         String[] arr = str.split("#!%");
         return arr;
     }
 
+    /**
+     * If test is enabled, returns the current date modified by test, otherwisw, current date.
+     * @return
+     */
     public Date getCurrentDate() {
         boolean testEnabled = MainActivity.testEnabled();
         if(testEnabled) {
