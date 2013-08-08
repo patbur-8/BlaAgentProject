@@ -102,8 +102,8 @@ public class Test {
                     }
                 }
                 //evaluate
-                //sn.evaluate(assignments,previous,context);
-                //lbn.evaluate(assignments,previous,context);
+                sn.evaluate(assignments,previous,context);
+                lbn.evaluate(assignments,previous,context);
                 dmn.evaluate(assignments, previous,context);
                 addMinutesToDate(5);
             }
