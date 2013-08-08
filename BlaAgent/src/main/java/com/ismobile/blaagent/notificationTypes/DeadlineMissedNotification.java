@@ -60,7 +60,7 @@ public class DeadlineMissedNotification extends NotificationType {
         String[] details;
 
         // A deadline miss can only happen if we have a previous assignment, mean current time
-        // is after stoptime for an assignment.
+        // is after stop time for an assignment.
         if(previous == null) return;
 
         // My location.
@@ -122,7 +122,7 @@ public class DeadlineMissedNotification extends NotificationType {
                                 details = new String [4];
                                 contentText = "You have to leave this assignment now";
                                 details[0] = "You have a booked meeting starting: " + getNextBooked(assignments).getStart();
-                                details[1] = "Next assignment starts: " + first.getStart();
+                                details[1] = "Next assignment start: " + first.getStart();
                                 details[2] = "Assignment: " + first.getTitle();
                                 details[3] = "Travel time in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
                                 notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNMB"+previous.getUid());
@@ -138,7 +138,7 @@ public class DeadlineMissedNotification extends NotificationType {
                                 contentTitle = previous.getTitle();
                                 details = new String [3];
                                 contentText = "You have to leave this assignment now";
-                                details[0] = "Next assignment starts: " + first.getStart();
+                                details[0] = "Next assignment start: " + first.getStart();
                                 details[1] = "Assignment: " + first.getTitle();
                                 details[2] = "Travel time in current traffic: " + getCurrentTrafficTime(from,to,true) + " min";
                                 notificationItem = MainActivity.getDatasource().createNotificationItem(previous, contentText, details ,"deadNMN"+previous.getUid());
@@ -155,7 +155,7 @@ public class DeadlineMissedNotification extends NotificationType {
                         details = new String [2];
                         contentText = "You will miss this assignment with the current" +
                                 " traffic time.";
-                        details[0] = "Next assignment starts: " + first.getStart();
+                        details[0] = "Next assignment start: " + first.getStart();
                         details[1] = "Assignment: " + first.getTitle();
                         notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details ,"deadMN"+first.getUid());
                         if(notificationItem != null) {
