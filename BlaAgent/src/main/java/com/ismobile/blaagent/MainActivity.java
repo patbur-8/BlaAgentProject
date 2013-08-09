@@ -166,7 +166,7 @@ public class MainActivity extends ListActivity  {
     protected void onListItemClick (ListView l, View v, int position, long id) {
         NotificationItem noti = adapter.getNoti(position);
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
-        resultIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        resultIntent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
         resultIntent.putExtra("com.ismobile.blaandroid.showAssDetails", noti.getUid());
         TaskStackBuilder resultStackBuilder = TaskStackBuilder.create(this);
         resultStackBuilder.addNextIntent(resultIntent);

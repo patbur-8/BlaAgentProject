@@ -12,11 +12,13 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 
 /**
  * Created by ats on 2013-07-29.
  */
 public class GetDirections {
+    HashMap<String, Integer> directions = new HashMap<String, Integer>();
     private String key = "Fmjtd%7Cluub20012d%2Cbl%3Do5-9ura14";
     //private String key = "AIzaSyDbRT8PQsIIGJriCrD80lF8hnlmPvizAac";
     //http://www.mapquestapi.com/directions/v1/route?key=Fmjtd%7Cluub20012d%2Cbl%3Do5-9ura14&from=Lancaster,PA&to=York,PA&callback=renderNarrative
@@ -55,6 +57,35 @@ public class GetDirections {
         } finally {
             is.close();
         }
+    }
+
+    public int getRouteDuration(String from, String to) {
+        String key = from + "-" + to;
+        if(directions.containsKey(key)) {
+            return directions.get(key);
+        }
+        try {
+            JSONObject directions = getDirectionsJSON(from, to);
+
+            // routesArray contains ALL routes
+            JSONArray routesArray = directions.getJSONArray("routes");
+            // Grab the first route
+            JSONObject route = routesArray.getJSONObject(0);
+            // Take all legs from the route
+            JSONArray legs = route.getJSONArray("legs");
+            // Grab first leg
+            JSONObject leg = legs.getJSONObject(0);
+
+            JSONObject durationObject = leg.getJSONObject("duration");
+            int duration = durationObject.getInt("value");
+            directions.put(key,duration);
+            return duration;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
 
