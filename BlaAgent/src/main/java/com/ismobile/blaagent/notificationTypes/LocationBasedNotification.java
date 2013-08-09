@@ -36,7 +36,6 @@ public class LocationBasedNotification extends NotificationType {
 
     /**
      * Evaluates if a notification should be sent or not.
-     *
      * @param assignments a vector containing all the assignments.
      * @param previous The previous assignment, if any.
      * @param context

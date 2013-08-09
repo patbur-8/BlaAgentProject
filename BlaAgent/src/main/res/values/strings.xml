@@ -38,10 +38,10 @@
 
     <string name="schedule_notification">Schedule based</string>
     <string name="schedule_notification_15_min">Early warning</string>
-    <string name="schedule_notification_15_min_summary">Send an early notification to warn when a notification is about to end. Default: 5 min.</string>
+    <string name="schedule_notification_15_min_summary">Send an early notification to warn when a notification is about to end. Default: 15 min.</string>
 
     <string name="schedule_notification_5_min">Late warning</string>
-    <string name="schedule_notification_5_min_summary">Send a notification to warn when a notification is about to end. Default: 15 min.</string>
+    <string name="schedule_notification_5_min_summary">Send a notification to warn when a notification is about to end. Default: 5 min.</string>
 
     <string name="schedule_enabled">Enabled</string>
 

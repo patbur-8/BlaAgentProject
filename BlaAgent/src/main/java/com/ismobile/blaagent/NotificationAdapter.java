@@ -29,6 +29,12 @@ public class NotificationAdapter extends ArrayAdapter {
     int layoutResourceId;
     List<NotificationItem> data = null;
 
+    /**
+     * Constructor.
+     * @param context
+     * @param layoutResourceId
+     * @param data
+     */
     public NotificationAdapter(Context context, int layoutResourceId, List<NotificationItem> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
@@ -36,6 +42,13 @@ public class NotificationAdapter extends ArrayAdapter {
         this.data = data;
     }
 
+    /**
+     * Sets the view of the list.
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
@@ -46,16 +59,12 @@ public class NotificationAdapter extends ArrayAdapter {
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new NotificationHolder();
-            Log.d("CHECKTYPE1",noti.getType());
             if (checkIfUseMapsIntent(noti)) {
-                Log.d("gfadgsdgd","hejj");
 
                 holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
-                //holder.imgMaps.setVisibility(View.VISIBLE);
                 holder.imgMaps.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.d("HEJJJJJAA","click");
                         Intent mapsIntent = new Intent(android.content.Intent.ACTION_VIEW,
                                 Uri.parse("http://maps.google.com/maps?f=d&daddr=" + noti.getLatitude() + "," + noti.getLongitude()));
                         mapsIntent.setComponent(new ComponentName("com.google.android.apps.maps",
@@ -85,11 +94,18 @@ public class NotificationAdapter extends ArrayAdapter {
         return row;
     }
 
-    //Returns a notification item
+    /**
+     * Returns a notification item.
+     * @param position
+     * @return
+     */
     public NotificationItem getNoti(int position) {
         return data.get(position-1);
     }
 
+    /**
+     *
+     */
     static class NotificationHolder {
         ImageView imgMaps;
         TextView txtTitle;
@@ -97,39 +113,31 @@ public class NotificationAdapter extends ArrayAdapter {
         TextView txtDate;
     }
 
+    /**
+     * Checks if a link to google maps should be in the list with an item.
+     * @param noti
+     * @return
+     */
     public boolean checkIfUseMapsIntent(NotificationItem noti) {
         String type = noti.getType();
-        String deadlineMissBooked = "deadMB" + noti.getUid();
-        String deadlineMissNotMissBooked = "deadNMB"+ noti.getUid();
-        String deadlineMissNotMissNextAss = "deadNMN"+ noti.getUid();
-        String deadlineMissNotMiss = "deadNM0"+ noti.getUid();
-        String deadlineMissNextAss = "deadMN"+ noti.getUid();
+        String deadlineMissNotMiss = "deadNM0" + noti.getUid();
+        String deadlineMissed = "deadNM1" + noti.getUid();
+
+        // Not in use at the moment. They all returns true, they should all show the imgMaps.
+        /*String deadlineMissBooked = "deadMB" + noti.getUid();
+        String deadlineMissNotMissBooked = "deadNMB" + noti.getUid();
+        String deadlineMissNotMissNextAss = "deadNMN" + noti.getUid();
+        String deadlineMissNextAss = "deadMN" + noti.getUid();
         String locationBased = "loc" + noti.getUid();
         String schedule5 = "scheme5" + noti.getUid();
-        String schedule15 = "scheme15" + noti.getUid();
-        Log.d("CHECKTYPE",type);
-        Log.d("CheckType: notmissnext",type.equals(deadlineMissNotMissNextAss)+"");
+        String schedule15 = "scheme15" + noti.getUid();*/
 
-        if (type.equals(deadlineMissBooked)) {
-            return true;
-        } else if (type.equals(deadlineMissNextAss)) {
-            return true;
-
-        } else if (type.equals(deadlineMissNotMissBooked)) {
-            return true;
-        } else if (type.equals(deadlineMissNotMissNextAss)) {
-            return true;
-        } else if (type.equals(deadlineMissNotMiss)) {
+       if (type.equals(deadlineMissNotMiss)) {
             return false;
-
-        } else if (type.equals(locationBased)) {
-            return true;
-
-        } else if (type.equals(schedule5)) {
-            return true;
-        } else if (type.equals(schedule15)) {
-            return true;
-        }
-        return false;
+        } else if (type.equals(deadlineMissed)) {
+           return false;
+       }
+        return true;
     }
+
 }
