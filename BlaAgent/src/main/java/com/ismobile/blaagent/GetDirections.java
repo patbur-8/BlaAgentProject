@@ -18,6 +18,7 @@ import java.util.HashMap;
  * Created by ats on 2013-07-29.
  */
 public class GetDirections {
+    //Cache for directions
     static HashMap<String, Integer> directionsCache = new HashMap<String, Integer>();
 
     private String readAll(Reader rd) throws IOException {
@@ -49,10 +50,17 @@ public class GetDirections {
         }
     }
 
+    /**
+     * Returns the route duration
+     * @param from
+     * @param to
+     * @return
+     */
     public int getRouteDuration(String from, String to) {
         String key = from + "-" + to;
+
+        //Tries to retrieve from cache in order to not ask google for the same directions twice.
         if(directionsCache.containsKey(key)) {
-            Log.d("CACHE","YEAH");
             return directionsCache.get(key);
         }
         try {
@@ -60,7 +68,6 @@ public class GetDirections {
 
             // routesArray contains ALL routes
             JSONArray routesArray = directions.getJSONArray("routes");
-            Log.d("ROUTESARRAY",routesArray.toString());
             // Grab the first route
             JSONObject route = routesArray.getJSONObject(0);
             // Take all legs from the route
@@ -71,7 +78,7 @@ public class GetDirections {
             JSONObject durationObject = leg.getJSONObject("duration");
             int duration = durationObject.getInt("value");
             directionsCache.put(key,duration);
-
+            Log.i("GetDirections", "Directions found, duration: " + duration);
             return duration;
         } catch (IOException e) {
             e.printStackTrace();

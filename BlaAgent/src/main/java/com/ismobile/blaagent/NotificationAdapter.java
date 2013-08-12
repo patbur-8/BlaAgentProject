@@ -59,6 +59,7 @@ public class NotificationAdapter extends ArrayAdapter {
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new NotificationHolder();
+            //Adds Google Maps image if notification wants it
             if (checkIfUseMapsIntent(noti)) {
 
                 holder.imgMaps = (ImageView)row.findViewById(R.id.imgMaps);
@@ -78,6 +79,7 @@ public class NotificationAdapter extends ArrayAdapter {
                 holder.imgMaps.setVisibility(View.GONE);
             }
 
+            //Sets title and details about the notification
             holder.txtTitle = (TextView)row.findViewById(R.id.txtTitle);
             holder.txtDetail = (TextView)row.findViewById(R.id.txtDetail);
             holder.txtDate = (TextView)row.findViewById(R.id.txtDate);
@@ -121,15 +123,6 @@ public class NotificationAdapter extends ArrayAdapter {
         String type = noti.getType();
         String deadlineMissNotMiss = "deadNM0" + noti.getUid();
         String deadlineMissed = "deadNM1" + noti.getUid();
-
-        // Not in use at the moment. They all returns true, they should all show the imgMaps.
-        /*String deadlineMissBooked = "deadMB" + noti.getUid();
-        String deadlineMissNotMissBooked = "deadNMB" + noti.getUid();
-        String deadlineMissNotMissNextAss = "deadNMN" + noti.getUid();
-        String deadlineMissNextAss = "deadMN" + noti.getUid();
-        String locationBased = "loc" + noti.getUid();
-        String schedule5 = "scheme5" + noti.getUid();
-        String schedule15 = "scheme15" + noti.getUid();*/
 
        if (type.equals(deadlineMissNotMiss)) {
             return false;

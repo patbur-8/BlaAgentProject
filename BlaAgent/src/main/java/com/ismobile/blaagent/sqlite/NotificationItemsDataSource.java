@@ -75,7 +75,6 @@ public class NotificationItemsDataSource {
         String stop = ass.getStop();
         float lati = ass.getLatitude();
         float longi = ass.getLongitude();
-        Log.d("uid+type", uid + " : " +type);
 
         //Each notification may only come once for each assignment.
         if(!checkIfNotificationExist(uid,type)) {
@@ -111,6 +110,7 @@ public class NotificationItemsDataSource {
             NotificationItem newNoti = cursorToNotification(cursor);
 
             cursor.close();
+            Log.i("NotificationItemsDataSource", "Notification item created");
             return newNoti;
         }
         return null;
@@ -140,8 +140,6 @@ public class NotificationItemsDataSource {
         whereArgs[0] = from.getTime()/1000L+"";
         whereArgs[1] = to.getTime()/1000L+"";
 
-        //SQLHelper.COLUMN_DATE + " => ? AND " + SQLHelper.COLUMN_DATE + " <= ?"
-
         Cursor cursor = database.query(SQLHelper.TABLE_NOTIFICATIONS,
                 allColumns, SQLHelper.COLUMN_DATE + " BETWEEN ? AND ?", whereArgs, null, null, null);
 
@@ -158,7 +156,7 @@ public class NotificationItemsDataSource {
     }
 
     /**
-     *
+     * Converts a cursor to a notification item
      * @param cursor
      * @return
      */

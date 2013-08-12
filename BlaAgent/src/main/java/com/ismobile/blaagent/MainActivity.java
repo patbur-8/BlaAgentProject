@@ -77,17 +77,18 @@ public class MainActivity extends ListActivity  {
         //Creates an instace of the background service and connects.
         isTestEnabled = prefs.getBoolean("testEnabled", true);
         if(isTestEnabled) {
-            Log.i("Test", "Running test");
+            Log.i("MainActivity - Test", "Running test");
             new RunTest().execute(this);
         } else {
             bs = new BackgroundService(this);
+            Log.i("MainActivity - Normal", "Starting background service");
             bs.connect();
         }
 
     }
 
     /**
-     * Retrieves the notification items from database
+     * Retrieves the notification items from database according to the filter
      * @return
      */
     public List<NotificationItem> getValuesFromDataSource() {
@@ -199,6 +200,7 @@ public class MainActivity extends ListActivity  {
      * Updates the feed after setting a new filter
      */
     public void updateFilter() {
+        Log.i("MainActivity", "Filter updated");
         values = getValuesFromDataSource();
         if(values != null) {
             adapter.data.clear();
@@ -217,6 +219,7 @@ public class MainActivity extends ListActivity  {
      * @param id
      */
     protected void onListItemClick (ListView l, View v, int position, long id) {
+        Log.i("MainActivity", "Starting BlaAndroid");
         NotificationItem noti = adapter.getNoti(position);
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);

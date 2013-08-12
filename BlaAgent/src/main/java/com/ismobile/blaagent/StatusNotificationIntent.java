@@ -89,7 +89,8 @@ public class StatusNotificationIntent {
             notiId++;
         }
 
-        Log.d("NotifID", id+"");
+
         nm.notify(id, builder.build());
+        Log.i("StatusNotificationIntent", "Notification built");
     }
 }

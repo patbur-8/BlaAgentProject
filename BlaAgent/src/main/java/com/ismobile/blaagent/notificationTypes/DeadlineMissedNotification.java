@@ -265,7 +265,6 @@ public class DeadlineMissedNotification extends NotificationType {
 
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
-        Log.d("distance", str);
         return distance;
     }
 
@@ -277,10 +276,8 @@ public class DeadlineMissedNotification extends NotificationType {
     public Assignment getNextBooked(Vector<Assignment> assignments) {
         nrOfCriticAssignments = 0;
         for (int i=0; i<assignments.size(); i++) {
-            Log.d("SIZE", assignments.size()+"");
             if (assignments.elementAt(i).getBooked()) {
                 nrOfCriticAssignments = i;
-                Log.d("SIZE-nrOfCriticAssignments", nrOfCriticAssignments+"");
                 return assignments.elementAt(i);
             }
         }
@@ -343,9 +340,9 @@ public class DeadlineMissedNotification extends NotificationType {
                 totalTime += estimatedWorkTime + getCurrentTrafficTime(to, locationOfLastAss, false);
                 locationOfLastAss = to;
             }
-            Log.d("TOTALTIME-TOT",totalTime+"");
+            Log.d("Deadline - TOTALTIME-TOT",totalTime+"");
         }
-        Log.d("TOTALTIME", totalTime+"");
+        Log.d("Deadline - TOTALTIME", totalTime+"");
         return totalTime;
     }
 
