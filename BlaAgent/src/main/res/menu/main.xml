@@ -3,4 +3,13 @@
         android:title="@string/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/action_filter"
+          android:title="@string/action_filter"
+          android:orderInCategory="100"
+          android:showAsAction="never" />
+    <item android:id="@+id/action_clear"
+          android:title="@string/action_clear"
+          android:orderInCategory="100"
+          android:showAsAction="never" />
+
 </menu>

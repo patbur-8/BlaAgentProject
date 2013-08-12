@@ -40,7 +40,9 @@ public class BackgroundService {
         TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"))*60*1000;
     }
 
-    //Registers a broadcast receiver and creates a new WAKE LOCK
+    /**
+     * Registers a broadcast receiver and creates a new WAKE LOCK
+     */
     public void initialize() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(alarmManagerAction);
@@ -62,14 +64,18 @@ public class BackgroundService {
         }
     }
 
-    //Calls initialize and sets a repeating alarm.
+    /**
+     * Calls initialize and sets a repeating alarm.
+     */
     protected void connect() {
         initialize();
         am = (AlarmManager)(context.getSystemService(Context.ALARM_SERVICE));
         am.setRepeating( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),20000, pi );
     }
 
-    //Unregisters the broadcast listener
+    /**
+     * Unregisters the broadcast listener
+     */
     protected void removeBroadCastListener() {
         if (this.receiver != null) {
             try {

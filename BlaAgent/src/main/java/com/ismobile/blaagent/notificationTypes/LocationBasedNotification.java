@@ -47,8 +47,8 @@ public class LocationBasedNotification extends NotificationType {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("locOnNewAss", true);
         DISTANCE_THRESHOLD = Double.parseDouble(prefs.getString("prefDistanceThreshold","0.5"));
+        Log.d("DISTANCETHRESHOLD",""+ DISTANCE_THRESHOLD);
         TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"));
-        Log.d("LOCONNEWASS",""+displayNotification);
         if(!displayNotification) return;
 
         // Assignments is sorted by stop time. Earliest stop time  = first element in vector.

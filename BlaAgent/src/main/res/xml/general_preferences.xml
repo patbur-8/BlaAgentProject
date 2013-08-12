@@ -4,7 +4,7 @@
     <PreferenceCategory android:title="@string/pref_update_setting" >
         <EditTextPreference
                 android:defaultValue="0.5"
-                android:key="prefOnSite"
+                android:key="prefDistanceThreshold"
                 android:summary="The radius in kilometer around an assignment, in which counts as being on site."
                 android:title="Distance threshold" >
         </EditTextPreference>

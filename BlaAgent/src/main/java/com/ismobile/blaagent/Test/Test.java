@@ -137,15 +137,15 @@ public class Test {
 
     public Vector<Assignment> createAssignmentList() {
         Vector<Assignment> assignments = new Vector<Assignment>();
-        assignments.add(createTestAssignment("2013-08-08 09:15", "2013-08-08 10:15", "bbbbbbbbbbbbb",59.4433f, 17.942f,false)); //sollentuna
-        assignments.add(1,createTestAssignment("2013-08-08 11:00", "2013-08-08 11:25", "ccccccccccccc",59.3337f, 18.056f,true)); //sthlm c
-        assignments.add(2,createTestAssignment("2013-08-08 11:30", "2013-08-08 12:30", "ddddddddddddd",59.30932f, 18.16613f,false)); //nacka
+        assignments.add(createTestAssignment("2013-08-09 09:15", "2013-08-09 10:15", "bbbbbbbbbbbbb",59.4433f, 17.942f,false)); //sollentuna
+        assignments.add(1,createTestAssignment("2013-08-09 11:00", "2013-08-09 11:25", "ccccccccccccc",59.3337f, 18.056f,true)); //sthlm c
+        assignments.add(2,createTestAssignment("2013-08-09 11:30", "2013-08-09 12:30", "ddddddddddddd",59.30932f, 18.16613f,false)); //nacka
 
         return assignments;
     }
 
     public Assignment createPrevious() {
-        Assignment previous = createTestAssignment("2013-08-08 07:30", "2013-08-08 08:45", "aaaaaaaaaaaaaa",59.30932f, 18.16613f,false); //nacka
+        Assignment previous = createTestAssignment("2013-08-09 07:30", "2013-08-09 08:45", "aaaaaaaaaaaaaa",59.30932f, 18.16613f,false); //nacka
         return previous;
     }
 

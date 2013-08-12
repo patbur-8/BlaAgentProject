@@ -22,7 +22,11 @@ import com.ismobile.blaagent.Test.Test;
 import com.ismobile.blaagent.menuSettings.SettingsActivity;
 import com.ismobile.blaagent.sqlite.NotificationItem;
 import com.ismobile.blaagent.sqlite.NotificationItemsDataSource;
+import com.ismobile.blaagent.sqlite.SQLHelper;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends ListActivity  {
@@ -41,6 +45,7 @@ public class MainActivity extends ListActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Log.d("Lifecycle","onCreate");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -52,8 +57,8 @@ public class MainActivity extends ListActivity  {
         datasource = new NotificationItemsDataSource(this);
         datasource.open();
 
-        //Retrieves the items from the database
-        values = datasource.getAllNotificationItems();
+        //Retrieves the items from the database between to dates
+        values = getValuesFromDataSource();
 
         // Use the SimpleCursorAdapter to show the
         // elements in a ListView
@@ -115,6 +120,38 @@ public class MainActivity extends ListActivity  {
         return location;
     }
 
+    public List<NotificationItem> getValuesFromDataSource() {
+        boolean filterToday;
+        filterToday = prefs.getBoolean("filterToday",true);
+        Date fromDate = new Date();
+        fromDate.setHours(0);
+        fromDate.setMinutes(0);
+        fromDate.setSeconds(0);
+
+        Date toDate = new Date();
+        toDate.setHours(24);
+        toDate.setMinutes(0);
+        toDate.setSeconds(0);
+        List<NotificationItem> vals = null;
+        if(filterToday) {
+
+            vals = datasource.getAllNotificationItems(fromDate, toDate);
+        } else {
+            String myFormatString = "yyyy-MM-dd";
+            SimpleDateFormat df = new SimpleDateFormat(myFormatString);
+
+            String fromPref = prefs.getString("filterFrom",df.format(fromDate));
+            String toPref = prefs.getString("filterTo",df.format(toDate));
+
+
+            try {
+                vals = datasource.getAllNotificationItems(df.parse(fromPref), df.parse(toPref));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return vals;
+    }
 
     public static boolean testEnabled() {
         return isTestEnabled;
@@ -134,6 +171,12 @@ public class MainActivity extends ListActivity  {
             case R.id.action_settings:
                 openSettings();
                 return true;
+            case R.id.action_filter:
+                filterList();
+                return true;
+            case R.id.action_clear:
+                SQLHelper.clearDatabase(this);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -142,6 +185,11 @@ public class MainActivity extends ListActivity  {
     public void openSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    public void filterList() {
+        Intent filter = new Intent(this,FilterListview.class);
+        startActivityForResult(filter, 1);
     }
 
     public void onDestroy() {
@@ -161,7 +209,27 @@ public class MainActivity extends ListActivity  {
         super.onPause();
     }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        if (requestCode == 1) {
+
+            if(resultCode == RESULT_OK){
+                //Filter
+                updateFilter();
+            }
+        }
+    }
+
+    public void updateFilter() {
+        values = getValuesFromDataSource();
+        if(values != null) {
+            adapter.data.clear();
+            for (int i = 0; i < values.size();i++) {
+                adapter.add(values.get(i));
+            }
+            adapter.notifyDataSetChanged();
+        }
+    }
     //Opens BlaAndroid to view a certain assignment
     protected void onListItemClick (ListView l, View v, int position, long id) {
         NotificationItem noti = adapter.getNoti(position);

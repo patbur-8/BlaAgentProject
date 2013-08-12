@@ -266,7 +266,7 @@ public class DeadlineMissedNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return  0.4; //distance;
+        return distance;
     }
 
     /**
@@ -295,7 +295,7 @@ public class DeadlineMissedNotification extends NotificationType {
      * @return
      */
     public double getCurrentTrafficTime(String from, String to, boolean traffic) {
-        int realTimeInSec;
+       /* int realTimeInSec;
         double realTime = -1;
         double time = 9999;
 
@@ -317,7 +317,8 @@ public class DeadlineMissedNotification extends NotificationType {
 
         if(realTime > 0) return realTime;
         Log.d("TravelTime", time+"");
-        return time;
+        return time;*/
+        return dir.getRouteDuration(from,to)/60;
     }
 
     /**

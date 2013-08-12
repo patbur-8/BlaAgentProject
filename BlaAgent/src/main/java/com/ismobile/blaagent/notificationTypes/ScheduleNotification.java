@@ -181,7 +181,7 @@ public class ScheduleNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(myLocation) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return 0.4; //distance;
+        return distance;
     }
 
     /**
@@ -192,7 +192,7 @@ public class ScheduleNotification extends NotificationType {
      * @return
      */
     public double getCurrentTrafficTime(String from, String to, boolean traffic) {
-        int realTimeInSec;
+       /* int realTimeInSec;
         double realTime = -1;
         double time = 9999;
         try {
@@ -219,7 +219,8 @@ public class ScheduleNotification extends NotificationType {
         }
 
         if(realTime > 0) return realTime;
-        return time;
+        return time;*/
+        return dir.getRouteDuration(from,to)/60;
     }
 
     /**

@@ -57,21 +57,6 @@ public class NotificationItemsDataSource {
         dbHelper.close();
     }
 
-    /**
-     * Removes old items from the list.
-     */
-    public void removeOldEntries() {
-        Date hej = new Date();
-        hej.setMinutes(0);
-        hej.setHours(0);
-        hej.setSeconds(0);
-        long today = hej.getTime();
-        Log.d("TODAYStörre",""+today/1000);
-        database.rawQuery("DELETE FROM " +
-                SQLHelper.TABLE_NOTIFICATIONS + " WHERE " + SQLHelper.COLUMN_DATE + " <= ? ",
-                new String[] {today*1000+""}).moveToFirst();
-    }
-
     Test test = new Test();
 
     /**
@@ -94,8 +79,6 @@ public class NotificationItemsDataSource {
 
         //Each notification may only come once for each assignment.
         if(!checkIfNotificationExist(uid,type)) {
-            Log.d("STEP THREE", "Retrieve the item from database");
-            Log.d("STEP - TYPE", type);
             //Convert details array to string as SQLite can't store string arrays.
             String detailString;
             if(details != null) {
@@ -115,7 +98,7 @@ public class NotificationItemsDataSource {
             values.put(SQLHelper.COLUMN_STOP, stop);
             values.put(SQLHelper.COLUMN_TYPE, type);
             values.put(SQLHelper.COLUMN_DATE, (""+getCurrentDate().getTime()/1000L));
-            Log.d("TIIIIIID", values.get(SQLHelper.COLUMN_DATE) + "");
+
             //Inserts the notification into database.
             long insertId = database.insert(SQLHelper.TABLE_NOTIFICATIONS, null,
                     values);
@@ -140,7 +123,6 @@ public class NotificationItemsDataSource {
      * @return
      */
     public boolean checkIfNotificationExist(String uid, String type) {
-        Log.d("STEP TWO", "Check if item exists");
         Cursor dataCount = database.rawQuery("SELECT " + SQLHelper.COLUMN_TITLE + " FROM " +
                 SQLHelper.TABLE_NOTIFICATIONS + " WHERE " + SQLHelper.COLUMN_UID + " = ? AND " +
                 SQLHelper.COLUMN_TYPE + " = ?", new String[] {uid, type});
@@ -151,11 +133,17 @@ public class NotificationItemsDataSource {
      * Retrieves all notification items from the database.
      * @return
      */
-    public List<NotificationItem> getAllNotificationItems() {
+    public List<NotificationItem> getAllNotificationItems(Date from, Date to) {
         List<NotificationItem> notiList = new ArrayList<NotificationItem>();
 
+        String [] whereArgs = new String[2];
+        whereArgs[0] = from.getTime()/1000L+"";
+        whereArgs[1] = to.getTime()/1000L+"";
+
+        //SQLHelper.COLUMN_DATE + " => ? AND " + SQLHelper.COLUMN_DATE + " <= ?"
+
         Cursor cursor = database.query(SQLHelper.TABLE_NOTIFICATIONS,
-                allColumns, null, null, null, null, null);
+                allColumns, SQLHelper.COLUMN_DATE + " BETWEEN ? AND ?", whereArgs, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -176,8 +164,6 @@ public class NotificationItemsDataSource {
      */
     private NotificationItem cursorToNotification(Cursor cursor) {
         NotificationItem noti = new NotificationItem();
-        Log.d("STEP FOUR", "Cursor to nofitication");
-        Log.d("cursor", cursor.getFloat(3) + ", " + cursor.getFloat(4));
 
         noti.setUid(cursor.getString(0));
         noti.setTitle(cursor.getString(1));
@@ -186,13 +172,12 @@ public class NotificationItemsDataSource {
         noti.setLongitude(cursor.getFloat(4));
         noti.setDetails(cursor.getString(5));
         noti.setType(cursor.getString(8));
-        Log.d("STEP - TYPE", cursor.getString(8));
+
         Date date = new Date ();
         date.setTime((long)cursor.getInt(9)*1000);
         DateFormat df = new SimpleDateFormat("HH:mm");
         noti.setDateCreated(df.format(date));
-        Log.d("TODAYMindre", date.getTime()+"");
-        Log.d("TODAYMindre", (long)cursor.getInt(9)+"");
+
 
         return noti;
     }

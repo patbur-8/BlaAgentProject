@@ -3,7 +3,6 @@
 
 
     <!-- NOTIFICATION TYPES -->
-    <header android:title="@string/notification_settings" />
     <header
             android:id="@+id/generalSettings"
             android:fragment="com.ismobile.blaagent.menuSettings.GeneralFragment"

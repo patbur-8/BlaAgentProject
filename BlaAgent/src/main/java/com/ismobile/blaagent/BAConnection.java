@@ -211,7 +211,7 @@ public class BAConnection {
 
                 String stopTime = nl.item(m+1).getTextContent();
                 //Only adds upcoming notifications
-                if(filterOutOldAssignments(stopTime)) {
+                if(filterOutTodaysAssignments(stopTime)) {
                 //if(true) {
                     String startTime = nl.item(m).getTextContent();
                     String uid = nl.item(m+2).getTextContent();
@@ -276,17 +276,23 @@ public class BAConnection {
         });
     }
 
-    //Filters out old assignments.
-    public boolean filterOutOldAssignments(String timestamp) {
+    //Filters out todays assignments.
+    public boolean filterOutTodaysAssignments(String timestamp) {
         String myFormatString = "yyyy-MM-dd HH:mm"; // for example
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         try {
+            Date tomorrow = new Date();
+            tomorrow.setMinutes(0);
+            tomorrow.setHours(24);
+            tomorrow.setSeconds(0);
+
             Date d1 = df.parse(timestamp);
             Date now = new Date(System.currentTimeMillis() - 60*60*1000);
-            return d1.after(now);
+            return d1.after(now) && d1.before(tomorrow);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         return false;
     }
 
@@ -303,5 +309,7 @@ public class BAConnection {
         }
         return false;
     }
+
+
 
 }

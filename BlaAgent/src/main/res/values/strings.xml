@@ -3,7 +3,8 @@
 
     <string name="app_name">Blå Agent</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="action_filter">Filter list</string>
+    <string name="action_clear">Clear feed</string>
 
     <color name="myColor">#ffffffff</color>
     <color name="myColorYellow">#ffeeed83</color>
@@ -17,36 +18,27 @@
     <string name="warning">Warning</string>
     <string name="error">Error</string>
     <string name="hello">test</string>
-
     <string name="pref_user_profile">Profile</string>
     <string name="pref_user_name">Username</string>
     <string name="pref_user_name_summary">This is my username</string>
-
     <string name="pref_update_setting">Update</string>
     <string name="pref_send_report_summary">Report summary</string>
     <string name="pref_send_report">Send report</string>
-
     <string name="pref_sync_frequency_summary">Sync summary</string>
     <string name="pref_sync_frequency">Sync frequency</string>
-
-
     <string name="notification_settings">Notifications</string>
-
     <string name="location_notification">Location based</string>
     <string name="location_notification_new_assignment">On new assignment</string>
     <string name="location_notification_new_assignment_started">Send a notification if you\'re not on place when a new assignment started.</string>
-
     <string name="schedule_notification">Schedule based</string>
     <string name="schedule_notification_15_min">Early warning</string>
     <string name="schedule_notification_15_min_summary">Send an early notification to warn when a notification is about to end. Default: 15 min.</string>
-
     <string name="schedule_notification_5_min">Late warning</string>
     <string name="schedule_notification_5_min_summary">Send a notification to warn when a notification is about to end. Default: 5 min.</string>
-
     <string name="schedule_enabled">Enabled</string>
-
     <string name="test_scenario">Testing</string>
     <string name="test_enabled">Enabled</string>
-
     <string name="general_settings">General settings</string>
+    <string name="title_activity_filter_listview">Filter</string>
+
 </resources>
