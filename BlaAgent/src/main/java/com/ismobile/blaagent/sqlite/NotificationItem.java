@@ -3,9 +3,9 @@ package com.ismobile.blaagent.sqlite;
 import java.util.Date;
 
 /**
+ * Notification items used for storing notifications in database and displaying in feed
  * Created by pbm on 2013-07-10.
  */
-//Notification items used for storing notifications in database and displaying in feed
 public class NotificationItem {
     private String uid;
     private String title;

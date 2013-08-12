@@ -266,7 +266,7 @@ public class DeadlineMissedNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return 0.4;//distance;
+        return distance;
     }
 
     /**
@@ -295,29 +295,6 @@ public class DeadlineMissedNotification extends NotificationType {
      * @return
      */
     public double getCurrentTrafficTime(String from, String to, boolean traffic) {
-       /* int realTimeInSec;
-        double realTime = -1;
-        double time = 9999;
-
-        try {
-            JSONObject obj = dir.getDirectionsJSON(from, to);
-            if(traffic) {
-                realTimeInSec = obj.getJSONObject("route").getInt("realTime");
-                if(realTimeInSec > 0) {
-                    realTime = secondsToMinute(realTimeInSec);
-                }
-            }
-            time = secondsToMinute(obj.getJSONObject("route").getInt("time"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if(realTime > 0) return realTime;
-        Log.d("TravelTime", time+"");
-        return time;*/
         return dir.getRouteDuration(from,to)/60;
     }
 

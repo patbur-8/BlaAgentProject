@@ -43,17 +43,17 @@ public class LocationBasedNotification extends NotificationType {
     @Override
     public void evaluate(Vector<Assignment> assignments,Assignment previous, Context context) {
         if(assignments == null || assignments.size() == 0) return;
+
         //Checks in the settings if it's enabled or not
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("locOnNewAss", true);
         DISTANCE_THRESHOLD = Double.parseDouble(prefs.getString("prefDistanceThreshold","0.5"));
         Log.d("DISTANCETHRESHOLD",""+ DISTANCE_THRESHOLD);
         TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"));
+
         if(!displayNotification) return;
 
-        // Assignments is sorted by stop time. Earliest stop time  = first element in vector.
         NotificationItem notificationItem;
-
         String contentText;
         String contentTitle = assignments.firstElement().getTitle();
         Assignment first = assignments.firstElement();
@@ -165,7 +165,6 @@ public class LocationBasedNotification extends NotificationType {
         Location location;
         boolean testEnabled = MainActivity.testEnabled();
         if(testEnabled) {
-            //TESTSET;
             location = stringToLocation(test.getMyLocation());
         } else {
             location = MainActivity.getMyLocation();
