@@ -51,7 +51,6 @@ public class Test {
     }
 
     static public Date getCurrentDate() {
-
         return currentTime;
     }
 
@@ -70,9 +69,16 @@ public class Test {
         });
     }
 
+    /**
+     * Runs evaluate on a list of assignment while adding time between the runs
+     * @param assignments
+     * @param previous
+     * @param context
+     */
     public void runTest(Vector<Assignment> assignments, Assignment previous, Context context){
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"));
+        //If assignnment list is empty, evaluate deadlineNoti on previous.
         if (assignments.size() == 0) {
             setMyLocation(59.4433f, 17.942f);
 
@@ -105,6 +111,7 @@ public class Test {
                 sn.evaluate(assignments,previous,context);
                 lbn.evaluate(assignments,previous,context);
                 dmn.evaluate(assignments, previous,context);
+                //Add some minutes to current time and run again
                 addMinutesToDate(5);
             }
         }
@@ -112,6 +119,11 @@ public class Test {
         setDataChanged();
     }
 
+    /**
+     * Checks if the stop time is in the past
+     * @param stopTime
+     * @return
+     */
     public boolean isStopTimeBeforeCurrentTime(String stopTime) {
         String myFormatString = "yyyy-MM-dd HH:mm"; // for example
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
@@ -130,11 +142,19 @@ public class Test {
         myLocation = lati +","+ longi;
     }
 
+    /**
+     * Returns "my location"
+     * @return
+     */
     static public String getMyLocation() {
         Log.d("TEST",myLocation);
         return myLocation;
     }
 
+    /**
+     * Creates a vector filled with new assignments
+     * @return
+     */
     public Vector<Assignment> createAssignmentList() {
         Vector<Assignment> assignments = new Vector<Assignment>();
         assignments.add(createTestAssignment("2013-08-09 09:15", "2013-08-09 10:15", "bbbbbbbbbbbbb",59.4433f, 17.942f,false)); //sollentuna
@@ -142,11 +162,6 @@ public class Test {
         assignments.add(2,createTestAssignment("2013-08-09 11:30", "2013-08-09 12:30", "ddddddddddddd",59.30932f, 18.16613f,false)); //nacka
 
         return assignments;
-    }
-
-    public Assignment createPrevious() {
-        Assignment previous = createTestAssignment("2013-08-09 07:30", "2013-08-09 08:45", "aaaaaaaaaaaaaa",59.30932f, 18.16613f,false); //nacka
-        return previous;
     }
 
 }

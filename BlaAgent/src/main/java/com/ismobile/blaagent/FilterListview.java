@@ -20,6 +20,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * An activity for filtering the notification feed using two datepickers and a "filter today" checkbox
+ */
 public class FilterListview extends Activity {
     private int year;
     private int month;
@@ -33,6 +36,11 @@ public class FilterListview extends Activity {
     String prefToDate;
     SharedPreferences prefs;
     boolean filterToday;
+
+    /**
+     * Initiates all the elements and sets onclick listeners
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +70,9 @@ public class FilterListview extends Activity {
 
         context = this;
 
+
+        //If filter today is checked, from and to is todays date.
+        //Else use dates stored in preferences
         String myFormatString = "yyyy-MM-dd";
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
         Date date = new Date();
@@ -77,6 +88,7 @@ public class FilterListview extends Activity {
             to = prefs.getString("filterTo",defaultToDate);
         }
 
+        //Sets the text in the two textfields
         filterFrom = (EditText) findViewById( R.id.filterFrom );
         filterTo = (EditText) findViewById( R.id.filterTo );
 
@@ -100,6 +112,7 @@ public class FilterListview extends Activity {
         filterFrom.setText(from);
         filterTo.setText(to);
 
+        //From date datepicker
         final DatePickerDialog.OnDateSetListener fromDatePicker = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -126,6 +139,7 @@ public class FilterListview extends Activity {
             }
         });
 
+        //To date datepicker
         final DatePickerDialog.OnDateSetListener toDatePicker = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -182,6 +196,9 @@ public class FilterListview extends Activity {
 
     }
 
+    /**
+     * Sets the filter to only list todays nofitications
+     */
     public void setFilterToday() {
         String myFormatString = "yyyy-MM-dd";
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
@@ -203,6 +220,9 @@ public class FilterListview extends Activity {
         filterTo.setText(defaultToDate);
     }
 
+    /**
+     * Sets the filter to list according to the user preference
+     */
     public void setPreferenceFilter() {
         String myFormatString = "yyyy-MM-dd";
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);

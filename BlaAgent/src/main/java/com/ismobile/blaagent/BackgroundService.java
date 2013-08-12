@@ -54,6 +54,7 @@ public class BackgroundService {
                     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
                     wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "BlaAgent-BackgroundService");
                     wl.acquire();
+                    Log.i("BackgroundService", "Wake Lock aquired, starting retrieval from BlaAndroid");
                     bacon.startRetrieval();
                     wl.release();
                 }
@@ -68,9 +69,11 @@ public class BackgroundService {
      * Calls initialize and sets a repeating alarm.
      */
     protected void connect() {
+        Log.i("BackgroundService", "Started background service");
+        Log.i("BackgroundService", "Time threshold set at: " + TIME_THRESHOLD );
         initialize();
         am = (AlarmManager)(context.getSystemService(Context.ALARM_SERVICE));
-        am.setRepeating( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),20000, pi );
+        am.setRepeating( AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),TIME_THRESHOLD, pi );
     }
 
     /**

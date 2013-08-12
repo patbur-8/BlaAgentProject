@@ -48,7 +48,6 @@ public class LocationBasedNotification extends NotificationType {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean displayNotification = prefs.getBoolean("locOnNewAss", true);
         DISTANCE_THRESHOLD = Double.parseDouble(prefs.getString("prefDistanceThreshold","0.5"));
-        Log.d("DISTANCETHRESHOLD",""+ DISTANCE_THRESHOLD);
         TIME_THRESHOLD = Integer.parseInt(prefs.getString("prefTimeInterval","5"));
 
         if(!displayNotification) return;
@@ -87,15 +86,11 @@ public class LocationBasedNotification extends NotificationType {
         if (timePassed <= TIME_THRESHOLD) {
             if ((currentTime.after(startTime) || currentTime.equals(startTime)) && currentTime.before(stopTime)) {
                 if (!(distance <= DISTANCE_THRESHOLD)) {
-                    Log.d("STEP ONE", "Create notification item");
-                    Log.d("STEP - TYPE", notificationType);
+
                     notificationItem = MainActivity.getDatasource().createNotificationItem(first, contentText, details , notificationType);
                     if(notificationItem != null) {
-                        Log.d("STEP FIVE", "Send notification");
-                        Log.d("STEP - TYPE", notificationItem.getType());
-                        Log.i("CHECKTYPE", "Location notification sent");
+                        Log.i("LocationBasedNotification", "Notification sent");
                         sendNotification(assignments, details, contentTitle, contentText, context);
-                        Log.d("STEP SIX", "Add notification item");
                         addNewItem(notificationItem);
                     }
                 }
@@ -112,7 +107,6 @@ public class LocationBasedNotification extends NotificationType {
         MainActivity.getUIHandler().post(new Runnable() {
             @Override
             public void run() {
-                Log.d("STEP - TYPE", noti.getType());
                 MainActivity.addNotificationItem(noti);
 
             }
@@ -177,7 +171,6 @@ public class LocationBasedNotification extends NotificationType {
 
         int distance = (int)aLocation.distanceTo(location) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
-        Log.d("distance", str);
         return distance;
     }
 

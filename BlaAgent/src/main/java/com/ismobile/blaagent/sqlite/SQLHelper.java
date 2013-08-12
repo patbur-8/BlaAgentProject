@@ -39,7 +39,8 @@ public class SQLHelper extends SQLiteOpenHelper {
 
     public SQLHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        clearDatabase(context);
+        //Uncomment if you want to clear the database every time you start the application
+        //clearDatabase(context);
     }
 
     /**

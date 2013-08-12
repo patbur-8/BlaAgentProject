@@ -87,7 +87,7 @@ public class ScheduleNotification extends NotificationType {
             if(0 <= difference && difference <= 6) {
                 boolean display5MinWarning =  prefs.getBoolean("sch5Min", true);
                 if(display5MinWarning) {
-                    Log.d("NOTIF", "<5min");
+                    Log.d("ScheduleNotification", "<5min");
                     notiType = "scheme5" + first.getUid();
                     //Warning notification.
                     contentText = difference + " min left to deadline";
@@ -109,7 +109,7 @@ public class ScheduleNotification extends NotificationType {
             } else if(10 <= difference && difference <= 16) {
                 boolean display15MinWarning =  prefs.getBoolean("sch15Min", true);
                 if(display15MinWarning) {
-                    Log.d("NOTIF", "<15min");
+                    Log.d("ScheduleNotification", "<15min");
                     notiType = "scheme15" + first.getUid();
                     //Info notification.
                     contentText = difference + " min left to deadline";
@@ -180,7 +180,7 @@ public class ScheduleNotification extends NotificationType {
 
         int distance = (int)aLocation.distanceTo(myLocation) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
-        Log.d("distance", str);
+        Log.d("ScheduleNotification", "Distance: " + str);
         return distance;
     }
 

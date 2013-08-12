@@ -41,7 +41,9 @@ import javax.xml.xpath.XPathFactory;
  */
 public class BAConnection {
 
-    //String containing all the field to parse from the XML.
+    /**
+     * String containing all the fields to parse from the XML.
+     */
     String nodesToRetrieve = "//assignment/start | //assignment/stop | //assignment/uid | //assignment/workorder/booked | //assignment/workorder/title | //assignment/workorder/location/latitude | //assignment/workorder/location/longitude";
 
     private Vector<Assignment> assignments = new Vector<Assignment>();
@@ -53,7 +55,10 @@ public class BAConnection {
     private DeadlineMissedNotification dmn;
     private Context context;
 
-    //Retrieves a file containing the port to BlaAndroid
+    /**
+     * Retrieves a file containing the port to BlaAndroid
+     * @return
+     */
     private File getPortfile() {
         File f = new File(new File(Environment.getExternalStorageDirectory(), "BlaAndroid"), "port.txt");
         f.mkdirs();
@@ -69,17 +74,21 @@ public class BAConnection {
         calculateNodePerAssignment();
     }
 
-    //Calculates the number of XML nodes per assignment
+    /**
+     * Calculates the number of XML nodes per assignment
+     */
     public void calculateNodePerAssignment() {
         nodePerAssignment = nodesToRetrieve.length() - nodesToRetrieve.replaceAll("\\|", "").length() + 1;
     }
 
-    //Starts retrieving the XML
+    /**
+     * Starts retrieving the XML
+     */
     public void startRetrieval() {
-        Log.i("Progress", "Starting retrieval");
+        Log.i("BAConnection", "Starting retrieval");
         final File p = getPortfile();
         if (! p.exists()) {
-            Log.e("Progress","Did not find " + p.getAbsolutePath());
+            Log.e("BAConnection","Did not find " + p.getAbsolutePath());
             return;
         }
         int port = -1;
@@ -88,11 +97,11 @@ public class BAConnection {
             sp = readFileAsString(p);
             if (sp != null) port = Integer.parseInt(sp);
         } catch (Exception e) {
-            Log.e("Progress","File " + p.getAbsolutePath() + " did not contain a number: " + sp);
+            Log.e("BAConnection","File " + p.getAbsolutePath() + " did not contain a number: " + sp);
             return;
         }
         if (port <= 0) {
-            Log.e("Progress","Invalid port: " + port);
+            Log.e("BAConnection","Invalid port: " + port);
             return;
         }
 
@@ -100,16 +109,20 @@ public class BAConnection {
     }
 
     private void copyStream(InputStream is, OutputStream os) throws IOException {
-        Log.i("Progress", "Copying stream");
+        Log.i("BAConnection", "Copying stream");
         int i;
         byte b[] = new byte[4096];
         while ((i = is.read(b)) > 0)
             os.write(b, 0, i);
     }
 
-    //Reads in file to string
+    /**
+     * Reads in file to string
+     * @param file
+     * @return
+     */
     private String readFileAsString(File file) {
-        Log.i("Progress", "Reading file as string");
+        Log.i("BAConnection", "Reading file as string");
         FileInputStream ifs = null;
         String ret = "";
         if (! file.exists()) return ret;
@@ -148,7 +161,12 @@ public class BAConnection {
         return ret;
     }
 
-    //Retrieves the XML data from BlaAndroid and puts in in a string
+    /**
+     * Retrieves the XML data from BlaAndroid and puts in in a string
+     * @param port
+     * @param incCustomXML
+     * @param incReports
+     */
     private void getXml(final int port, final boolean incCustomXML, final boolean incReports) {
         Log.i("Progress", "Getting XML");
         xml = "";
@@ -163,7 +181,6 @@ public class BAConnection {
                     ByteArrayOutputStream b = getUrlData(url);
                     if (b != null) xml = b.toString("UTF-8");
                     if (xml != null && xml.length() > 0) parseXML();
-                    Log.w("xml", " " + xml.charAt(xml.length()-3));
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -173,7 +190,11 @@ public class BAConnection {
         }).start();
     }
 
-    //Creates a XML document from string
+    /**
+     * Creates a XML document from string
+     * @param v
+     * @return
+     */
     private Document docFromString(String v) {
         Document doc = null;
 
@@ -183,16 +204,18 @@ public class BAConnection {
             InputSource is = new InputSource();
             is.setCharacterStream(new StringReader(v));
             doc = db.parse(is);
-            Log.i("Progress","WIN");
+            Log.i("BAConnection","XML parsed");
         } catch (Exception e) {
-            Log.i("Progress","Failed");
-            Log.e("Progress","ParseXML error: " + e);
+            Log.i("BAConnection","Failed");
+            Log.e("BAConnection","ParseXML error: " + e);
             e.printStackTrace();
         }
         return doc;
     }
 
-    //Parses the XML in order to retrieve only the important fields.
+    /**
+     * Parses the XML in order to retrieve only the important fields.
+     */
     private void parseXML() {
         Document doc = docFromString(xml);
         if (doc == null) return;
@@ -203,9 +226,8 @@ public class BAConnection {
             assignments.clear();
             //String title, String uid, boolean booked, String startTime, String stopTime, float latitude, float longitude
             // <title> <uid>  <booked> <start> <stop> <latitude> <longitude>
-            Log.i("Progress","Try");
             nl = (NodeList) xp1.evaluate(nodesToRetrieve, doc, XPathConstants.NODESET);
-            Log.i("Progress","Created Node list");
+            Log.i("BAConnection","Created Node list");
             events = "";
             for (int m = 0; m < nl.getLength(); m=m+nodePerAssignment) {
 
@@ -225,12 +247,14 @@ public class BAConnection {
             }
             evaluateNotifications();
         } catch (XPathExpressionException e) {
-            Log.e("Progress","XPath error: " + e);
+            Log.e("BAConnection","XPath error: " + e);
             e.printStackTrace();
         }
     }
 
-    //Evaluates if any notifications should be sent or not
+    /**
+     * Evaluates if any notifications should be sent or not
+     */
     public void evaluateNotifications() {
         sort("stop", assignments);
         Assignment previous = null;
@@ -247,7 +271,11 @@ public class BAConnection {
 
     }
 
-    //Sorts the assignments by stop time
+    /**
+     * Sorts the assignments by stop time
+     * @param field
+     * @param itemLocationList
+     */
     public void sort(final String field, List<Assignment> itemLocationList) {
         Collections.sort(itemLocationList, new Comparator<Assignment>() {
             @Override
@@ -276,7 +304,11 @@ public class BAConnection {
         });
     }
 
-    //Filters out todays assignments.
+    /**
+     * Filters out todays assignments.
+     * @param timestamp
+     * @return
+     */
     public boolean filterOutTodaysAssignments(String timestamp) {
         String myFormatString = "yyyy-MM-dd HH:mm"; // for example
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
@@ -296,7 +328,11 @@ public class BAConnection {
         return false;
     }
 
-    //Compares an assignments stop time to see if it has passed or not.
+    /**
+     * Compares an assignments stop time to see if it has passed or not.
+     * @param stopTime
+     * @return
+     */
     public boolean isStopTimeBeforeNow(String stopTime) {
         String myFormatString = "yyyy-MM-dd HH:mm"; // for example
         SimpleDateFormat df = new SimpleDateFormat(myFormatString);
