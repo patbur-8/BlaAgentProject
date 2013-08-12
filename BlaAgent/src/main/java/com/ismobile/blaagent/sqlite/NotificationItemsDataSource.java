@@ -178,7 +178,6 @@ public class NotificationItemsDataSource {
         DateFormat df = new SimpleDateFormat("HH:mm");
         noti.setDateCreated(df.format(date));
 
-
         return noti;
     }
 
@@ -191,7 +190,6 @@ public class NotificationItemsDataSource {
         String str = "";
         for (int i = 0;i<array.length; i++) {
             str = str+array[i];
-            // Do not append comma at the end of last element
             if(i<array.length-1){
                 str = str+"#!%";
             }
@@ -210,7 +208,7 @@ public class NotificationItemsDataSource {
     }
 
     /**
-     * If test is enabled, returns the current date modified by test, otherwisw, current date.
+     * If test is enabled, returns the current date modified by test, otherwise, current date.
      * @return
      */
     public Date getCurrentDate() {

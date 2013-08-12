@@ -89,7 +89,7 @@ public class ScheduleNotification extends NotificationType {
                 if(display5MinWarning) {
                     Log.d("NOTIF", "<5min");
                     notiType = "scheme5" + first.getUid();
-                    //Warning
+                    //Warning notification.
                     contentText = difference + " min left to deadline";
                     details[0] = "Deadline: " + stopTime;
                     details[1] = "Assignment: " + title;
@@ -111,7 +111,7 @@ public class ScheduleNotification extends NotificationType {
                 if(display15MinWarning) {
                     Log.d("NOTIF", "<15min");
                     notiType = "scheme15" + first.getUid();
-                    //Info
+                    //Info notification.
                     contentText = difference + " min left to deadline";
                     details[0] = "Deadline: " + stopTime;
                     details[1] = "Assignment: " + title;
@@ -181,7 +181,7 @@ public class ScheduleNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(myLocation) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return 0.4;//distance;
+        return distance;
     }
 
     /**
@@ -192,34 +192,6 @@ public class ScheduleNotification extends NotificationType {
      * @return
      */
     public double getCurrentTrafficTime(String from, String to, boolean traffic) {
-       /* int realTimeInSec;
-        double realTime = -1;
-        double time = 9999;
-        try {
-            JSONObject obj = dir.getDirectionsJSON(from, to);
-            if(traffic) {
-                realTimeInSec = obj.getJSONObject("route").getInt("realTime");
-                if(realTimeInSec > 0) {
-                    realTime = secondsToMinute(realTimeInSec);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            JSONObject obj = dir.getDirectionsJSON(from, to);
-            time = secondsToMinute(obj.getJSONObject("route").getInt("time"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if(realTime > 0) return realTime;
-        return time;*/
         return dir.getRouteDuration(from,to)/60;
     }
 
@@ -233,7 +205,7 @@ public class ScheduleNotification extends NotificationType {
     }
 
     /**
-     *
+     * Takes a string with (lat, long) and returning a location.
      * @param loc
      * @return
      */
@@ -285,6 +257,10 @@ public class ScheduleNotification extends NotificationType {
         return date;
     }
 
+    /**
+     * Gets the fake date from test if test is enable, otherwise returns the current date.
+     * @return
+     */
     public Date getCurrentDate() {
         boolean testEnabled = MainActivity.testEnabled();
         if(testEnabled) {
