@@ -33,6 +33,7 @@ public class MainActivity extends ListActivity  {
     private List<NotificationItem> values;
     private static NotificationAdapter adapter;
     private static NotificationItemsDataSource datasource;
+
     StatusNotificationIntent sn = new StatusNotificationIntent(this);
     SharedPreferences prefs;
     BackgroundService bs;
@@ -76,62 +77,13 @@ public class MainActivity extends ListActivity  {
         //Creates an instace of the background service and connects.
         isTestEnabled = prefs.getBoolean("testEnabled", true);
         if(isTestEnabled) {
+            Log.i("Test", "Running test");
             new RunTest().execute(this);
         } else {
             bs = new BackgroundService(this);
             bs.connect();
         }
 
-    }
-
-    public static NotificationAdapter getNotificationAdapter() {
-        return adapter;
-    }
-
-    public static void addNotificationItem(NotificationItem noti) {
-        adapter.data.add(0, noti);
-        Log.d("STEP SEVEN", "Notify data set changed");
-        adapter.notifyDataSetChanged();
-    }
-
-    public static NotificationItemsDataSource getDatasource() {
-        return datasource;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public static Handler getUIHandler() {
-        return handler;
-    }
-
-    /**
-     * Returns "My location"
-     * If test is enabled, a fake location will be
-     * @return
-     */
-    public static Location getMyLocation() {
-        Location location;
-        if(isTestEnabled) {
-            location = stringToLocation(Test.getMyLocation());
-        } else {
-            location = loc.getLocation();
-        }
-        return location;
-    }
-
-    /**
-     * Converts a string to a location object
-     * @param loc
-     * @return
-     */
-    public static Location stringToLocation(String loc) {
-        String[] latlong = loc.split(",");
-        Location location = new Location("");
-        location.setLatitude(Double.parseDouble(latlong[0]));
-        location.setLongitude(Double.parseDouble(latlong[1]));
-        return location;
     }
 
     /**
@@ -169,14 +121,6 @@ public class MainActivity extends ListActivity  {
             }
         }
         return vals;
-    }
-
-    /**
-     * Returns if test is enabled or not
-     * @return
-     */
-    public static boolean testEnabled() {
-        return isTestEnabled;
     }
 
    @Override
@@ -251,7 +195,9 @@ public class MainActivity extends ListActivity  {
         }
     }
 
-    //Updates the feed after setting a new filter
+    /**
+     * Updates the feed after setting a new filter
+     */
     public void updateFilter() {
         values = getValuesFromDataSource();
         if(values != null) {
@@ -263,7 +209,13 @@ public class MainActivity extends ListActivity  {
         }
     }
 
-    //Opens BlaAndroid to view a certain assignment
+    /**
+     * Opens BlaAndroid to view a certain assignment
+     * @param l
+     * @param v
+     * @param position
+     * @param id
+     */
     protected void onListItemClick (ListView l, View v, int position, long id) {
         NotificationItem noti = adapter.getNoti(position);
         Intent resultIntent = new Intent("com.ismobile.blaandroid.showAssDetails");
@@ -278,6 +230,77 @@ public class MainActivity extends ListActivity  {
         } catch (PendingIntent.CanceledException e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * Returns the notification adapter
+     * @return
+     */
+    public static NotificationAdapter getNotificationAdapter() {
+        return adapter;
+    }
+
+    /**
+     * Adds a notification item to the feed
+     * @param noti
+     */
+    public static void addNotificationItem(NotificationItem noti) {
+        Log.i("Notification", "Notification item added to the feed");
+        adapter.data.add(0, noti);
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Returns the datasource
+     * @return
+     */
+    public static NotificationItemsDataSource getDatasource() {
+        return datasource;
+    }
+
+    /**
+     * Returns a handler
+     * @return
+     */
+    public static Handler getUIHandler() {
+        return handler;
+    }
+
+    /**
+     * Returns "My location"
+     * If test is enabled, a fake location will be
+     * @return
+     */
+    public static Location getMyLocation() {
+        Location location;
+        if(isTestEnabled) {
+            location = stringToLocation(Test.getMyLocation());
+        } else {
+            location = loc.getLocation();
+        }
+        return location;
+    }
+
+    /**
+     * Converts a string to a location object
+     * @param loc
+     * @return
+     */
+    public static Location stringToLocation(String loc) {
+        String[] latlong = loc.split(",");
+        Location location = new Location("");
+        location.setLatitude(Double.parseDouble(latlong[0]));
+        location.setLongitude(Double.parseDouble(latlong[1]));
+        return location;
+    }
+
+    /**
+     * Returns if test is enabled or not
+     * @return
+     */
+    public static boolean testEnabled() {
+        return isTestEnabled;
     }
 
     /**
