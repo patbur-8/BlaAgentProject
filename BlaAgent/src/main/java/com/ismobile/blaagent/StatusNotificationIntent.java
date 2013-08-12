@@ -20,6 +20,16 @@ public class StatusNotificationIntent {
         this.context = context;
     }
 
+    /**
+     * Builds the notification
+     * @param contentTitle
+     * @param contentText
+     * @param resultIntent
+     * @param details
+     * @param bigStyle
+     * @param notiActions
+     * @param notificationId
+     */
     public void buildNotification(CharSequence contentTitle, CharSequence contentText, Intent resultIntent, String[] details, boolean bigStyle, NotificationAction[] notiActions, String notificationId) {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
@@ -68,6 +78,7 @@ public class StatusNotificationIntent {
             builder.setStyle(inboxStyle);
         }
 
+        //Checks if the notification ID already exists, else puts it there
         int id;
         if(hm.containsKey(notificationId)) {
             Log.d("NotifID", "Contains ID");

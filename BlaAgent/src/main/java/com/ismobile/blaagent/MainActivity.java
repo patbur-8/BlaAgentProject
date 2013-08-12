@@ -76,7 +76,7 @@ public class MainActivity extends ListActivity  {
         //Creates an instace of the background service and connects.
         isTestEnabled = prefs.getBoolean("testEnabled", true);
         if(isTestEnabled) {
-            new DownloadFilesTask().execute(this);
+            new RunTest().execute(this);
         } else {
             bs = new BackgroundService(this);
             bs.connect();
@@ -98,13 +98,22 @@ public class MainActivity extends ListActivity  {
         return datasource;
     }
 
+    /**
+     *
+     * @return
+     */
     public static Handler getUIHandler() {
         return handler;
     }
+
+    /**
+     * Returns "My location"
+     * If test is enabled, a fake location will be
+     * @return
+     */
     public static Location getMyLocation() {
         Location location;
         if(isTestEnabled) {
-            //TESTSET;
             location = stringToLocation(Test.getMyLocation());
         } else {
             location = loc.getLocation();
@@ -112,6 +121,11 @@ public class MainActivity extends ListActivity  {
         return location;
     }
 
+    /**
+     * Converts a string to a location object
+     * @param loc
+     * @return
+     */
     public static Location stringToLocation(String loc) {
         String[] latlong = loc.split(",");
         Location location = new Location("");
@@ -120,6 +134,10 @@ public class MainActivity extends ListActivity  {
         return location;
     }
 
+    /**
+     * Retrieves the notification items from database
+     * @return
+     */
     public List<NotificationItem> getValuesFromDataSource() {
         boolean filterToday;
         filterToday = prefs.getBoolean("filterToday",true);
@@ -153,6 +171,10 @@ public class MainActivity extends ListActivity  {
         return vals;
     }
 
+    /**
+     * Returns if test is enabled or not
+     * @return
+     */
     public static boolean testEnabled() {
         return isTestEnabled;
     }
@@ -182,16 +204,25 @@ public class MainActivity extends ListActivity  {
         }
     }
 
+    /**
+     * Opens the settings activity
+     */
     public void openSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * Opens the filter activity
+     */
     public void filterList() {
         Intent filter = new Intent(this,FilterListview.class);
         startActivityForResult(filter, 1);
     }
 
+    /**
+     * Close the datasource and remove the broadcast listener
+     */
     public void onDestroy() {
         super.onDestroy();
         Log.d("Lifecycle","onDestroy");
@@ -220,6 +251,7 @@ public class MainActivity extends ListActivity  {
         }
     }
 
+    //Updates the feed after setting a new filter
     public void updateFilter() {
         values = getValuesFromDataSource();
         if(values != null) {
@@ -230,6 +262,7 @@ public class MainActivity extends ListActivity  {
             adapter.notifyDataSetChanged();
         }
     }
+
     //Opens BlaAndroid to view a certain assignment
     protected void onListItemClick (ListView l, View v, int position, long id) {
         NotificationItem noti = adapter.getNoti(position);
@@ -247,7 +280,10 @@ public class MainActivity extends ListActivity  {
         }
     }
 
-    private class DownloadFilesTask extends AsyncTask<Context , Void, Void> {
+    /**
+     * Private class that executes the test in a background thread
+     */
+    private class RunTest extends AsyncTask<Context , Void, Void> {
 
         @Override
         protected Void doInBackground(Context... context) {

@@ -181,7 +181,7 @@ public class ScheduleNotification extends NotificationType {
         int distance = (int)aLocation.distanceTo(myLocation) / 1000; // Distance in km.
         String str = " (" + String.valueOf(distance) + " km)";
         Log.d("distance", str);
-        return distance;
+        return 0.4;//distance;
     }
 
     /**
